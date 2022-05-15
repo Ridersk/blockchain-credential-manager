@@ -3,9 +3,84 @@ export type BlockchainCredentialManager = {
   name: "blockchain_credential_manager";
   instructions: [
     {
-      name: "initialize";
-      accounts: [];
-      args: [];
+      name: "createCredential";
+      accounts: [
+        {
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "author";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "credentialUid";
+          type: "u64";
+        },
+        {
+          name: "credentialBump";
+          type: "u8";
+        },
+        {
+          name: "label";
+          type: "string";
+        },
+        {
+          name: "secret";
+          type: "string";
+        },
+        {
+          name: "websiteUrl";
+          type: "string";
+        }
+      ];
+    }
+  ];
+  accounts: [
+    {
+      name: "credentialAccount";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "ownerAddress";
+            type: "publicKey";
+          },
+          {
+            name: "uid";
+            type: "u64";
+          },
+          {
+            name: "label";
+            type: "string";
+          },
+          {
+            name: "secret";
+            type: "string";
+          },
+          {
+            name: "websiteUrl";
+            type: "string";
+          },
+          {
+            name: "createdAt";
+            type: "i64";
+          },
+          {
+            name: "updatedAt";
+            type: "i64";
+          }
+        ];
+      };
     }
   ];
 };
@@ -15,9 +90,84 @@ export const IDL: BlockchainCredentialManager = {
   name: "blockchain_credential_manager",
   instructions: [
     {
-      name: "initialize",
-      accounts: [],
-      args: [],
+      name: "createCredential",
+      accounts: [
+        {
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "author",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "credentialUid",
+          type: "u64",
+        },
+        {
+          name: "credentialBump",
+          type: "u8",
+        },
+        {
+          name: "label",
+          type: "string",
+        },
+        {
+          name: "secret",
+          type: "string",
+        },
+        {
+          name: "websiteUrl",
+          type: "string",
+        },
+      ],
+    },
+  ],
+  accounts: [
+    {
+      name: "credentialAccount",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "ownerAddress",
+            type: "publicKey",
+          },
+          {
+            name: "uid",
+            type: "u64",
+          },
+          {
+            name: "label",
+            type: "string",
+          },
+          {
+            name: "secret",
+            type: "string",
+          },
+          {
+            name: "websiteUrl",
+            type: "string",
+          },
+          {
+            name: "createdAt",
+            type: "i64",
+          },
+          {
+            name: "updatedAt",
+            type: "i64",
+          },
+        ],
+      },
     },
   ],
 };
