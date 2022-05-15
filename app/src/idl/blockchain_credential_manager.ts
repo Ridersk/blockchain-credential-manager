@@ -31,6 +31,10 @@ export type BlockchainCredentialManager = {
           type: "u8";
         },
         {
+          name: "title";
+          type: "string";
+        },
+        {
           name: "label";
           type: "string";
         },
@@ -40,6 +44,14 @@ export type BlockchainCredentialManager = {
         },
         {
           name: "websiteUrl";
+          type: "string";
+        },
+        {
+          name: "labelPath";
+          type: "string";
+        },
+        {
+          name: "secretPath";
           type: "string";
         }
       ];
@@ -60,6 +72,10 @@ export type BlockchainCredentialManager = {
             type: "u64";
           },
           {
+            name: "title";
+            type: "string";
+          },
+          {
             name: "label";
             type: "string";
           },
@@ -69,6 +85,14 @@ export type BlockchainCredentialManager = {
           },
           {
             name: "websiteUrl";
+            type: "string";
+          },
+          {
+            name: "labelPath";
+            type: "string";
+          },
+          {
+            name: "secretPath";
             type: "string";
           },
           {
@@ -118,6 +142,10 @@ export const IDL: BlockchainCredentialManager = {
           type: "u8",
         },
         {
+          name: "title",
+          type: "string",
+        },
+        {
           name: "label",
           type: "string",
         },
@@ -127,6 +155,14 @@ export const IDL: BlockchainCredentialManager = {
         },
         {
           name: "websiteUrl",
+          type: "string",
+        },
+        {
+          name: "labelPath",
+          type: "string",
+        },
+        {
+          name: "secretPath",
           type: "string",
         },
       ],
@@ -147,6 +183,10 @@ export const IDL: BlockchainCredentialManager = {
             type: "u64",
           },
           {
+            name: "title",
+            type: "string",
+          },
+          {
             name: "label",
             type: "string",
           },
@@ -156,6 +196,14 @@ export const IDL: BlockchainCredentialManager = {
           },
           {
             name: "websiteUrl",
+            type: "string",
+          },
+          {
+            name: "labelPath",
+            type: "string",
+          },
+          {
+            name: "secretPath",
             type: "string",
           },
           {

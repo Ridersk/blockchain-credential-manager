@@ -38,6 +38,9 @@ airdrop:
 test-localnet:
 	anchor test --provider.cluster localnet
 
+test-localnet-net-started:
+	anchor test --provider.cluster localnet
+
 test-devnet:
 	anchor test --provider.cluster devnet
 
@@ -49,10 +52,11 @@ deploy-devnet:
 	${SET_LOCALHOST} &&\
 	anchor run copy-idl
 
+# To deploy local, run "make start-localnet-cluster" first
 deploy-localnet:
 	${SET_LOCALHOST} &&\
 	anchor build &&\
-	anchor deploy --provider.cluster localnet &&
+	anchor deploy --provider.cluster localnet &&\
 	anchor run copy-idl
 
 show-program-id:

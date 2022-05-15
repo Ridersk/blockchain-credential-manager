@@ -69,16 +69,22 @@ describe("blockchain-credential-manager", () => {
     const credentialAccountKey = credentialPda.accountKey;
     await requestAirdrop(author);
 
-    const label = "secret from github user-001";
+    const title = "Github Credentials";
+    const label = "user-001";
+    const labelPath = '//*[@id="login_field"]';
     const secret = "password123";
+    const secretPath = '//*[@type="password"]';
     const websiteUrl = "https://github.com";
 
     await program.rpc.createCredential(
       credentialPda.uid,
       credentialPda.bump,
-      label,
+      title,
+      encryptData(author.secretKey, label),
       encryptData(author.secretKey, secret),
       websiteUrl,
+      labelPath,
+      secretPath,
       {
         accounts: {
           credentialAccount: credentialAccountKey,
@@ -104,12 +110,19 @@ describe("blockchain-credential-manager", () => {
       credentialPda.uid.toNumber(),
       credentialAccountData.uid.toNumber()
     );
-    assert.equal(label, credentialAccountData.label);
+    assert.equal(title, credentialAccountData.title);
+    assert.notEqual(label, credentialAccountData.label);
+    assert.equal(
+      label,
+      decryptData(author.secretKey, credentialAccountData.label)
+    );
     assert.notEqual(secret, credentialAccountData.secret);
     assert.equal(
       secret,
       decryptData(author.secretKey, credentialAccountData.secret)
     );
     assert.equal(websiteUrl, credentialAccountData.websiteUrl);
+    assert.equal(labelPath, credentialAccountData.labelPath);
+    assert.equal(secretPath, credentialAccountData.secretPath);
   });
 });

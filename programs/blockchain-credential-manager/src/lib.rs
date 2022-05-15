@@ -21,9 +21,12 @@ pub mod blockchain_credential_manager {
         ctx: Context<CreateCredentialInstruction>,
         credential_uid: u64,
         credential_bump: u8,
+        title: String,
         label: String,
         secret: String,
         website_url: String,
+        label_path: String,
+        secret_path: String,
     ) -> Result<()> {
         let credential_account: &mut Account<CredentialAccount> =
             &mut ctx.accounts.credential_account;
@@ -33,9 +36,12 @@ pub mod blockchain_credential_manager {
             credential_account,
             *ctx.accounts.author.key,
             credential_uid,
+            title,
             label,
             secret,
             website_url,
+            label_path,
+            secret_path,
         )?;
 
         Ok(())
