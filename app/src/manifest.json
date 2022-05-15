@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Blockchain Credentials Manager",
+    "description": "Store sensitive informations secure in blockchain Solana platform.",
+    "author": "Ridersk",
+    "version": "0.0.1",
+    "permissions": [
+        "tabs"
+    ],
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "Blockchain Credentials Manager"
+    }
+}
