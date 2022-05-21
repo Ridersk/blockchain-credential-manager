@@ -1,9 +1,27 @@
-import * as React from 'react';
-import ReactDOM from 'react-dom';
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
+
+import { ThemeProvider } from "@mui/material/styles";
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
+
+import { theme } from "themes";
+import Routes from "routes";
+import NavigationScroll from "./layouts/NavigationScroll";
+import { useTypedSelector } from "hooks/useTypedSelector";
 
 function App() {
-  return <Button variant="contained"> Olá Mundo</Button>;
+    const customization = useTypedSelector((state) => state.customization);
+
+    return (
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <NavigationScroll>
+                    <Routes />
+                </NavigationScroll>
+            </ThemeProvider>
+        </StyledEngineProvider>
+    );
+    // return <Button variant="contained">Hello World</Button>;
 }
 
 export default App;
