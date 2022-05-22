@@ -28,10 +28,11 @@ describe("blockchain-credential-manager", () => {
     author: anchor.web3.Keypair | any
   ): Promise<CredentialPDAParameters> => {
     const uid = new anchor.BN(parseInt((Date.now() / 1000).toString()));
-    const uidBuffer = uid.toBuffer("be", 8);
+    // const uidBuffer = uid.toBuffer("be", 8);
+    const uidBuffer = uid.toArray("be", 8);
 
     const [accountKey, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(namespace), author.publicKey.toBuffer(), uidBuffer],
+      [Buffer.from(namespace), author.publicKey.toBuffer(), Buffer.from(uidBuffer)],
       program.programId
     );
 

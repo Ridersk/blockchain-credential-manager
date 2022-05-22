@@ -6,7 +6,7 @@ import customizationReducer from "./customization";
 // ==============================|| COMBINE REDUCER ||============================== //
 
 const reducers = combineReducers({
-    customization: customizationReducer
+  customization: customizationReducer
 });
 
 export default reducers;
