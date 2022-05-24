@@ -14,5 +14,18 @@
   "action": {
     "default_popup": "index.html",
     "default_title": "Blockchain Credentials Manager"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "./content_script/content.js"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
   }
 }

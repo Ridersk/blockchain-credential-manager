@@ -1,6 +1,20 @@
-import { Box, Button, Container, FormControl, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormHelperText,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Typography
+} from "@mui/material";
 import AnimateButton from "components/buttons/AnimateButton";
 import { Formik } from "formik";
+import { useEffect, useState } from "react";
 import { sendCredential } from "services/sendCredentials";
 
 interface FormValues {
@@ -9,6 +23,28 @@ interface FormValues {
 }
 
 const CredentialCreation = () => {
+  const [currentTabUsername, setCurrentTabUsername] = useState("");
+  const [currentTabPassword, setCurrentTabPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // useEffect(() => {
+  //   async function setPageBackgroundColor() {
+  //     chrome.storage.sync.set({ color: "#3aa757" }, () => {});
+  //     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  //     chrome.scripting.executeScript({
+  //       target: { tabId: tab.id },
+  //       function: () => {
+  //         chrome.storage.sync.get("color", ({ color }) => {
+  //           document.body.style.backgroundColor = color;
+  //         });
+  //       }
+  //     });
+  //   }
+
+  //   setPageBackgroundColor();
+  // }, []);
+
   const sendCredentials = async (values: FormValues) => {
     const title = "Credencial de teste";
     const label = values.credentialLabel;
@@ -25,6 +61,25 @@ const CredentialCreation = () => {
     console.log("Credencial criada:", credentialAccount);
   };
 
+  useEffect(() => {
+    async function getUserValue() {
+      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+      // Send a request to the content script to get current tab input value.
+      chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
+        // alert("RESPOSTA:", response.data);
+        setCurrentTabUsername(response.data.username);
+        setCurrentTabPassword(response.data.password);
+      });
+    }
+
+    getUserValue();
+  }, []);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Container maxWidth="sm">
       <Box my={4}>
@@ -35,10 +90,11 @@ const CredentialCreation = () => {
 
       <Formik
         initialValues={{
-          credentialLabel: "",
-          credentialSecret: "",
+          credentialLabel: currentTabUsername,
+          credentialSecret: currentTabPassword,
           submit: null
         }}
+        enableReinitialize
         onSubmit={async (values) => {
           await sendCredentials(values);
         }}
@@ -68,13 +124,25 @@ const CredentialCreation = () => {
               <InputLabel htmlFor="credential-secret">Segredo</InputLabel>
               <OutlinedInput
                 id="credential-secret"
-                type="text"
+                type={showPassword ? "text" : "password"}
                 value={values.credentialSecret}
                 name="credentialSecret"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 label="Segredo"
                 inputProps={{}}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      // onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
               {touched.credentialSecret && errors.credentialSecret && (
                 <FormHelperText error id="credential-secret-helper">
