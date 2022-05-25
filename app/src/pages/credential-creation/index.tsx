@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, ContentCopy } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import AnimateButton from "components/buttons/AnimateButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import { sendCredential } from "services/sendCredentials";
+import { copyTextToClipboard } from "utils/clipboard";
 
 interface FormValues {
   credentialLabel: string;
@@ -80,6 +81,11 @@ const CredentialCreation = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleClickCopyInput = (value: string) => {
+    console.log("Input VALUE:", value);
+    copyTextToClipboard(value);
+  };
+
   return (
     <Container maxWidth="sm">
       <Box my={4}>
@@ -112,6 +118,19 @@ const CredentialCreation = () => {
                 onChange={handleChange}
                 label="Rótulo"
                 inputProps={{}}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="copy credential label value"
+                      onClick={() => {
+                        handleClickCopyInput(values.credentialLabel);
+                      }}
+                      edge="end"
+                    >
+                      <ContentCopy />
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
               {touched.credentialLabel && errors.credentialLabel && (
                 <FormHelperText error id="credential-label-helper">
@@ -133,13 +152,17 @@ const CredentialCreation = () => {
                 inputProps={{}}
                 endAdornment={
                   <InputAdornment position="end">
+                    <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
                     <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      // onMouseDown={handleMouseDownPassword}
+                      aria-label="copy credential secret value"
+                      onClick={() => {
+                        handleClickCopyInput(values.credentialSecret);
+                      }}
                       edge="end"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      <ContentCopy />
                     </IconButton>
                   </InputAdornment>
                 }

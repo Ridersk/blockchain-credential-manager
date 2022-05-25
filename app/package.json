@@ -42,8 +42,8 @@
     "dist": "yarn build && rm -rf ../static && mv build/static ../static",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.jsx,.ts,.tsx,.json}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    "lint:fix": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" -w",
+    "lint": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --check"
   },
   "eslintConfig": {
     "extends": [
