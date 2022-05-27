@@ -68,8 +68,7 @@ const CredentialCreation = () => {
 
       // Send a request to the content script to get current tab input value.
       chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
-        // alert("RESPOSTA:", response.data);
-        setCurrentTabUsername(response.data.username);
+        setCurrentTabUsername(response.data.label);
         setCurrentTabPassword(response.data.password);
       });
     }
