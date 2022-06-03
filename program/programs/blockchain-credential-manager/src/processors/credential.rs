@@ -7,11 +7,10 @@ pub fn process_create_credential(
     author_key: Pubkey,
     credential_uid: u64,
     title: String,
+    website_url: String,
     label: String,
     secret: String,
-    website_url: String,
-    label_path: String,
-    secret_path: String,
+    description: String,
 ) -> Result<()> {
     let curr_timestamp: i64 = Clock::get().unwrap().unix_timestamp;
 
@@ -21,8 +20,7 @@ pub fn process_create_credential(
     credential_account.label = label;
     credential_account.secret = secret;
     credential_account.website_url = website_url;
-    credential_account.label_path = label_path;
-    credential_account.secret_path = secret_path;
+    credential_account.description = description;
     credential_account.created_at = curr_timestamp;
     credential_account.updated_at = curr_timestamp;
 

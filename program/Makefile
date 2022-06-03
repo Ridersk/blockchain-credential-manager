@@ -50,14 +50,16 @@ deploy-devnet:
 	anchor build &&\
 	anchor deploy --provider.cluster devnet &&\
 	${SET_LOCALHOST} &&\
-	anchor run copy-idl
+	anchor run copy-idl &&\
+	anchor run copy-types
 
 # To deploy local, run "make start-localnet-cluster" first
 deploy-localnet:
 	${SET_LOCALHOST} &&\
 	anchor build &&\
 	anchor deploy --provider.cluster localnet &&\
-	anchor run copy-idl
+	anchor run copy-idl &&\
+	anchor run copy-types
 
 show-program-id:
 	@echo PROGRAM_ID: $$(solana address -k target/deploy/blockchain_credential_manager-keypair.json)

@@ -26,7 +26,6 @@ import { Formik } from "formik";
 
 // project imports
 import useScriptRef from "hooks/useScriptRef";
-import AnimateButton from "components/buttons/AnimateButton";
 
 // assets
 import Visibility from "@mui/icons-material/Visibility";
@@ -62,25 +61,23 @@ const AuthLogin = ({ ...others }) => {
     <>
       <Grid container direction="column" justifyContent="center" spacing={2}>
         <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              disableElevation
-              fullWidth
-              onClick={googleHandler}
-              size="large"
-              variant="outlined"
-              sx={{
-                color: "grey.700",
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              Sign in with Google
-            </Button>
-          </AnimateButton>
+          <Button
+            disableElevation
+            fullWidth
+            onClick={googleHandler}
+            size="large"
+            variant="outlined"
+            sx={{
+              color: "grey.700",
+              backgroundColor: theme.palette.grey[50],
+              borderColor: theme.palette.grey[100]
+            }}
+          >
+            <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
+              <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
+            </Box>
+            Sign in with Google
+          </Button>
         </Grid>
         <Grid item xs={12}>
           <Box
@@ -215,11 +212,9 @@ const AuthLogin = ({ ...others }) => {
             )}
 
             <Box sx={{ mt: 2 }}>
-              <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Sign in
-                </Button>
-              </AnimateButton>
+              <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                Sign in
+              </Button>
             </Box>
           </form>
         )}

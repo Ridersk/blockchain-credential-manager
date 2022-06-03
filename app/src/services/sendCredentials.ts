@@ -13,34 +13,31 @@ const programId = SystemProgram.programId;
 
 interface NewCredentialParameters {
   title: string;
-  label: string;
-  labelPath: string;
-  secret: string;
-  secretPath: string;
   websiteUrl: string;
+  label: string;
+  secret: string;
+  description: string;
 }
 
 export class Credential {
   publicKey: anchor.web3.PublicKey;
   title: string;
-  label: string;
-  labelPath: string;
-  secret: string;
-  secretPath: string;
   websiteUrl: string;
+  label: string;
+  secret: string;
+  description: string;
 
   constructor(publicKey: anchor.web3.PublicKey, accountData: NewCredentialParameters) {
     this.publicKey = publicKey;
     this.title = accountData.title;
-    this.label = accountData.label;
-    this.labelPath = accountData.labelPath;
-    this.secret = accountData.secret;
-    this.secretPath = accountData.secretPath;
     this.websiteUrl = accountData.websiteUrl;
+    this.label = accountData.label;
+    this.secret = accountData.secret;
+    this.description = accountData.description;
   }
 }
 
-export const sendCredential = async ({ title, label, labelPath, secret, secretPath, websiteUrl }: NewCredentialParameters) => {
+export const sendCredential = async ({ title, websiteUrl, label, secret, description }: NewCredentialParameters) => {
   // Request Airdrop for user wallet
   await requestAirdrop(program, userKeypair);
 
@@ -51,11 +48,10 @@ export const sendCredential = async ({ title, label, labelPath, secret, secretPa
     credentialPda.uid,
     credentialPda.bump,
     title,
+    websiteUrl,
     encryptData(userKeypair.secretKey, label),
     encryptData(userKeypair.secretKey, secret),
-    websiteUrl,
-    labelPath,
-    secretPath,
+    description,
     {
       accounts: {
         credentialAccount: credentialAccountKey,

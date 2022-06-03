@@ -7,23 +7,21 @@ pub struct CredentialAccount {
     pub owner_address: Pubkey, // wallet address
     pub uid: u64,
     pub title: String,
+    pub website_url: String,
     pub label: String,
     pub secret: String,
-    pub website_url: String,
-    pub label_path: String,
-    pub secret_path: String,
+    pub description: String,
     pub created_at: i64,
     pub updated_at: i64,
 }
 
 pub const CREDENTIAL_NAMESPACE: &str = "credential";
 
-pub const CREDENTIAL_TITLE_SIZE: usize = 20;
-pub const CREDENTIAL_LABEL_SIZE: usize = 50;
-pub const CREDENTIAL_SECRET_SIZE: usize = 50;
-pub const CREDENTIAL_URL_SIZE: usize = 50;
-pub const CREDENTIAL_LABEL_PATH_SIZE: usize = 100;
-pub const CREDENTIAL_SECRET_PATH_SIZE: usize = 100;
+pub const CREDENTIAL_TITLE_SIZE: usize = 50;
+pub const CREDENTIAL_LABEL_SIZE: usize = 128;
+pub const CREDENTIAL_SECRET_SIZE: usize = 128;
+pub const CREDENTIAL_URL_SIZE: usize = 100;
+pub const CREDENTIAL_DESCRIPTION_SIZE: usize = 100;
 
 pub const CREDENTIAL_OWNER_ADDRESS_LENGTH: usize = PUBLIC_KEY_LENGTH;
 pub const CREDENTIAL_UID_LENGTH: usize = 8;
@@ -42,8 +40,7 @@ impl CredentialAccount {
         + CREDENTIAL_LABEL_LENGTH
         + CREDENTIAL_SECRET_LENGTH
         + CREDENTIAL_URL_LENGTH
-        + CREDENTIAL_LABEL_PATH_SIZE
-        + CREDENTIAL_SECRET_PATH_SIZE
+        + CREDENTIAL_DESCRIPTION_SIZE
         + CREATED_AT_LENGTH
         + UPDATED_AT_LENGTH;
 }

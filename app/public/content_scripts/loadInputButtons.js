@@ -9,6 +9,8 @@ const interval = setInterval(() => {
   const passwordInput = document.querySelector('input[type="password"]');
   const labelInput = passwordInput.closest("form").querySelector("input");
 
+  window.highlight()
+
   if (passwordInput) {
     const size = passwordInput.offsetHeight * 0.8;
 

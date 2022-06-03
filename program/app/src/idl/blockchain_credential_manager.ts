@@ -35,6 +35,10 @@ export type BlockchainCredentialManager = {
           "type": "string"
         },
         {
+          "name": "websiteUrl",
+          "type": "string"
+        },
+        {
           "name": "label",
           "type": "string"
         },
@@ -43,15 +47,7 @@ export type BlockchainCredentialManager = {
           "type": "string"
         },
         {
-          "name": "websiteUrl",
-          "type": "string"
-        },
-        {
-          "name": "labelPath",
-          "type": "string"
-        },
-        {
-          "name": "secretPath",
+          "name": "description",
           "type": "string"
         }
       ]
@@ -76,6 +72,10 @@ export type BlockchainCredentialManager = {
             "type": "string"
           },
           {
+            "name": "websiteUrl",
+            "type": "string"
+          },
+          {
             "name": "label",
             "type": "string"
           },
@@ -84,15 +84,7 @@ export type BlockchainCredentialManager = {
             "type": "string"
           },
           {
-            "name": "websiteUrl",
-            "type": "string"
-          },
-          {
-            "name": "labelPath",
-            "type": "string"
-          },
-          {
-            "name": "secretPath",
+            "name": "description",
             "type": "string"
           },
           {
@@ -105,6 +97,33 @@ export type BlockchainCredentialManager = {
           }
         ]
       }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TitleTooLong",
+      "msg": "O título deve ter no máximo 50 caracteres."
+    },
+    {
+      "code": 6001,
+      "name": "URLTooLong",
+      "msg": "A URL deve ter no máximo 100 caracteres."
+    },
+    {
+      "code": 6002,
+      "name": "LabelTooLong",
+      "msg": "Tamanho da label ultrapassou o limite após encriptação."
+    },
+    {
+      "code": 6003,
+      "name": "SecretTooLong",
+      "msg": "Tamanho da senha ultrapassou o limite após encriptação."
+    },
+    {
+      "code": 6004,
+      "name": "DescriptionTooLong",
+      "msg": "A descrição deve ter no máximo 100 caracteres."
     }
   ]
 };
@@ -146,6 +165,10 @@ export const IDL: BlockchainCredentialManager = {
           "type": "string"
         },
         {
+          "name": "websiteUrl",
+          "type": "string"
+        },
+        {
           "name": "label",
           "type": "string"
         },
@@ -154,15 +177,7 @@ export const IDL: BlockchainCredentialManager = {
           "type": "string"
         },
         {
-          "name": "websiteUrl",
-          "type": "string"
-        },
-        {
-          "name": "labelPath",
-          "type": "string"
-        },
-        {
-          "name": "secretPath",
+          "name": "description",
           "type": "string"
         }
       ]
@@ -187,6 +202,10 @@ export const IDL: BlockchainCredentialManager = {
             "type": "string"
           },
           {
+            "name": "websiteUrl",
+            "type": "string"
+          },
+          {
             "name": "label",
             "type": "string"
           },
@@ -195,15 +214,7 @@ export const IDL: BlockchainCredentialManager = {
             "type": "string"
           },
           {
-            "name": "websiteUrl",
-            "type": "string"
-          },
-          {
-            "name": "labelPath",
-            "type": "string"
-          },
-          {
-            "name": "secretPath",
+            "name": "description",
             "type": "string"
           },
           {
@@ -216,6 +227,33 @@ export const IDL: BlockchainCredentialManager = {
           }
         ]
       }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TitleTooLong",
+      "msg": "O título deve ter no máximo 50 caracteres."
+    },
+    {
+      "code": 6001,
+      "name": "URLTooLong",
+      "msg": "A URL deve ter no máximo 100 caracteres."
+    },
+    {
+      "code": 6002,
+      "name": "LabelTooLong",
+      "msg": "Tamanho da label ultrapassou o limite após encriptação."
+    },
+    {
+      "code": 6003,
+      "name": "SecretTooLong",
+      "msg": "Tamanho da senha ultrapassou o limite após encriptação."
+    },
+    {
+      "code": 6004,
+      "name": "DescriptionTooLong",
+      "msg": "A descrição deve ter no máximo 100 caracteres."
     }
   ]
 };
