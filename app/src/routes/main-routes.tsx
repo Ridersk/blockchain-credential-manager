@@ -1,7 +1,7 @@
 // project imports
 import MinimalLayout from "layouts/MinimalLayout";
 import CredentialCreation from "pages/credential-creation";
-import { Link } from "react-router-dom";
+import Home from "pages/home";
 
 // ==============================|| ROUTING ||============================== //
 
@@ -11,13 +11,7 @@ const MainRoutes = {
   children: [
     {
       path: "/",
-      element: (
-        <div>
-          Home Page
-          <br />
-          <Link to={{ pathname: "/credentials-creation" }}>Criar Credencial</Link>
-        </div>
-      )
+      element: <Home />
     },
     {
       path: "/credentials-creation",

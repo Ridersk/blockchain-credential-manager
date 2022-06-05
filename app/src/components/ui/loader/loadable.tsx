@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 // project imports
-import Loader from "./Loader";
+import Loader from "./loader";
 
 // ==============================|| LOADABLE - LAZY LOADING ||============================== //
 

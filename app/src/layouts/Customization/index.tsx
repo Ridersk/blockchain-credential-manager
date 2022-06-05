@@ -22,7 +22,7 @@ import { IconSettings } from "@tabler/icons";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // project imports
-import SubCard from "components/cards/SubCard";
+import SubCard from "components/ui/card/subcard";
 import { SET_BORDER_RADIUS, SET_FONT_FAMILY } from "store/actionTypes";
 import { gridSpacing } from "store/constant";
 import { useTypedSelector } from "hooks/useTypedSelector";

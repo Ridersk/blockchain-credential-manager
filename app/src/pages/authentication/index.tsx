@@ -5,18 +5,16 @@ import { useTheme } from "@mui/material/styles";
 import { Divider, Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 
 // project imports
-import AuthWrapper1 from "./AuthWrapper1";
-import AuthCardWrapper from "./AuthCardWrapper";
-import AuthLogin from "components/forms/AuthLogin";
-import Logo from "components/Logo";
-import AuthFooter from "components/cards/AuthFooter";
+import AuthWrapper from "./auth-wrapper";
+import AuthCardWrapper from "../../components/login/auth-card-wrapper";
+import AuthLogin from "components/login/auth-login-form";
 
 const Login = () => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <AuthWrapper1>
+    <AuthWrapper>
       <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: "100vh" }}>
         <Grid item xs={12}>
           <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "calc(100vh - 68px)" }}>
@@ -24,9 +22,7 @@ const Login = () => {
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item sx={{ mb: 3 }}>
-                    <Link to="#">
-                      <Logo />
-                    </Link>
+                    <Link to="#">INÍCIO</Link>
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container direction={matchDownSM ? "column-reverse" : "row"} alignItems="center" justifyContent="center">
@@ -60,11 +56,8 @@ const Login = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sx={{ m: 3, mt: 1 }}>
-          <AuthFooter />
-        </Grid>
       </Grid>
-    </AuthWrapper1>
+    </AuthWrapper>
   );
 };
 

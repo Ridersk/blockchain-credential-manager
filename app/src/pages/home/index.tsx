@@ -1,12 +1,15 @@
+import { Container } from "@mui/material";
+import CredentialsList from "components/credential/credentials-list";
 import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
-    <div>
+    <Container maxWidth="sm" sx={{ textAlign: "center" }}>
       Home Page
       <br />
       <Link to={{ pathname: "/credentials-creation" }}>Criar Credencial</Link>
-    </div>
+      <CredentialsList />
+    </Container>
   );
 };
 
