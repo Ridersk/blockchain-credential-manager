@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material";
 
+const defaultTheme = createTheme();
 export const theme = createTheme({
   breakpoints: {
     values: {
@@ -38,6 +39,13 @@ export const theme = createTheme({
           borderStyle: "none"
         }
       }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#27293D"
+        }
+      }
     }
   },
   palette: {
@@ -57,6 +65,17 @@ export const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    h6: {
+      [defaultTheme.breakpoints.down("md")]: {
+        fontSize: "1rem"
+      },
+      [defaultTheme.breakpoints.up("md")]: {
+        fontSize: "1.2rem"
+      }
+    },
+    subtitle2: {
+      color: defaultTheme.palette.grey[500]
+    }
   }
 });

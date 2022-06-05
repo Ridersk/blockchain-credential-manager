@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff, ContentCopy } from "@mui/icons-material";
+import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
 import {
   Box,
   Container,
@@ -13,7 +13,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { sendCredential } from "services/sendCredentials";
+import { sendCredential } from "services/solana-web3/sendCredential";
 import { copyTextToClipboard } from "utils/clipboard";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -36,23 +36,19 @@ const CredentialCreation = () => {
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
 
-  // useEffect(() => {
-  //   async function setPageBackgroundColor() {
-  //     chrome.storage.sync.set({ color: "#3aa757" }, () => {});
-  //     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  useEffect(() => {
+    async function getUserValue() {
+      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  //     chrome.scripting.executeScript({
-  //       target: { tabId: tab.id },
-  //       function: () => {
-  //         chrome.storage.sync.get("color", ({ color }) => {
-  //           document.body.style.backgroundColor = color;
-  //         });
-  //       }
-  //     });
-  //   }
+      // Send a request to the content script to get current tab input value.
+      chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
+        setCurrentTabUsername(response.data.label);
+        setCurrentTabPassword(response.data.password);
+      });
+    }
 
-  //   setPageBackgroundColor();
-  // }, []);
+    getUserValue();
+  }, []);
 
   const sendCredentials = async (values: FormValues) => {
     /*
@@ -82,26 +78,11 @@ const CredentialCreation = () => {
     }
   };
 
-  useEffect(() => {
-    async function getUserValue() {
-      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-      // Send a request to the content script to get current tab input value.
-      chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
-        setCurrentTabUsername(response.data.label);
-        setCurrentTabPassword(response.data.password);
-      });
-    }
-
-    getUserValue();
-  }, []);
-
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleClickCopyInput = (value: string) => {
-    console.log("Input VALUE:", value);
     copyTextToClipboard(value);
   };
 
@@ -208,7 +189,7 @@ const CredentialCreation = () => {
                       }}
                       edge="end"
                     >
-                      <ContentCopy />
+                      <ContentCopyIcon />
                     </IconButton>
                   </InputAdornment>
                 }
@@ -240,7 +221,7 @@ const CredentialCreation = () => {
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                     </IconButton>
                     <IconButton
                       aria-label="copy credential secret value"
@@ -249,7 +230,7 @@ const CredentialCreation = () => {
                       }}
                       edge="end"
                     >
-                      <ContentCopy />
+                      <ContentCopyIcon />
                     </IconButton>
                   </InputAdornment>
                 }
@@ -289,7 +270,7 @@ const CredentialCreation = () => {
                       }}
                       edge="end"
                     >
-                      <ContentCopy />
+                      <ContentCopyIcon />
                     </IconButton>
                   </InputAdornment>
                 }

@@ -4,6 +4,8 @@ import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
 import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
 
 import idl from "idl/blockchain_credential_manager.json";
+import { getCookie, setCookie } from "utils/cookie";
+import bs58 from "bs58";
 
 const clusterUrl = process.env.REACT_APP_CLUSTER_URL || "devnet";
 const preflightCommitment = "processed";
@@ -11,7 +13,15 @@ const commitment = "processed";
 const programID = new PublicKey(idl.metadata.address);
 
 // User keypair credentials
-const userKeypair = Keypair.generate();
+const secretBs58Saved = getCookie("userSecret");
+let userKeypair: Keypair;
+if (secretBs58Saved) {
+  const secret = bs58.decode(secretBs58Saved);
+  userKeypair = Keypair.fromSecretKey(secret);
+} else {
+  userKeypair = Keypair.generate();
+  setCookie("userSecret", bs58.encode(userKeypair.secretKey));
+}
 
 interface SolanaWeb3Workspace {
   userKeypair: Keypair;

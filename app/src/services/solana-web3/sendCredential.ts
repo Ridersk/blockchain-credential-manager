@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
-import * as bs58 from "bs58";
 const CryptoJS = require("crypto-js");
+import { decryptData, encryptData } from "utils/aes-encryption";
 
-import { solanaWeb3, requestAirdrop } from "./solanaWeb3";
+import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
 
 const { SystemProgram, PublicKey } = anchor.web3;
 const { program, userKeypair } = solanaWeb3();
@@ -65,6 +65,10 @@ export const sendCredential = async ({ title, websiteUrl, label, secret, descrip
   // Fetch credential created account
   let credentialAccount = await program.account.credentialAccount.fetch(credentialAccountKey);
 
+  for (let i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+    console.log("LABEL DECRIPTADA:", decryptData(userKeypair.secretKey, credentialAccount.label));
+  }
+
   return new Credential(credentialAccountKey, credentialAccount);
 };
 
@@ -93,16 +97,4 @@ const getPdaParams = async (namespace: string, author: anchor.web3.Keypair): Pro
   console.log("ACCOUNT KEY:", accountKey);
 
   return { uid, accountKey, bump };
-};
-
-const encryptData = (secretKey: Uint8Array, data: string) => {
-  const bs58EncodedSecretKey = bs58.encode(secretKey);
-  const encodedData = CryptoJS.AES.encrypt(data, bs58EncodedSecretKey);
-  return encodedData.toString();
-};
-
-const decryptData = (secretKey: Uint8Array, encryptedData: string) => {
-  const bs58EncodedSecretKey = bs58.encode(secretKey);
-  const decryptedData = CryptoJS.AES.decrypt(encryptedData, bs58EncodedSecretKey);
-  return decryptedData.toString(CryptoJS.enc.Utf8);
 };

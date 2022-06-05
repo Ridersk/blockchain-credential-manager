@@ -7,7 +7,7 @@ import Customization from "../Customization";
 // ==============================|| MINIMAL LAYOUT ||============================== //
 
 const MinimalLayout: React.FC = (): JSX.Element => (
-  <Container style={{ minWidth: "400px", minHeight: "600px" }}>
+  <Container sx={{ width: { xs: "400px", md: "100%" }, height: { xs: "600px", md: "100%" } }}>
     <Outlet />
     {/* <Customization /> */}
   </Container>

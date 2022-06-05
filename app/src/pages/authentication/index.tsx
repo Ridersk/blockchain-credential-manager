@@ -5,9 +5,9 @@ import { useTheme } from "@mui/material/styles";
 import { Divider, Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 
 // project imports
-import AuthWrapper from "./auth-wrapper";
-import AuthCardWrapper from "../../components/login/auth-card-wrapper";
+import AuthCardWrapper from "components/login/auth-card-wrapper";
 import AuthLogin from "components/login/auth-login-form";
+import AuthWrapper from "components/login/auth-wrapper";
 
 const Login = () => {
   const theme = useTheme();
