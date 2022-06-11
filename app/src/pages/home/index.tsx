@@ -7,7 +7,7 @@ const Home = () => {
     <Container maxWidth="sm" sx={{ textAlign: "center" }}>
       Home Page
       <br />
-      <Link to={{ pathname: "/credentials-creation" }}>Criar Credencial</Link>
+      <Link to={{ pathname: "/credential" }}>Criar Credencial</Link>
       <CredentialsPanel />
     </Container>
   );

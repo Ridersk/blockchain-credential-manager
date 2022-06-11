@@ -14,7 +14,7 @@ const MainRoutes = {
       element: <Home />
     },
     {
-      path: "/credentials-creation",
+      path: "/credential",
       element: <CredentialCreation />
     }
   ]

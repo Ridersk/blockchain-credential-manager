@@ -13,7 +13,7 @@ interface CredentialParameters {
 }
 
 export class Credential {
-  publicKey: anchor.web3.PublicKey;
+  private _publicKey: anchor.web3.PublicKey;
   title: string;
   url: string;
   private _label: string;
@@ -21,12 +21,16 @@ export class Credential {
   description: string;
 
   constructor(publicKey: anchor.web3.PublicKey, { title, url, label, secret, description }: CredentialParameters) {
-    this.publicKey = publicKey;
+    this._publicKey = publicKey;
     this.title = title;
     this.url = url;
     this._label = label;
     this._secret = secret;
     this.description = description;
+  }
+
+  get publicKey() {
+    return this._publicKey.toBase58();
   }
 
   get label() {

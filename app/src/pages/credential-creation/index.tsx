@@ -16,9 +16,12 @@ import { useEffect, useState } from "react";
 import { sendCredential } from "services/solana-web3/sendCredential";
 import { copyTextToClipboard } from "utils/clipboard";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import useNotification from "hooks/useNotification";
 import { AnchorError } from "@project-serum/anchor";
+import { getCredential } from "services/solana-web3/getCredential";
+import bs58 from "bs58";
+import { PublicKey } from "@solana/web3.js";
 
 interface FormValues {
   title: string;
@@ -30,21 +33,47 @@ interface FormValues {
 
 const CredentialCreation = () => {
   const navigate = useNavigate();
-  const [currentTabUsername, setCurrentTabUsername] = useState("");
-  const [currentTabPassword, setCurrentTabPassword] = useState("");
+  const [searchParams, _] = useSearchParams();
+  const [initialTitle, setInitialTitle] = useState("");
+  const [initialUrl, setInitialUrl] = useState("");
+  const [initialLabel, setInitialLabel] = useState("");
+  const [initialPassword, setInitialPassword] = useState("");
+  const [initialDescription, setInitialDescription] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
 
+  // Get Data from blockchain to edit existing credential
+  useEffect(() => {
+    async function getCredentialToEdit() {
+      const credPublicKey = searchParams.get("cred");
+
+      if (credPublicKey) {
+        const credential = await getCredential(new PublicKey(bs58.decode(credPublicKey)));
+
+        setInitialTitle(credential.title);
+        setInitialUrl(credential.url);
+        setInitialLabel(credential.label);
+        setInitialPassword(credential.secret);
+        setInitialDescription(credential.description);
+      }
+    }
+
+    getCredentialToEdit();
+  }, []);
+
+  // Get Data from user current external website page
   useEffect(() => {
     async function getUserValue() {
-      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (chrome?.tabs) {
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-      // Send a request to the content script to get current tab input value.
-      chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
-        setCurrentTabUsername(response.data.label);
-        setCurrentTabPassword(response.data.password);
-      });
+        // Send a request to the content script to get current tab input value.
+        chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
+          setInitialLabel(response.data.label);
+          setInitialPassword(response.data.password);
+        });
+      }
     }
 
     getUserValue();
@@ -96,11 +125,11 @@ const CredentialCreation = () => {
 
       <Formik
         initialValues={{
-          title: "",
-          currentPageUrl: "",
-          credentialLabel: currentTabUsername,
-          credentialSecret: currentTabPassword,
-          description: "",
+          title: initialTitle,
+          currentPageUrl: initialUrl,
+          credentialLabel: initialLabel,
+          credentialSecret: initialPassword,
+          description: initialDescription,
           submit: null
         }}
         validationSchema={Yup.object().shape({

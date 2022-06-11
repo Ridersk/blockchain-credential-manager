@@ -20,54 +20,52 @@ interface CredentialPDAParameters {
   bump: number;
 }
 
-describe("blockchain-credential-manager", () => {
-  const CREDENTIAL_NAMESPACE = "credential";
+const getPdaParams = async (
+  namespace: string,
+  author: anchor.web3.Keypair | any
+): Promise<CredentialPDAParameters> => {
+  const uid = new anchor.BN(parseInt((Date.now() / 1000).toString()));
+  const uidBuffer = uid.toBuffer("be", 8);
 
-  const getPdaParams = async (
-    namespace: string,
-    author: anchor.web3.Keypair | any
-  ): Promise<CredentialPDAParameters> => {
-    const uid = new anchor.BN(parseInt((Date.now() / 1000).toString()));
-    // const uidBuffer = uid.toBuffer("be", 8);
-    const uidBuffer = uid.toArray("be", 8);
+  const [accountKey, bump] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from(namespace),
+      author.publicKey.toBuffer(),
+      Buffer.from(uidBuffer),
+    ],
+    program.programId
+  );
 
-    const [accountKey, bump] = await PublicKey.findProgramAddress(
-      [
-        Buffer.from(namespace),
-        author.publicKey.toBuffer(),
-        Buffer.from(uidBuffer),
-      ],
-      program.programId
-    );
+  return { uid, accountKey, bump };
+};
 
-    return { uid, accountKey, bump };
-  };
+const requestAirdrop = async (author: anchor.web3.Keypair) => {
+  // Request airdrop of 1 SOL
+  await program.provider.connection.confirmTransaction(
+    await program.provider.connection.requestAirdrop(
+      author.publicKey,
+      1000000000
+    )
+  );
+};
 
-  const requestAirdrop = async (author: anchor.web3.Keypair) => {
-    // Request airdrop of 1 SOL
-    await program.provider.connection.confirmTransaction(
-      await program.provider.connection.requestAirdrop(
-        author.publicKey,
-        1000000000
-      )
-    );
-  };
+const encryptData = (secretKey: Uint8Array, data: string) => {
+  const bs58EncodedSecretKey = bs58.encode(secretKey);
+  const encodedData = CryptoJS.AES.encrypt(data, bs58EncodedSecretKey);
+  return encodedData.toString();
+};
 
-  const encryptData = (secretKey: Uint8Array, data: string) => {
-    const bs58EncodedSecretKey = bs58.encode(secretKey);
-    const encodedData = CryptoJS.AES.encrypt(data, bs58EncodedSecretKey);
-    return encodedData.toString();
-  };
+const decryptData = (secretKey: Uint8Array, encryptedData: string) => {
+  const bs58EncodedSecretKey = bs58.encode(secretKey);
+  const decryptedData = CryptoJS.AES.decrypt(
+    encryptedData,
+    bs58EncodedSecretKey
+  );
+  return decryptedData.toString(CryptoJS.enc.Utf8);
+};
 
-  const decryptData = (secretKey: Uint8Array, encryptedData: string) => {
-    const bs58EncodedSecretKey = bs58.encode(secretKey);
-    const decryptedData = CryptoJS.AES.decrypt(
-      encryptedData,
-      bs58EncodedSecretKey
-    );
-    return decryptedData.toString(CryptoJS.enc.Utf8);
-  };
-
+const CREDENTIAL_NAMESPACE = "credential";
+describe("credential-creation", () => {
   it("Can add new credential", async () => {
     const author = Keypair.generate();
     const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
@@ -330,3 +328,77 @@ describe("blockchain-credential-manager", () => {
     }
   });
 });
+
+// describe("credential-edition", () => {
+//   let author;
+//   let credentialPda;
+
+//   it("Create support credential account", async () => {
+//     author = Keypair.generate();
+//     credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+//     const credentialAccountKey = credentialPda.accountKey;
+//     await requestAirdrop(author);
+
+//     const title = "Github Credentials";
+//     const url = "https://github.com";
+//     const label = "user-001";
+//     const secret = "password123";
+//     const description = "Github Login";
+
+//     await program.rpc.createCredential(
+//       credentialPda.uid,
+//       credentialPda.bump,
+//       title,
+//       url,
+//       encryptData(author.secretKey, label),
+//       encryptData(author.secretKey, secret),
+//       description,
+//       {
+//         accounts: {
+//           credentialAccount: credentialAccountKey,
+//           author: author.publicKey,
+//           systemProgram: programId,
+//         },
+//         signers: [author],
+//       }
+//     );
+//   });
+
+//   it("Can edit a existing credential account", async () => {
+//     const credentialAccountKey = credentialPda.accountKey;
+//     await requestAirdrop(author);
+
+//     const title = "Github Credentials [UPDATE]";
+//     const url = "https://www.github.com";
+//     const label = "user-002";
+//     const secret = "password1234";
+//     const description = "Github Login [UPDATED]";
+
+//     try {
+//       await program.rpc.createCredential(
+//         credentialPda.uid,
+//         credentialPda.bump,
+//         title,
+//         url,
+//         encryptData(author.secretKey, label),
+//         encryptData(author.secretKey, secret),
+//         description,
+//         {
+//           accounts: {
+//             credentialAccount: credentialAccountKey,
+//             author: author.publicKey,
+//             systemProgram: programId,
+//           },
+//           signers: [author],
+//         }
+//       );
+//     } catch (err) {
+//       assert.strictEqual("Error", err.name);
+//       assert.strictEqual(
+//         "Tamanho da senha ultrapassou o limite após encriptação.",
+//         err.error.errorMessage
+//       );
+//       return true;
+//     }
+//   });
+// });

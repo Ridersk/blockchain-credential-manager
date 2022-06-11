@@ -3,16 +3,16 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Avatar, Box, Card, CardContent, IconButton, Skeleton, Typography, useTheme } from "@mui/material";
 import { copyTextToClipboard } from "utils/clipboard";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 interface Props {
   dataLoaded?: boolean;
+  credentialKey: string;
   url: string;
   label: string;
   secret: string;
 }
 
-const CredentialCard = ({ dataLoaded = true, url, label, secret }: Props) => {
+const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }: Props) => {
   const navigate = useNavigate();
 
   const handleClickCopySecret = () => {
@@ -20,7 +20,7 @@ const CredentialCard = ({ dataLoaded = true, url, label, secret }: Props) => {
   };
 
   const goToEditCredentialPage = () => {
-    navigate({ pathname: "/credentials-creation" });
+    navigate({ pathname: "/credential", search: `?cred=${credentialKey}` });
   };
 
   return (
