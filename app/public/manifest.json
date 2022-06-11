@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "short_name": "BCManager",
+  "name": "Blockchain Credentials Manager",
+  "description": "Store sensitive informations secure in blockchain Solana platform.",
+  "author": "Ridersk",
+  "version": "0.0.1",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Blockchain Credentials Manager"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "./content_scripts/loadInputButtons.js",
+        "./content_scripts/popupListener.js"
+      ],
+      "css": [
+        "popup_credentials/styles.css"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "popup_credentials/index.html"
+      ],
+      "matches": [
+        "https://*/*"
+      ]
+    }
+  ]
+}
