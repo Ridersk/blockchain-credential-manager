@@ -6,22 +6,6 @@ import { useTheme } from "@mui/material/styles";
 import { Card, CardContent, CardHeader, Divider, Typography } from "@mui/material";
 
 // ==============================|| CUSTOM SUB CARD ||============================== //
-
-// SubCard.propTypes = {
-//   children: PropTypes.node,
-//   content: PropTypes.bool,
-//   contentClass: PropTypes.string,
-//   darkTitle: PropTypes.bool,
-//   secondary: PropTypes.oneOfType([PropTypes.node, PropTypes.string, PropTypes.object]),
-//   sx: PropTypes.object,
-//   contentSX: PropTypes.object,
-//   title: PropTypes.oneOfType([PropTypes.node, PropTypes.string, PropTypes.object])
-// };
-
-// SubCard.defaultProps = {
-//   content: true
-// };
-
 type Props = React.HTMLProps<HTMLDivElement> & {
   content?: boolean;
   contentClass?: string;

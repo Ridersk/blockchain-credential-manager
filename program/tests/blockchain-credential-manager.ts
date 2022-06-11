@@ -32,7 +32,11 @@ describe("blockchain-credential-manager", () => {
     const uidBuffer = uid.toArray("be", 8);
 
     const [accountKey, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(namespace), author.publicKey.toBuffer(), Buffer.from(uidBuffer)],
+      [
+        Buffer.from(namespace),
+        author.publicKey.toBuffer(),
+        Buffer.from(uidBuffer),
+      ],
       program.programId
     );
 
@@ -71,21 +75,19 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "Github Credentials";
+    const url = "https://github.com";
     const label = "user-001";
-    const labelPath = '//*[@id="login_field"]';
     const secret = "password123";
-    const secretPath = '//*[@type="password"]';
-    const websiteUrl = "https://github.com";
+    const description = "Github Login";
 
     await program.rpc.createCredential(
       credentialPda.uid,
       credentialPda.bump,
       title,
+      url,
       encryptData(author.secretKey, label),
       encryptData(author.secretKey, secret),
-      websiteUrl,
-      labelPath,
-      secretPath,
+      description,
       {
         accounts: {
           credentialAccount: credentialAccountKey,
@@ -112,6 +114,7 @@ describe("blockchain-credential-manager", () => {
       credentialAccountData.uid.toNumber()
     );
     assert.equal(title, credentialAccountData.title);
+    assert.equal(url, credentialAccountData.url);
     assert.notEqual(label, credentialAccountData.label);
     assert.equal(
       label,
@@ -122,8 +125,208 @@ describe("blockchain-credential-manager", () => {
       secret,
       decryptData(author.secretKey, credentialAccountData.secret)
     );
-    assert.equal(websiteUrl, credentialAccountData.websiteUrl);
-    assert.equal(labelPath, credentialAccountData.labelPath);
-    assert.equal(secretPath, credentialAccountData.secretPath);
+    assert.equal(description, credentialAccountData.description);
+  });
+
+  it("Cannot add new credential with title more than 50 characters", async () => {
+    const author = Keypair.generate();
+    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "x".repeat(51);
+    const url = "https://github.com";
+    const label = "user-001";
+    const secret = "password123";
+    const description = "Github Login";
+
+    try {
+      await program.rpc.createCredential(
+        credentialPda.uid,
+        credentialPda.bump,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author],
+        }
+      );
+    } catch ({ error, name }) {
+      assert.strictEqual("Error", name);
+      assert.strictEqual(
+        "O título deve ter no máximo 50 caracteres.",
+        error.errorMessage
+      );
+      return true;
+    }
+  });
+
+  it("Cannot add new credential with url more than 100 characters", async () => {
+    const author = Keypair.generate();
+    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "x".repeat(50);
+    const url = "x".repeat(101);
+    const label = "user-001";
+    const secret = "password123";
+    const description = "Github Login";
+
+    try {
+      await program.rpc.createCredential(
+        credentialPda.uid,
+        credentialPda.bump,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author],
+        }
+      );
+    } catch ({ error, name }) {
+      assert.strictEqual("Error", name);
+      assert.strictEqual(
+        "A URL deve ter no máximo 100 caracteres.",
+        error.errorMessage
+      );
+      return true;
+    }
+  });
+
+  it("Cannot add new credential with label more than 100 characters", async () => {
+    const author = Keypair.generate();
+    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "x".repeat(50);
+    const url = "x".repeat(100);
+    const label = "x".repeat(101);
+    const secret = "password123";
+    const description = "Github Login";
+
+    try {
+      await program.rpc.createCredential(
+        credentialPda.uid,
+        credentialPda.bump,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author],
+        }
+      );
+    } catch ({ error, name }) {
+      assert.strictEqual("Error", name);
+      assert.strictEqual(
+        "Tamanho da label ultrapassou o limite após encriptação.",
+        error.errorMessage
+      );
+      return true;
+    }
+  });
+
+  it("Cannot add new credential with secret more than 100 characters", async () => {
+    const author = Keypair.generate();
+    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "x".repeat(50);
+    const url = "x".repeat(100);
+    const label = "x".repeat(48);
+    const secret = "x".repeat(101);
+    const description = "Github Login";
+
+    try {
+      await program.rpc.createCredential(
+        credentialPda.uid,
+        credentialPda.bump,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author],
+        }
+      );
+    } catch ({ error, name }) {
+      assert.strictEqual("Error", name);
+      assert.strictEqual(
+        "Tamanho da senha ultrapassou o limite após encriptação.",
+        error.errorMessage
+      );
+      return true;
+    }
+  });
+
+  it("Cannot add new credential with description more than 100 characters", async () => {
+    const author = Keypair.generate();
+    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "x".repeat(50);
+    const url = "x".repeat(100);
+    const label = "x".repeat(48);
+    const secret = "x".repeat(48);
+    const description = "x".repeat(101);
+
+    console.log("SECRET LOG:", encryptData(author.secretKey, secret).length);
+
+    try {
+      await program.rpc.createCredential(
+        credentialPda.uid,
+        credentialPda.bump,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author],
+        }
+      );
+    } catch ({ error, name }) {
+      assert.strictEqual("Error", name);
+      assert.strictEqual(
+        "A descrição deve ter no máximo 100 caracteres.",
+        error.errorMessage
+      );
+      return true;
+    }
   });
 });

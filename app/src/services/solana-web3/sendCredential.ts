@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
-import * as bs58 from "bs58";
 const CryptoJS = require("crypto-js");
+import { decryptData, encryptData } from "utils/aes-encryption";
 
-import { solanaWeb3, requestAirdrop } from "./solanaWeb3";
+import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
 
 const { SystemProgram, PublicKey } = anchor.web3;
 const { program, userKeypair } = solanaWeb3();
@@ -13,34 +13,31 @@ const programId = SystemProgram.programId;
 
 interface NewCredentialParameters {
   title: string;
+  url: string;
   label: string;
-  labelPath: string;
   secret: string;
-  secretPath: string;
-  websiteUrl: string;
+  description: string;
 }
 
 export class Credential {
   publicKey: anchor.web3.PublicKey;
   title: string;
+  url: string;
   label: string;
-  labelPath: string;
   secret: string;
-  secretPath: string;
-  websiteUrl: string;
+  description: string;
 
   constructor(publicKey: anchor.web3.PublicKey, accountData: NewCredentialParameters) {
     this.publicKey = publicKey;
     this.title = accountData.title;
+    this.url = accountData.url;
     this.label = accountData.label;
-    this.labelPath = accountData.labelPath;
     this.secret = accountData.secret;
-    this.secretPath = accountData.secretPath;
-    this.websiteUrl = accountData.websiteUrl;
+    this.description = accountData.description;
   }
 }
 
-export const sendCredential = async ({ title, label, labelPath, secret, secretPath, websiteUrl }: NewCredentialParameters) => {
+export const sendCredential = async ({ title, url, label, secret, description }: NewCredentialParameters) => {
   // Request Airdrop for user wallet
   await requestAirdrop(program, userKeypair);
 
@@ -51,11 +48,10 @@ export const sendCredential = async ({ title, label, labelPath, secret, secretPa
     credentialPda.uid,
     credentialPda.bump,
     title,
+    url,
     encryptData(userKeypair.secretKey, label),
     encryptData(userKeypair.secretKey, secret),
-    websiteUrl,
-    labelPath,
-    secretPath,
+    description,
     {
       accounts: {
         credentialAccount: credentialAccountKey,
@@ -68,6 +64,10 @@ export const sendCredential = async ({ title, label, labelPath, secret, secretPa
 
   // Fetch credential created account
   let credentialAccount = await program.account.credentialAccount.fetch(credentialAccountKey);
+
+  for (let i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+    console.log("LABEL DECRIPTADA:", decryptData(userKeypair.secretKey, credentialAccount.label));
+  }
 
   return new Credential(credentialAccountKey, credentialAccount);
 };
@@ -97,16 +97,4 @@ const getPdaParams = async (namespace: string, author: anchor.web3.Keypair): Pro
   console.log("ACCOUNT KEY:", accountKey);
 
   return { uid, accountKey, bump };
-};
-
-const encryptData = (secretKey: Uint8Array, data: string) => {
-  const bs58EncodedSecretKey = bs58.encode(secretKey);
-  const encodedData = CryptoJS.AES.encrypt(data, bs58EncodedSecretKey);
-  return encodedData.toString();
-};
-
-const decryptData = (secretKey: Uint8Array, encryptedData: string) => {
-  const bs58EncodedSecretKey = bs58.encode(secretKey);
-  const decryptedData = CryptoJS.AES.decrypt(encryptedData, bs58EncodedSecretKey);
-  return decryptedData.toString(CryptoJS.enc.Utf8);
 };

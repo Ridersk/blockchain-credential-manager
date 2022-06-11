@@ -22,8 +22,7 @@ import { IconSettings } from "@tabler/icons";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // project imports
-import SubCard from "components/cards/SubCard";
-import AnimateButton from "components/buttons/AnimateButton";
+import SubCard from "components/ui/card/subcard";
 import { SET_BORDER_RADIUS, SET_FONT_FAMILY } from "store/actionTypes";
 import { gridSpacing } from "store/constant";
 import { useTypedSelector } from "hooks/useTypedSelector";
@@ -111,11 +110,9 @@ const Customization = () => {
             zIndex: theme.zIndex.speedDial
           }}
         >
-          <AnimateButton type="rotate">
-            <IconButton color="inherit" size="large" disableRipple>
-              <IconSettings />
-            </IconButton>
-          </AnimateButton>
+          <IconButton color="inherit" size="large" disableRipple>
+            <IconSettings />
+          </IconButton>
         </Fab>
       </Tooltip>
 

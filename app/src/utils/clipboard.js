@@ -5,10 +5,10 @@ export function copyTextToClipboard(text) {
   }
   navigator.clipboard.writeText(text).then(
     function () {
-      console.log("Copied to clipboard!");
+      console.log("Copied to clipboard:", text);
     },
     function (err) {
-      console.error("Could not copy text to clipboard: ", err);
+      console.error("Could not copy text to clipboard", err);
     }
   );
 }
