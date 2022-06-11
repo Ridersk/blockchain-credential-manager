@@ -1,9 +1,0 @@
-#bcm-credentials-container {
-  position: absolute;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-#bcm-credentials-container img {
-  max-height: 100%;
-}
