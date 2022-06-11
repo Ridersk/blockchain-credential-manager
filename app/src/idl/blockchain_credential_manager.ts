@@ -119,54 +119,54 @@ export const IDL: BlockchainCredentialManager = {
         {
           name: "credentialAccount",
           isMut: true,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: "author",
           isMut: true,
-          isSigner: true,
+          isSigner: true
         },
         {
           name: "systemProgram",
           isMut: false,
-          isSigner: false,
-        },
+          isSigner: false
+        }
       ],
       args: [
         {
           name: "credentialUid",
-          type: "u64",
+          type: "u64"
         },
         {
           name: "credentialBump",
-          type: "u8",
+          type: "u8"
         },
         {
           name: "title",
-          type: "string",
+          type: "string"
         },
         {
           name: "label",
-          type: "string",
+          type: "string"
         },
         {
           name: "secret",
-          type: "string",
+          type: "string"
         },
         {
           name: "websiteUrl",
-          type: "string",
+          type: "string"
         },
         {
           name: "labelPath",
-          type: "string",
+          type: "string"
         },
         {
           name: "secretPath",
-          type: "string",
-        },
-      ],
-    },
+          type: "string"
+        }
+      ]
+    }
   ],
   accounts: [
     {
@@ -176,46 +176,46 @@ export const IDL: BlockchainCredentialManager = {
         fields: [
           {
             name: "ownerAddress",
-            type: "publicKey",
+            type: "publicKey"
           },
           {
             name: "uid",
-            type: "u64",
+            type: "u64"
           },
           {
             name: "title",
-            type: "string",
+            type: "string"
           },
           {
             name: "label",
-            type: "string",
+            type: "string"
           },
           {
             name: "secret",
-            type: "string",
+            type: "string"
           },
           {
             name: "websiteUrl",
-            type: "string",
+            type: "string"
           },
           {
             name: "labelPath",
-            type: "string",
+            type: "string"
           },
           {
             name: "secretPath",
-            type: "string",
+            type: "string"
           },
           {
             name: "createdAt",
-            type: "i64",
+            type: "i64"
           },
           {
             name: "updatedAt",
-            type: "i64",
-          },
-        ],
-      },
-    },
-  ],
+            type: "i64"
+          }
+        ]
+      }
+    }
+  ]
 };
