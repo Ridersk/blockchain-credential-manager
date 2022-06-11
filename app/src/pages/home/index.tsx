@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import CredentialsList from "components/credential/credentials-list";
+import CredentialsPanel from "components/credential/credentials-list-panel";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -8,7 +8,7 @@ const Home = () => {
       Home Page
       <br />
       <Link to={{ pathname: "/credentials-creation" }}>Criar Credencial</Link>
-      <CredentialsList />
+      <CredentialsPanel />
     </Container>
   );
 };

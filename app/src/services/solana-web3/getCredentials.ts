@@ -1,5 +1,6 @@
 import { solanaWeb3 } from "../solanaWeb3";
 import { Credential } from "models/Credential";
+import bs58 from "bs58";
 
 const { program, userKeypair } = solanaWeb3();
 
@@ -25,3 +26,26 @@ export const authorFilter = (authorBase58PublicKey: string): FilterOption => ({
     bytes: authorBase58PublicKey
   }
 });
+
+// export const titleFilter = (title: string) => ({
+//   memcmp: {
+//     offset:
+//       8 + // Discriminator.
+//       32 + // Author public key.
+//       8 + // uid
+//       4, // Title string prefix
+//     bytes: bs58.encode(Buffer.from(title))
+//   }
+// });
+
+// export const urlFilter = (url: string) => ({
+//   memcmp: {
+//     offset:
+//       8 + // Discriminator.
+//       32 + // Author public key.
+//       8 + // uid
+//       (4 + 50 * 4) + // Title
+//       4, // URL string prefix
+//     bytes: bs58.encode(Buffer.from(url))
+//   }
+// });

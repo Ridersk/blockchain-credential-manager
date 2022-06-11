@@ -59,7 +59,7 @@ const CredentialCreation = () => {
       setLoading(true);
       const credentialAccount = await sendCredential({
         title: values.title,
-        websiteUrl: values.currentPageUrl,
+        url: values.currentPageUrl,
         label: values.credentialLabel,
         secret: values.credentialSecret,
         description: values.description

@@ -75,7 +75,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "Github Credentials";
-    const websiteUrl = "https://github.com";
+    const url = "https://github.com";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -84,7 +84,7 @@ describe("blockchain-credential-manager", () => {
       credentialPda.uid,
       credentialPda.bump,
       title,
-      websiteUrl,
+      url,
       encryptData(author.secretKey, label),
       encryptData(author.secretKey, secret),
       description,
@@ -114,7 +114,7 @@ describe("blockchain-credential-manager", () => {
       credentialAccountData.uid.toNumber()
     );
     assert.equal(title, credentialAccountData.title);
-    assert.equal(websiteUrl, credentialAccountData.websiteUrl);
+    assert.equal(url, credentialAccountData.url);
     assert.notEqual(label, credentialAccountData.label);
     assert.equal(
       label,
@@ -135,7 +135,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "x".repeat(51);
-    const websiteUrl = "https://github.com";
+    const url = "https://github.com";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -145,7 +145,7 @@ describe("blockchain-credential-manager", () => {
         credentialPda.uid,
         credentialPda.bump,
         title,
-        websiteUrl,
+        url,
         encryptData(author.secretKey, label),
         encryptData(author.secretKey, secret),
         description,
@@ -175,7 +175,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "x".repeat(50);
-    const websiteUrl = "x".repeat(101);
+    const url = "x".repeat(101);
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -185,7 +185,7 @@ describe("blockchain-credential-manager", () => {
         credentialPda.uid,
         credentialPda.bump,
         title,
-        websiteUrl,
+        url,
         encryptData(author.secretKey, label),
         encryptData(author.secretKey, secret),
         description,
@@ -215,7 +215,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "x".repeat(50);
-    const websiteUrl = "x".repeat(100);
+    const url = "x".repeat(100);
     const label = "x".repeat(101);
     const secret = "password123";
     const description = "Github Login";
@@ -225,7 +225,7 @@ describe("blockchain-credential-manager", () => {
         credentialPda.uid,
         credentialPda.bump,
         title,
-        websiteUrl,
+        url,
         encryptData(author.secretKey, label),
         encryptData(author.secretKey, secret),
         description,
@@ -255,7 +255,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "x".repeat(50);
-    const websiteUrl = "x".repeat(100);
+    const url = "x".repeat(100);
     const label = "x".repeat(48);
     const secret = "x".repeat(101);
     const description = "Github Login";
@@ -265,7 +265,7 @@ describe("blockchain-credential-manager", () => {
         credentialPda.uid,
         credentialPda.bump,
         title,
-        websiteUrl,
+        url,
         encryptData(author.secretKey, label),
         encryptData(author.secretKey, secret),
         description,
@@ -295,7 +295,7 @@ describe("blockchain-credential-manager", () => {
     await requestAirdrop(author);
 
     const title = "x".repeat(50);
-    const websiteUrl = "x".repeat(100);
+    const url = "x".repeat(100);
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
     const description = "x".repeat(101);
@@ -307,7 +307,7 @@ describe("blockchain-credential-manager", () => {
         credentialPda.uid,
         credentialPda.bump,
         title,
-        websiteUrl,
+        url,
         encryptData(author.secretKey, label),
         encryptData(author.secretKey, secret),
         description,

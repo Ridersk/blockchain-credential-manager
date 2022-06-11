@@ -27,7 +27,7 @@ pub mod blockchain_credential_manager {
         credential_uid: u64,
         credential_bump: u8,
         title: String,
-        website_url: String,
+        url: String,
         label: String,
         secret: String,
         description: String,
@@ -40,7 +40,7 @@ pub mod blockchain_credential_manager {
             return Err(CustomErrorCode::TitleTooLong.into());
         }
 
-        if website_url.chars().count() > CREDENTIAL_URL_SIZE {
+        if url.chars().count() > CREDENTIAL_URL_SIZE {
             return Err(CustomErrorCode::URLTooLong.into());
         }
 
@@ -61,7 +61,7 @@ pub mod blockchain_credential_manager {
             *ctx.accounts.author.key,
             credential_uid,
             title,
-            website_url,
+            url,
             label,
             secret,
             description,

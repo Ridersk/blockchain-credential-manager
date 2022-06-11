@@ -7,7 +7,7 @@ pub fn process_create_credential(
     author_key: Pubkey,
     credential_uid: u64,
     title: String,
-    website_url: String,
+    url: String,
     label: String,
     secret: String,
     description: String,
@@ -19,7 +19,7 @@ pub fn process_create_credential(
     credential_account.title = title;
     credential_account.label = label;
     credential_account.secret = secret;
-    credential_account.website_url = website_url;
+    credential_account.url = url;
     credential_account.description = description;
     credential_account.created_at = curr_timestamp;
     credential_account.updated_at = curr_timestamp;

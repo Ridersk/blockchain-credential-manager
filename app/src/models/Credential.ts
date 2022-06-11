@@ -6,7 +6,7 @@ const { userKeypair } = solanaWeb3();
 
 interface CredentialParameters {
   title: string;
-  websiteUrl: string;
+  url: string;
   label: string;
   secret: string;
   description: string;
@@ -15,15 +15,15 @@ interface CredentialParameters {
 export class Credential {
   publicKey: anchor.web3.PublicKey;
   title: string;
-  websiteUrl: string;
+  url: string;
   private _label: string;
   private _secret: string;
   description: string;
 
-  constructor(publicKey: anchor.web3.PublicKey, { title, websiteUrl, label, secret, description }: CredentialParameters) {
+  constructor(publicKey: anchor.web3.PublicKey, { title, url, label, secret, description }: CredentialParameters) {
     this.publicKey = publicKey;
     this.title = title;
-    this.websiteUrl = websiteUrl;
+    this.url = url;
     this._label = label;
     this._secret = secret;
     this.description = description;
