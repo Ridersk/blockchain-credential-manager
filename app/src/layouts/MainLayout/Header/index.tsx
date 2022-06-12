@@ -38,7 +38,7 @@ export default function Header() {
             }}
           >
             <Typography variant="h6" component="span" align="center" margin={{ sm: "2px", md: "4px" }}>
-              Cofre 1
+              Wallet 1
             </Typography>
             <Typography variant="h6" component="span" color="gray" align="center" margin={{ sm: "2px", md: "4px" }}>
               (HRT...F52)

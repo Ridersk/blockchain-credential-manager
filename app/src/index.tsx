@@ -8,6 +8,7 @@ import App from "./App";
 import { store } from "store";
 import config from "config";
 import { SnackbarProvider } from "notistack";
+import "./i18n";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
