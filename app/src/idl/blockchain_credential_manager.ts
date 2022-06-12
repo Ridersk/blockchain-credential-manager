@@ -27,8 +27,50 @@ export type BlockchainCredentialManager = {
           type: "u64";
         },
         {
-          name: "credentialBump";
-          type: "u8";
+          name: "title";
+          type: "string";
+        },
+        {
+          name: "url";
+          type: "string";
+        },
+        {
+          name: "label";
+          type: "string";
+        },
+        {
+          name: "secret";
+          type: "string";
+        },
+        {
+          name: "description";
+          type: "string";
+        }
+      ];
+    },
+    {
+      name: "editCredential";
+      accounts: [
+        {
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "author";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "credentialUid";
+          type: "u64";
         },
         {
           name: "title";
@@ -157,8 +199,50 @@ export const IDL: BlockchainCredentialManager = {
           type: "u64"
         },
         {
-          name: "credentialBump",
-          type: "u8"
+          name: "title",
+          type: "string"
+        },
+        {
+          name: "url",
+          type: "string"
+        },
+        {
+          name: "label",
+          type: "string"
+        },
+        {
+          name: "secret",
+          type: "string"
+        },
+        {
+          name: "description",
+          type: "string"
+        }
+      ]
+    },
+    {
+      name: "editCredential",
+      accounts: [
+        {
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: "author",
+          isMut: true,
+          isSigner: true
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false
+        }
+      ],
+      args: [
+        {
+          name: "credentialUid",
+          type: "u64"
         },
         {
           name: "title",

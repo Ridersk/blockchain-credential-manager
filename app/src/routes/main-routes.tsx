@@ -1,5 +1,5 @@
 // project imports
-import MinimalLayout from "layouts/MinimalLayout";
+import MainLayout from "layouts/MainLayout";
 import CredentialCreation from "pages/credential-creation";
 import Home from "pages/home";
 
@@ -7,14 +7,14 @@ import Home from "pages/home";
 
 const MainRoutes = {
   path: "/",
-  element: <MinimalLayout />,
+  element: <MainLayout />,
   children: [
     {
       path: "/",
       element: <Home />
     },
     {
-      path: "/credentials-creation",
+      path: "/credential",
       element: <CredentialCreation />
     }
   ]

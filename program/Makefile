@@ -45,6 +45,9 @@ test-devnet:
 	anchor test --provider.cluster devnet
 
 ###### Deploy
+build:
+	anchor build
+
 deploy-devnet:
 	${SET_DEVNET} &&\
 	anchor build &&\

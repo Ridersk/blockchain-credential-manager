@@ -5,6 +5,7 @@ import { decryptData } from "utils/aes-encryption";
 const { userKeypair } = solanaWeb3();
 
 interface CredentialParameters {
+  uid: anchor.BN;
   title: string;
   url: string;
   label: string;
@@ -13,20 +14,26 @@ interface CredentialParameters {
 }
 
 export class Credential {
-  publicKey: anchor.web3.PublicKey;
+  private _publicKey: anchor.web3.PublicKey;
+  uid: number;
   title: string;
   url: string;
   private _label: string;
   private _secret: string;
   description: string;
 
-  constructor(publicKey: anchor.web3.PublicKey, { title, url, label, secret, description }: CredentialParameters) {
-    this.publicKey = publicKey;
+  constructor(publicKey: anchor.web3.PublicKey, { uid, title, url, label, secret, description }: CredentialParameters) {
+    this._publicKey = publicKey;
+    this.uid = uid.toNumber();
     this.title = title;
     this.url = url;
     this._label = label;
     this._secret = secret;
     this.description = description;
+  }
+
+  get publicKey() {
+    return this._publicKey.toBase58();
   }
 
   get label() {

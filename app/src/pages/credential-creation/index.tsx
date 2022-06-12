@@ -13,12 +13,17 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { sendCredential } from "services/solana-web3/sendCredential";
+import { createCredential } from "services/solana-web3/createCredential";
 import { copyTextToClipboard } from "utils/clipboard";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import useNotification from "hooks/useNotification";
 import { AnchorError } from "@project-serum/anchor";
+import { getCredential } from "services/solana-web3/getCredential";
+import bs58 from "bs58";
+import { PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
+import { editCredential } from "services/solana-web3/editCredential";
 
 interface FormValues {
   title: string;
@@ -30,44 +35,94 @@ interface FormValues {
 
 const CredentialCreation = () => {
   const navigate = useNavigate();
-  const [currentTabUsername, setCurrentTabUsername] = useState("");
-  const [currentTabPassword, setCurrentTabPassword] = useState("");
+  const [searchParams, _] = useSearchParams();
+  const [credentialPubKey, setCredentialPubKey] = useState<anchor.web3.PublicKey>();
+  const [uid, setUid] = useState<number>();
+  const [initialTitle, setInitialTitle] = useState("");
+  const [initialUrl, setInitialUrl] = useState("");
+  const [initialLabel, setInitialLabel] = useState("");
+  const [initialPassword, setInitialPassword] = useState("");
+  const [initialDescription, setInitialDescription] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
 
+  // Get Data from blockchain to edit existing credential
+  useEffect(() => {
+    async function getCredentialToEdit() {
+      const credPublicKey = searchParams.get("cred");
+
+      if (credPublicKey) {
+        const publicKey = new PublicKey(bs58.decode(credPublicKey));
+        const credential = await getCredential(publicKey);
+
+        setCredentialPubKey(publicKey);
+        setUid(credential.uid);
+        setInitialTitle(credential.title);
+        setInitialUrl(credential.url);
+        setInitialLabel(credential.label);
+        setInitialPassword(credential.secret);
+        setInitialDescription(credential.description);
+        setIsUpdate(true);
+      }
+    }
+
+    getCredentialToEdit();
+  }, []);
+
+  // Get Data from user current external website page
   useEffect(() => {
     async function getUserValue() {
-      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (chrome?.tabs) {
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-      // Send a request to the content script to get current tab input value.
-      chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
-        setCurrentTabUsername(response.data.label);
-        setCurrentTabPassword(response.data.password);
-      });
+        // Send a request to the content script to get current tab input value.
+        chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
+          setInitialLabel(response.data.label);
+          setInitialPassword(response.data.password);
+        });
+      }
     }
 
     getUserValue();
   }, []);
 
-  const sendCredentials = async (values: FormValues) => {
+  const saveCredentials = async (values: FormValues) => {
     /*
      * Send credentials to blockchain
      */
 
     try {
+      let credentialAccount;
       setLoading(true);
-      const credentialAccount = await sendCredential({
-        title: values.title,
-        url: values.currentPageUrl,
-        label: values.credentialLabel,
-        secret: values.credentialSecret,
-        description: values.description
-      });
-      console.log("Credencial criada:", credentialAccount);
-      sendNotification({ message: "Credencial criada com sucesso!", variant: "info" });
+      if (isUpdate && credentialPubKey && uid) {
+        console.log("ATUALIZANDO");
+        credentialAccount = await editCredential({
+          credentialPubKey: credentialPubKey,
+          uid: uid,
+          title: values.title,
+          url: values.currentPageUrl,
+          label: values.credentialLabel,
+          secret: values.credentialSecret,
+          description: values.description
+        });
+        console.log("Credencial editada:", credentialAccount);
+        sendNotification({ message: "Credencial editada com sucesso!", variant: "info" });
+      } else {
+        credentialAccount = await createCredential({
+          title: values.title,
+          url: values.currentPageUrl,
+          label: values.credentialLabel,
+          secret: values.credentialSecret,
+          description: values.description
+        });
+        console.log("Credencial criada:", credentialAccount);
+        sendNotification({ message: "Credencial criada com sucesso!", variant: "info" });
+      }
       navigate(-1);
     } catch (err) {
+      console.log(err);
       if (err instanceof AnchorError) {
         sendNotification({ message: err?.error?.errorMessage, variant: "error" });
       } else {
@@ -90,17 +145,17 @@ const CredentialCreation = () => {
     <Container maxWidth="sm">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Nova Credencial
+          {isUpdate ? "Editar Credencial" : "Nova Credencial"}
         </Typography>
       </Box>
 
       <Formik
         initialValues={{
-          title: "",
-          currentPageUrl: "",
-          credentialLabel: currentTabUsername,
-          credentialSecret: currentTabPassword,
-          description: "",
+          title: initialTitle,
+          currentPageUrl: initialUrl,
+          credentialLabel: initialLabel,
+          credentialSecret: initialPassword,
+          description: initialDescription,
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -112,7 +167,7 @@ const CredentialCreation = () => {
         })}
         enableReinitialize
         onSubmit={async (values) => {
-          await sendCredentials(values);
+          await saveCredentials(values);
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
