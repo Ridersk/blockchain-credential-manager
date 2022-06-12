@@ -1,0 +1,13 @@
+{
+  "create_credential": "Criar credencial",
+  "credential_form_title": "Título",
+  "credential_form_url": "URL",
+  "credential_form_label": "Usuário",
+  "credential_form_secret": "Senha",
+  "credential_form_description": "Notas",
+  "form_save": "Salvar",
+  "edit_credential": "Editar credencial",
+  "new_credential": "Nova credencial",
+  "required_field": "Campo obrigatório",
+  "search_credentials": "Buscar credenciais"
+}

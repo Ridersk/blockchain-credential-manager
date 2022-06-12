@@ -24,6 +24,7 @@ import bs58 from "bs58";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { editCredential } from "services/solana-web3/editCredential";
+import { useTranslation } from "react-i18next";
 
 interface FormValues {
   title: string;
@@ -34,6 +35,7 @@ interface FormValues {
 }
 
 const CredentialCreation = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, _] = useSearchParams();
   const [credentialPubKey, setCredentialPubKey] = useState<anchor.web3.PublicKey>();
@@ -145,7 +147,7 @@ const CredentialCreation = () => {
     <Container maxWidth="sm">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          {isUpdate ? "Editar Credencial" : "Nova Credencial"}
+          {isUpdate ? t("edit_credential") : t("new_credential")}
         </Typography>
       </Box>
 
@@ -159,10 +161,10 @@ const CredentialCreation = () => {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          title: Yup.string().max(50).required("Campo obrigatório"),
-          currentPageUrl: Yup.string().max(100).required("Campo obrigatório"),
-          credentialLabel: Yup.string().max(100).required("Campo obrigatório"),
-          credentialSecret: Yup.string().max(100).required("Campo obrigatório"),
+          title: Yup.string().max(50).required(t("required_field")),
+          currentPageUrl: Yup.string().max(100).required(t("required_field")),
+          credentialLabel: Yup.string().max(100).required(t("required_field")),
+          credentialSecret: Yup.string().max(100).required(t("required_field")),
           description: Yup.string().max(100)
         })}
         enableReinitialize
@@ -173,7 +175,7 @@ const CredentialCreation = () => {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <FormControl fullWidth error={Boolean(touched.credentialLabel && errors.credentialLabel)}>
-              <InputLabel htmlFor="credential-title">Título</InputLabel>
+              <InputLabel htmlFor="credential-title">{t("credential_form_title")}</InputLabel>
               <OutlinedInput
                 id="credential-title"
                 type="text"
@@ -181,7 +183,7 @@ const CredentialCreation = () => {
                 name="title"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Título"
+                label={t("credential_form_title")}
                 inputProps={{ maxLength: 50 }}
               />
               {touched.title && errors.title && (
@@ -198,7 +200,7 @@ const CredentialCreation = () => {
                 marginTop: 2
               }}
             >
-              <InputLabel htmlFor="credential-url">URL</InputLabel>
+              <InputLabel htmlFor="credential-url">{t("credential_form_url")}</InputLabel>
               <OutlinedInput
                 id="credential-url"
                 type="text"
@@ -207,7 +209,7 @@ const CredentialCreation = () => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 inputProps={{ maxLength: 100 }}
-                label="URL"
+                label={t("credential_form_url")}
               />
               {touched.currentPageUrl && errors.currentPageUrl && (
                 <FormHelperText error id="credential-url-helper">
@@ -224,7 +226,7 @@ const CredentialCreation = () => {
               }}
             >
               <InputLabel htmlFor="credential-label" variant="outlined">
-                Usuário
+                {t("credential_form_label")}
               </InputLabel>
               <OutlinedInput
                 id="credential-label"
@@ -234,7 +236,7 @@ const CredentialCreation = () => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 inputProps={{ maxLength: 100 }}
-                label="Usuário"
+                label={t("credential_form_label")}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -263,7 +265,7 @@ const CredentialCreation = () => {
                 marginTop: 2
               }}
             >
-              <InputLabel htmlFor="credential-secret">Senha</InputLabel>
+              <InputLabel htmlFor="credential-secret">{t("credential_form_secret")}</InputLabel>
               <OutlinedInput
                 id="credential-secret"
                 type={showPassword ? "text" : "password"}
@@ -272,7 +274,7 @@ const CredentialCreation = () => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 inputProps={{ maxLength: 100 }}
-                label="Senha"
+                label={t("credential_form_secret")}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
@@ -304,7 +306,7 @@ const CredentialCreation = () => {
                 marginTop: 2
               }}
             >
-              <InputLabel htmlFor="credential-notes">Notas</InputLabel>
+              <InputLabel htmlFor="credential-notes">{t("credential_form_description")}</InputLabel>
               <OutlinedInput
                 id="credential-notes"
                 type="text"
@@ -312,7 +314,7 @@ const CredentialCreation = () => {
                 name="description"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Notas"
+                label={t("credential_form_description")}
                 multiline
                 maxRows={2}
                 inputProps={{ maxLength: 100 }}
@@ -353,7 +355,7 @@ const CredentialCreation = () => {
                 variant="contained"
                 color="primary"
               >
-                Salvar
+                {t("form_save")}
               </LoadingButton>
             </Box>
           </form>

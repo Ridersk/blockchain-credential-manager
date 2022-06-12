@@ -1,0 +1,13 @@
+{
+  "create_credential": "Create credential",
+  "credential_form_title": "Title",
+  "credential_form_url": "URL",
+  "credential_form_label": "User",
+  "credential_form_secret": "Password",
+  "credential_form_description": "Notes",
+  "form_save": "Save",
+  "edit_credential": "Edit credential",
+  "new_credential": "New credential",
+  "required_field": "Required field",
+  "search_credentials": "Search credentials"
+}
