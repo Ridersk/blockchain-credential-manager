@@ -13,7 +13,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { sendCredential } from "services/solana-web3/sendCredential";
+import { createCredential } from "services/solana-web3/createCredential";
 import { copyTextToClipboard } from "utils/clipboard";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -22,6 +22,8 @@ import { AnchorError } from "@project-serum/anchor";
 import { getCredential } from "services/solana-web3/getCredential";
 import bs58 from "bs58";
 import { PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
+import { editCredential } from "services/solana-web3/editCredential";
 
 interface FormValues {
   title: string;
@@ -34,12 +36,15 @@ interface FormValues {
 const CredentialCreation = () => {
   const navigate = useNavigate();
   const [searchParams, _] = useSearchParams();
+  const [credentialPubKey, setCredentialPubKey] = useState<anchor.web3.PublicKey>();
+  const [uid, setUid] = useState<number>();
   const [initialTitle, setInitialTitle] = useState("");
   const [initialUrl, setInitialUrl] = useState("");
   const [initialLabel, setInitialLabel] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
   const [initialDescription, setInitialDescription] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
 
@@ -49,13 +54,17 @@ const CredentialCreation = () => {
       const credPublicKey = searchParams.get("cred");
 
       if (credPublicKey) {
-        const credential = await getCredential(new PublicKey(bs58.decode(credPublicKey)));
+        const publicKey = new PublicKey(bs58.decode(credPublicKey));
+        const credential = await getCredential(publicKey);
 
+        setCredentialPubKey(publicKey);
+        setUid(credential.uid);
         setInitialTitle(credential.title);
         setInitialUrl(credential.url);
         setInitialLabel(credential.label);
         setInitialPassword(credential.secret);
         setInitialDescription(credential.description);
+        setIsUpdate(true);
       }
     }
 
@@ -79,24 +88,41 @@ const CredentialCreation = () => {
     getUserValue();
   }, []);
 
-  const sendCredentials = async (values: FormValues) => {
+  const saveCredentials = async (values: FormValues) => {
     /*
      * Send credentials to blockchain
      */
 
     try {
+      let credentialAccount;
       setLoading(true);
-      const credentialAccount = await sendCredential({
-        title: values.title,
-        url: values.currentPageUrl,
-        label: values.credentialLabel,
-        secret: values.credentialSecret,
-        description: values.description
-      });
-      console.log("Credencial criada:", credentialAccount);
-      sendNotification({ message: "Credencial criada com sucesso!", variant: "info" });
+      if (isUpdate && credentialPubKey && uid) {
+        console.log("ATUALIZANDO");
+        credentialAccount = await editCredential({
+          credentialPubKey: credentialPubKey,
+          uid: uid,
+          title: values.title,
+          url: values.currentPageUrl,
+          label: values.credentialLabel,
+          secret: values.credentialSecret,
+          description: values.description
+        });
+        console.log("Credencial editada:", credentialAccount);
+        sendNotification({ message: "Credencial editada com sucesso!", variant: "info" });
+      } else {
+        credentialAccount = await createCredential({
+          title: values.title,
+          url: values.currentPageUrl,
+          label: values.credentialLabel,
+          secret: values.credentialSecret,
+          description: values.description
+        });
+        console.log("Credencial criada:", credentialAccount);
+        sendNotification({ message: "Credencial criada com sucesso!", variant: "info" });
+      }
       navigate(-1);
     } catch (err) {
+      console.log(err);
       if (err instanceof AnchorError) {
         sendNotification({ message: err?.error?.errorMessage, variant: "error" });
       } else {
@@ -119,7 +145,7 @@ const CredentialCreation = () => {
     <Container maxWidth="sm">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Nova Credencial
+          {isUpdate ? "Editar Credencial" : "Nova Credencial"}
         </Typography>
       </Box>
 
@@ -141,7 +167,7 @@ const CredentialCreation = () => {
         })}
         enableReinitialize
         onSubmit={async (values) => {
-          await sendCredentials(values);
+          await saveCredentials(values);
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (

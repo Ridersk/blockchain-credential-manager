@@ -65,6 +65,7 @@ const decryptData = (secretKey: Uint8Array, encryptedData: string) => {
 };
 
 const CREDENTIAL_NAMESPACE = "credential";
+
 describe("credential-creation", () => {
   it("Can add new credential", async () => {
     const author = Keypair.generate();
@@ -80,7 +81,6 @@ describe("credential-creation", () => {
 
     await program.rpc.createCredential(
       credentialPda.uid,
-      credentialPda.bump,
       title,
       url,
       encryptData(author.secretKey, label),
@@ -141,7 +141,6 @@ describe("credential-creation", () => {
     try {
       await program.rpc.createCredential(
         credentialPda.uid,
-        credentialPda.bump,
         title,
         url,
         encryptData(author.secretKey, label),
@@ -164,6 +163,10 @@ describe("credential-creation", () => {
       );
       return true;
     }
+
+    assert.fail(
+      "The instruction should have failed with a 51-character title."
+    );
   });
 
   it("Cannot add new credential with url more than 100 characters", async () => {
@@ -181,7 +184,6 @@ describe("credential-creation", () => {
     try {
       await program.rpc.createCredential(
         credentialPda.uid,
-        credentialPda.bump,
         title,
         url,
         encryptData(author.secretKey, label),
@@ -204,6 +206,8 @@ describe("credential-creation", () => {
       );
       return true;
     }
+
+    assert.fail("The instruction should have failed with a 101-character url.");
   });
 
   it("Cannot add new credential with label more than 100 characters", async () => {
@@ -221,7 +225,6 @@ describe("credential-creation", () => {
     try {
       await program.rpc.createCredential(
         credentialPda.uid,
-        credentialPda.bump,
         title,
         url,
         encryptData(author.secretKey, label),
@@ -244,6 +247,10 @@ describe("credential-creation", () => {
       );
       return true;
     }
+
+    assert.fail(
+      "The instruction should have failed with a 129-character label."
+    );
   });
 
   it("Cannot add new credential with secret more than 100 characters", async () => {
@@ -261,7 +268,6 @@ describe("credential-creation", () => {
     try {
       await program.rpc.createCredential(
         credentialPda.uid,
-        credentialPda.bump,
         title,
         url,
         encryptData(author.secretKey, label),
@@ -284,6 +290,10 @@ describe("credential-creation", () => {
       );
       return true;
     }
+
+    assert.fail(
+      "The instruction should have failed with a 129-character password."
+    );
   });
 
   it("Cannot add new credential with description more than 100 characters", async () => {
@@ -303,7 +313,6 @@ describe("credential-creation", () => {
     try {
       await program.rpc.createCredential(
         credentialPda.uid,
-        credentialPda.bump,
         title,
         url,
         encryptData(author.secretKey, label),
@@ -326,79 +335,144 @@ describe("credential-creation", () => {
       );
       return true;
     }
+
+    assert.fail(
+      "The instruction should have failed with a 101-character description."
+    );
   });
 });
 
-// describe("credential-edition", () => {
-//   let author;
-//   let credentialPda;
+describe("credential-edition", () => {
+  let author;
+  let credentialPda;
 
-//   it("Create support credential account", async () => {
-//     author = Keypair.generate();
-//     credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
-//     const credentialAccountKey = credentialPda.accountKey;
-//     await requestAirdrop(author);
+  it("Create support credential account", async () => {
+    author = Keypair.generate();
+    credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, author);
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
 
-//     const title = "Github Credentials";
-//     const url = "https://github.com";
-//     const label = "user-001";
-//     const secret = "password123";
-//     const description = "Github Login";
+    const title = "Github Credentials";
+    const url = "https://github.com";
+    const label = "user-001";
+    const secret = "password123";
+    const description = "Github Login";
 
-//     await program.rpc.createCredential(
-//       credentialPda.uid,
-//       credentialPda.bump,
-//       title,
-//       url,
-//       encryptData(author.secretKey, label),
-//       encryptData(author.secretKey, secret),
-//       description,
-//       {
-//         accounts: {
-//           credentialAccount: credentialAccountKey,
-//           author: author.publicKey,
-//           systemProgram: programId,
-//         },
-//         signers: [author],
-//       }
-//     );
-//   });
+    await program.rpc.createCredential(
+      credentialPda.uid,
+      title,
+      url,
+      encryptData(author.secretKey, label),
+      encryptData(author.secretKey, secret),
+      description,
+      {
+        accounts: {
+          credentialAccount: credentialAccountKey,
+          author: author.publicKey,
+          systemProgram: programId,
+        },
+        signers: [author],
+      }
+    );
+  });
 
-//   it("Can edit a existing credential account", async () => {
-//     const credentialAccountKey = credentialPda.accountKey;
-//     await requestAirdrop(author);
+  it("Can edit a existing credential account", async () => {
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
 
-//     const title = "Github Credentials [UPDATE]";
-//     const url = "https://www.github.com";
-//     const label = "user-002";
-//     const secret = "password1234";
-//     const description = "Github Login [UPDATED]";
+    const title = "Github Credentials [UPDATE]";
+    const url = "https://www.github.com";
+    const label = "user-002";
+    const secret = "password1234";
+    const description = "Github Login [UPDATED]";
 
-//     try {
-//       await program.rpc.createCredential(
-//         credentialPda.uid,
-//         credentialPda.bump,
-//         title,
-//         url,
-//         encryptData(author.secretKey, label),
-//         encryptData(author.secretKey, secret),
-//         description,
-//         {
-//           accounts: {
-//             credentialAccount: credentialAccountKey,
-//             author: author.publicKey,
-//             systemProgram: programId,
-//           },
-//           signers: [author],
-//         }
-//       );
-//     } catch (err) {
-//       assert.strictEqual("Error", err.name);
-//       assert.strictEqual(
-//         "Tamanho da senha ultrapassou o limite após encriptação.",
-//         err.error.errorMessage
-//       );
-//       return true;
-//     }
-//   });
-// });
+    await program.rpc.editCredential(
+      credentialPda.uid,
+      title,
+      url,
+      encryptData(author.secretKey, label),
+      encryptData(author.secretKey, secret),
+      description,
+      {
+        accounts: {
+          credentialAccount: credentialAccountKey,
+          author: author.publicKey,
+          systemProgram: programId,
+        },
+        signers: [author],
+      }
+    );
+
+    let credentialAccountData = await program.account.credentialAccount.fetch(
+      credentialAccountKey
+    );
+
+    // Assertions
+    console.log("Credential Account Data", credentialAccountData);
+
+    assert.equal(
+      author.publicKey.toBase58(),
+      credentialAccountData.ownerAddress.toBase58()
+    );
+    assert.equal(
+      credentialPda.uid.toNumber(),
+      credentialAccountData.uid.toNumber()
+    );
+    assert.equal(title, credentialAccountData.title);
+    assert.equal(url, credentialAccountData.url);
+    assert.notEqual(label, credentialAccountData.label);
+    assert.equal(
+      label,
+      decryptData(author.secretKey, credentialAccountData.label)
+    );
+    assert.notEqual(secret, credentialAccountData.secret);
+    assert.equal(
+      secret,
+      decryptData(author.secretKey, credentialAccountData.secret)
+    );
+    assert.equal(description, credentialAccountData.description);
+  });
+
+  it("Cannot edit a existing credential of another user", async () => {
+    const author2 = Keypair.generate();
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(author);
+
+    const title = "Github Credentials [UPDATE]";
+    const url = "https://www.github.com";
+    const label = "user-002";
+    const secret = "password1234";
+    const description = "Github Login [UPDATED]";
+
+    try {
+      await program.rpc.editCredential(
+        credentialPda.uid,
+        title,
+        url,
+        encryptData(author.secretKey, label),
+        encryptData(author.secretKey, secret),
+        description,
+        {
+          accounts: {
+            credentialAccount: credentialAccountKey,
+            author: author.publicKey,
+            systemProgram: programId,
+          },
+          signers: [author2],
+        }
+      );
+    } catch (err) {
+      assert.strictEqual("Error", err.name);
+      assert.strictEqual(
+        `unknown signer: ${author2.publicKey.toBase58()}`,
+        err.message
+      );
+      return true;
+    }
+
+    assert.fail(
+      "The instruction should have failed with a unauthorized user " +
+        "trying modify credential data of another user."
+    );
+  });
+});
