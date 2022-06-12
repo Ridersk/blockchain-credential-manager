@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 const Home = () => {
   return (
     <Container maxWidth="sm" sx={{ textAlign: "center" }}>
-      Home Page
-      <br />
       <Link to={{ pathname: "/credential" }}>Criar Credencial</Link>
       <CredentialsPanel />
     </Container>
