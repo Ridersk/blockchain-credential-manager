@@ -32,7 +32,7 @@ export const editCredential = async ({ credentialPubKey, uid, title, url, label,
     {
       accounts: {
         credentialAccount: credentialPubKey,
-        author: userKeypair.publicKey,
+        owner: userKeypair.publicKey,
         systemProgram: programId
       },
       signers: [userKeypair]

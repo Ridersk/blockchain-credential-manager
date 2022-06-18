@@ -10,7 +10,7 @@ use crate::{
 
 pub fn process_save_credential(
     credential_account: &mut Account<CredentialAccount>,
-    author_key: Pubkey,
+    owner_key: Pubkey,
     credential_uid: u64,
     title: String,
     url: String,
@@ -28,7 +28,7 @@ pub fn process_save_credential(
 
     let curr_timestamp: i64 = Clock::get().unwrap().unix_timestamp;
 
-    credential_account.owner_address = author_key;
+    credential_account.owner = owner_key;
     credential_account.uid = credential_uid;
     credential_account.title = title;
     credential_account.label = label;

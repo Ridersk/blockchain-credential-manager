@@ -14,16 +14,16 @@ interface FilterOption {
 }
 
 export const getCredentials = async (filters: Array<FilterOption> = []): Promise<Array<Credential>> => {
-  filters.push(authorFilter(userKeypair.publicKey.toBase58()));
+  filters.push(ownerFilter(userKeypair.publicKey.toBase58()));
   const credentials = await program.account.credentialAccount.all(filters);
 
   return credentials.map((credential) => new Credential(credential.publicKey, credential.account));
 };
 
-export const authorFilter = (authorBase58PublicKey: string): FilterOption => ({
+export const ownerFilter = (ownerBase58PublicKey: string): FilterOption => ({
   memcmp: {
     offset: 8, // Discriminator.
-    bytes: authorBase58PublicKey
+    bytes: ownerBase58PublicKey
   }
 });
 
@@ -31,7 +31,7 @@ export const authorFilter = (authorBase58PublicKey: string): FilterOption => ({
 //   memcmp: {
 //     offset:
 //       8 + // Discriminator.
-//       32 + // Author public key.
+//       32 + // Owner public key.
 //       8 + // uid
 //       4, // Title string prefix
 //     bytes: bs58.encode(Buffer.from(title))
@@ -42,7 +42,7 @@ export const authorFilter = (authorBase58PublicKey: string): FilterOption => ({
 //   memcmp: {
 //     offset:
 //       8 + // Discriminator.
-//       32 + // Author public key.
+//       32 + // Owner public key.
 //       8 + // uid
 //       (4 + 50 * 4) + // Title
 //       4, // URL string prefix

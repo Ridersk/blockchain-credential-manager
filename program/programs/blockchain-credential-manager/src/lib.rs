@@ -31,7 +31,7 @@ pub mod blockchain_credential_manager {
 
         process_save_credential(
             credential_account,
-            *ctx.accounts.author.key,
+            *ctx.accounts.owner.key,
             credential_uid,
             title,
             url,
@@ -57,7 +57,7 @@ pub mod blockchain_credential_manager {
 
         process_save_credential(
             credential_account,
-            *ctx.accounts.author.key,
+            *ctx.accounts.owner.key,
             credential_uid,
             title,
             url,
@@ -65,6 +65,10 @@ pub mod blockchain_credential_manager {
             secret,
             description,
         )?;
+        Ok(())
+    }
+
+    pub fn delete_credential(_ctx: Context<DeleteCredentialInstruction>) -> Result<()> {
         Ok(())
     }
 }
