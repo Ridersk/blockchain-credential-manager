@@ -5,9 +5,19 @@
   "credential_form_label": "User",
   "credential_form_secret": "Password",
   "credential_form_description": "Notes",
+  "delete_credential": "Delete",
+  "form_cancel": "Cancel",
   "form_save": "Save",
   "edit_credential": "Edit credential",
   "new_credential": "New credential",
+  "operation_credential_created_successfully": "Credential created successfully!",
+  "operation_credential_edited_successfully": "Credential edited successfully!",
+  "operation_credential_deleted_successfully": "Credential deleted successfully!",
+  "operation_unknown_error": "Error processing request.",
   "required_field": "Required field",
-  "search_credentials": "Search credentials"
+  "search_credentials": "Search credentials",
+  "warning_delete_credential_title": "Do you want to delete the credential?",
+  "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the wallet. It will not be possible to retrieve the credential once it has been removed.",
+  "warning_default_cancel": "Cancel",
+  "warning_default_accept": "Accept"
 }
