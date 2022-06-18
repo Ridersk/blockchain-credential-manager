@@ -7,7 +7,7 @@ const MainLayout = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Header />
-      <Container sx={{ width: { xs: "400px", md: "100%" }, height: { xs: "600px", md: "100%" } }}>
+      <Container sx={{ width: { xs: "400px", sm: "100%" }, height: { xs: "600px", sm: "100%" } }}>
         <Outlet />
       </Container>
     </Box>

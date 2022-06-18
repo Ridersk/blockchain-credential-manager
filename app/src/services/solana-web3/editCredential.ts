@@ -4,9 +4,7 @@ import { Credential } from "models/Credential";
 
 import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
 
-const { SystemProgram } = anchor.web3;
 const { program, userKeypair } = solanaWeb3();
-const programId = SystemProgram.programId;
 
 interface EditCredentialParameters {
   credentialPubKey: anchor.web3.PublicKey;
@@ -32,8 +30,7 @@ export const editCredential = async ({ credentialPubKey, uid, title, url, label,
     {
       accounts: {
         credentialAccount: credentialPubKey,
-        author: userKeypair.publicKey,
-        systemProgram: programId
+        owner: userKeypair.publicKey
       },
       signers: [userKeypair]
     }

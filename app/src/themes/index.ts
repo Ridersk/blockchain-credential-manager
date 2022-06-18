@@ -46,6 +46,14 @@ export const theme = createTheme({
           backgroundColor: "#27293D"
         }
       }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: "16px",
+          margin: "5px"
+        }
+      }
     }
   },
   palette: {
@@ -62,6 +70,9 @@ export const theme = createTheme({
     },
     background: {
       default: "#1E1E2F"
+    },
+    info: {
+      main: defaultTheme.palette.grey[500]
     }
   },
   typography: {

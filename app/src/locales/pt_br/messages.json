@@ -5,9 +5,19 @@
   "credential_form_label": "Usuário",
   "credential_form_secret": "Senha",
   "credential_form_description": "Notas",
+  "delete_credential": "Apagar",
+  "form_cancel": "Cancelar",
   "form_save": "Salvar",
   "edit_credential": "Editar credencial",
   "new_credential": "Nova credencial",
+  "operation_credential_created_successfully": "Credencial criada com sucesso!",
+  "operation_credential_edited_successfully": "Credencial editada com sucesso!",
+  "operation_credential_deleted_successfully": "Credencial deletada com sucesso!",
+  "operation_unknown_error": "Erro ao processar requisição.",
   "required_field": "Campo obrigatório",
-  "search_credentials": "Buscar credenciais"
+  "search_credentials": "Buscar credenciais",
+  "warning_delete_credential_title": "Deseja apagar a credencial?",
+  "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a carteira. Não será possível recuperar a credencial depois de removida.",
+  "warning_default_cancel": "Cancelar",
+  "warning_default_accept": "Aceitar"
 }

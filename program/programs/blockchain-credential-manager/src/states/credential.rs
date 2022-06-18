@@ -3,8 +3,9 @@ use anchor_lang::prelude::*;
 use super::base::*;
 
 #[account]
+#[derive(Default)]
 pub struct CredentialAccount {
-    pub owner_address: Pubkey, // wallet address
+    pub owner: Pubkey, // wallet address
     pub uid: u64,
     pub title: String,
     pub url: String,

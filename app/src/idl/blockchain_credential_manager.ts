@@ -11,7 +11,7 @@ export type BlockchainCredentialManager = {
           isSigner: false;
         },
         {
-          name: "author";
+          name: "owner";
           isMut: true;
           isSigner: true;
         },
@@ -57,14 +57,9 @@ export type BlockchainCredentialManager = {
           isSigner: false;
         },
         {
-          name: "author";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
+          name: "owner";
           isMut: false;
-          isSigner: false;
+          isSigner: true;
         }
       ];
       args: [
@@ -93,6 +88,22 @@ export type BlockchainCredentialManager = {
           type: "string";
         }
       ];
+    },
+    {
+      name: "deleteCredential";
+      accounts: [
+        {
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "owner";
+          isMut: true;
+          isSigner: true;
+        }
+      ];
+      args: [];
     }
   ];
   accounts: [
@@ -102,7 +113,7 @@ export type BlockchainCredentialManager = {
         kind: "struct";
         fields: [
           {
-            name: "ownerAddress";
+            name: "owner";
             type: "publicKey";
           },
           {
@@ -183,7 +194,7 @@ export const IDL: BlockchainCredentialManager = {
           isSigner: false
         },
         {
-          name: "author",
+          name: "owner",
           isMut: true,
           isSigner: true
         },
@@ -229,14 +240,9 @@ export const IDL: BlockchainCredentialManager = {
           isSigner: false
         },
         {
-          name: "author",
-          isMut: true,
-          isSigner: true
-        },
-        {
-          name: "systemProgram",
+          name: "owner",
           isMut: false,
-          isSigner: false
+          isSigner: true
         }
       ],
       args: [
@@ -265,6 +271,22 @@ export const IDL: BlockchainCredentialManager = {
           type: "string"
         }
       ]
+    },
+    {
+      name: "deleteCredential",
+      accounts: [
+        {
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: "owner",
+          isMut: true,
+          isSigner: true
+        }
+      ],
+      args: []
     }
   ],
   accounts: [
@@ -274,7 +296,7 @@ export const IDL: BlockchainCredentialManager = {
         kind: "struct",
         fields: [
           {
-            name: "ownerAddress",
+            name: "owner",
             type: "publicKey"
           },
           {

@@ -34,7 +34,7 @@ export const createCredential = async ({ title, url, label, secret, description 
     {
       accounts: {
         credentialAccount: credentialAccountKey,
-        author: userKeypair.publicKey,
+        owner: userKeypair.publicKey,
         systemProgram: programId
       },
       signers: [userKeypair]
