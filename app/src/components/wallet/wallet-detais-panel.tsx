@@ -1,7 +1,8 @@
-import { Container, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getWalletDetails } from "services/solana/getWalletDetails";
 import WalletBalanceCard from "./wallet-balance-card";
+import WalletOptionsGroup from "./wallet-options-group";
 
 const WalletDetailsPanel = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,8 @@ const WalletDetailsPanel = () => {
 
   return (
     <Container>
-      <WalletBalanceCard dataLoaded={!loading} balance={balance} />
+      <WalletBalanceCard dataLoaded={!loading} balance={balance} sx={{ marginBottom: "24px" }} />
+      <WalletOptionsGroup sx={{ marginBottom: "24px" }} />
     </Container>
   );
 };

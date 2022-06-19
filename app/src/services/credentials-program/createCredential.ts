@@ -2,8 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import getSolanaWorkspace from "../solana/solanaWeb3";
-import requestAirdrop from "services/solana/requestAirdrop";
+import getSolanaWorkspace from "services/solana/solanaWeb3";
 
 const { SystemProgram, PublicKey } = anchor.web3;
 const { program, userKeypair } = getSolanaWorkspace();
@@ -19,9 +18,6 @@ interface NewCredentialParameters {
 }
 
 export const createCredential = async ({ title, url, label, secret, description }: NewCredentialParameters) => {
-  // Request Airdrop for user wallet
-  // await requestAirdrop(program, userKeypair);
-
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 

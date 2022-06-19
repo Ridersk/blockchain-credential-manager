@@ -1,13 +1,16 @@
-import { Avatar, Box, Card, CardContent, Skeleton, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardContent, Skeleton, styled, Typography } from "@mui/material";
+import { SxProps } from "@mui/system";
 import { useEffect, useState } from "react";
 import getPrice from "services/asset-price-api/binance-api";
 
 interface WalletBalanceCardProps {
   dataLoaded?: boolean;
   balance: number;
+  sx?: SxProps;
 }
 
-const WalletBalanceCard = ({ dataLoaded = true, balance }: WalletBalanceCardProps) => {
+const WalletBalanceCard = (props: WalletBalanceCardProps) => {
+  const { dataLoaded = true, balance } = props;
   const [loading, setLoading] = useState(false);
   const [pairPrice, setPairPrice] = useState("0");
 
@@ -27,9 +30,23 @@ const WalletBalanceCard = ({ dataLoaded = true, balance }: WalletBalanceCardProp
   }, [balance]);
 
   return (
-    <Card>
-      <CardContent sx={{ display: "flex", padding: { xs: "4px", md: "16px" } }}>
-        <Box sx={{ width: "16%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+    <Card {...props}>
+      <CardContent
+        sx={{
+          display: "flex",
+          height: "144px",
+          padding: "4px !important"
+        }}
+      >
+        <Box
+          sx={{
+            width: "24%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           {dataLoaded ? (
             <Avatar
               src="https://assets.coingecko.com/coins/images/4128/large/solana.png"
@@ -61,4 +78,4 @@ const WalletBalanceCard = ({ dataLoaded = true, balance }: WalletBalanceCardProp
   );
 };
 
-export default WalletBalanceCard;
+export default styled(WalletBalanceCard)();
