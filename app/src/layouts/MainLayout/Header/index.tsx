@@ -5,10 +5,16 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material";
+import { SxProps } from "@mui/system";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export default function Header() {
+interface HeaderProps {
+  sx?: SxProps;
+}
+
+function Header(props: HeaderProps) {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <Box>
+    <Box {...props}>
       <AppBar
         position="static"
         color="inherit"
@@ -54,3 +60,5 @@ export default function Header() {
     </Box>
   );
 }
+
+export default styled(Header)();

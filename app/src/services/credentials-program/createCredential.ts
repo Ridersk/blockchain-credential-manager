@@ -19,7 +19,7 @@ interface NewCredentialParameters {
 
 export const createCredential = async ({ title, url, label, secret, description }: NewCredentialParameters) => {
   // Request Airdrop for user wallet
-  await requestAirdrop(program, userKeypair);
+  // await requestAirdrop(program, userKeypair);
 
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;

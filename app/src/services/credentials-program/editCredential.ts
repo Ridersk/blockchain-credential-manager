@@ -2,7 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import { solanaWeb3, requestAirdrop } from "../solana/solanaWeb3";
+import { solanaWeb3 } from "../solana/solanaWeb3";
 
 const { program, userKeypair } = solanaWeb3();
 
@@ -17,9 +17,6 @@ interface EditCredentialParameters {
 }
 
 export const editCredential = async ({ credentialPubKey, uid, title, url, label, secret, description }: EditCredentialParameters) => {
-  // Request Airdrop for user wallet
-  await requestAirdrop(program, userKeypair);
-
   await program.rpc.editCredential(
     new anchor.BN(uid),
     title,
