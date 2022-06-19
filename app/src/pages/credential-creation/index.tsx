@@ -365,6 +365,12 @@ const CredentialCreation = () => {
                 )}
               </FormControl>
 
+              {isUpdate && credentialPubKey && (
+                <Typography variant="body2" component="div" color="gray">
+                  Address: {credentialPubKey.toBase58()}
+                </Typography>
+              )}
+
               {errors.submit && (
                 <Box sx={{ mt: 3 }}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
