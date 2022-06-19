@@ -12,26 +12,13 @@ const preflightCommitment = "processed";
 const commitment = "processed";
 const programID = new PublicKey(idl.metadata.address);
 
-// User keypair credentials
-const secretBs58Saved = getCookie("userSecret");
-let userKeypair: Keypair;
-if (secretBs58Saved) {
-  const secret = bs58.decode(secretBs58Saved);
-  userKeypair = Keypair.fromSecretKey(secret);
-} else {
-  userKeypair = Keypair.generate();
-  setCookie("userSecret", bs58.encode(userKeypair.secretKey));
-}
-
 interface SolanaWeb3Workspace {
   userKeypair: Keypair;
-  // wallet: MyWallet;
   connection: Connection;
-  provider: AnchorProvider;
   program: Program<BlockchainCredentialManager>;
 }
 
-export class MyWallet implements Wallet {
+export class WalletCustom implements Wallet {
   constructor(readonly payer: Keypair) {
     this.payer = payer;
   }
@@ -53,25 +40,33 @@ export class MyWallet implements Wallet {
   }
 }
 
-export const solanaWeb3 = (): SolanaWeb3Workspace => {
-  // User wallet
-  const wallet = new MyWallet(userKeypair);
+// ************************************************************************
+const getUserKeypair = (): Keypair => {
+  let userKeypair: Keypair;
+  const secretBs58Saved = getCookie("userSecret");
+  if (secretBs58Saved) {
+    const secret = bs58.decode(secretBs58Saved);
+    userKeypair = Keypair.fromSecretKey(secret);
+  } else {
+    userKeypair = Keypair.generate();
+    setCookie("userSecret", bs58.encode(userKeypair.secretKey));
+  }
+
+  return userKeypair;
+};
+// ************************************************************************
+
+export default function getSolanaWorkspace(): SolanaWeb3Workspace {
+  const walletKeyPair = getUserKeypair();
+  const wallet = new WalletCustom(walletKeyPair!);
 
   const connection = new Connection(clusterUrl, commitment);
   const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
   const program = new Program<BlockchainCredentialManager>(idl, programID, provider);
 
   return {
-    userKeypair,
-    // wallet,
+    userKeypair: walletKeyPair!,
     connection,
-    provider,
     program
   };
-};
-
-export const requestAirdrop = async (program: Program<BlockchainCredentialManager>, author: Keypair) => {
-  // Request airdrop of 1 SOL
-  await program.provider.connection.confirmTransaction(await program.provider.connection.requestAirdrop(author.publicKey, 1000000000));
-  console.log("Airdrop Provided!!!");
-};
+}

@@ -2,10 +2,11 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import { solanaWeb3, requestAirdrop } from "../solana/solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
+import requestAirdrop from "services/solana/requestAirdrop";
 
 const { SystemProgram, PublicKey } = anchor.web3;
-const { program, userKeypair } = solanaWeb3();
+const { program, userKeypair } = getSolanaWorkspace();
 const programId = SystemProgram.programId;
 const CREDENTIAL_NAMESPACE = "credential";
 

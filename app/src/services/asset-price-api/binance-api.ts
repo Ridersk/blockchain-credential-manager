@@ -59,7 +59,7 @@ function formatBalance(balance: number, symbol: string, locale: string) {
   try {
     return `${symbol} ${balance.toLocaleString(locale, {
       minimumIntegerDigits: 2,
-      useGrouping: false,
+      useGrouping: true,
       maximumFractionDigits: 2
     })}`;
   } catch (_) {

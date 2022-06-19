@@ -1,7 +1,7 @@
-import { solanaWeb3 } from "../solana/solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-const { connection, userKeypair } = solanaWeb3();
+const { connection, userKeypair } = getSolanaWorkspace();
 
 interface WalletDetails {
   address: string;

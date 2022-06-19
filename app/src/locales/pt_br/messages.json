@@ -1,4 +1,5 @@
 {
+  "copy_wallet_address": "Copiar endereço da carteira!",
   "create_credential": "Criar credencial",
   "credential_form_title": "Título",
   "credential_form_url": "URL",
@@ -6,9 +7,10 @@
   "credential_form_secret": "Senha",
   "credential_form_description": "Notas",
   "delete_credential": "Apagar",
+  "edit_credential": "Editar credencial",
   "form_cancel": "Cancelar",
   "form_save": "Salvar",
-  "edit_credential": "Editar credencial",
+  "generic_copied": "Copiado!",
   "new_credential": "Nova credencial",
   "operation_credential_created_successfully": "Credencial criada com sucesso!",
   "operation_credential_edited_successfully": "Credencial editada com sucesso!",

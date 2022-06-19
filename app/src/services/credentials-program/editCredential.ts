@@ -2,9 +2,9 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import { solanaWeb3 } from "../solana/solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
 
-const { program, userKeypair } = solanaWeb3();
+const { program, userKeypair } = getSolanaWorkspace();
 
 interface EditCredentialParameters {
   credentialPubKey: anchor.web3.PublicKey;

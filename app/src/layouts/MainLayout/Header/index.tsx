@@ -6,9 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
-import { useTheme } from "@mui/material";
+import { ButtonBase, Tooltip, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTypedSelector } from "hooks/useTypedSelector";
+import { copyTextToClipboard } from "utils/clipboard";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 interface HeaderProps {
   sx?: SxProps;
@@ -18,10 +22,29 @@ function Header(props: HeaderProps) {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_wallet_address"));
+  const wallet = useTypedSelector((state) => state.wallet);
 
   const handleGoToBack = () => {
     navigate(-1);
   };
+
+  const handleClickCopyAddress = () => {
+    copyTextToClipboard(wallet.address);
+    setAddressTooltip(t("generic_copied"));
+  };
+
+  const resetAddressTooltip = () => {
+    setTimeout(() => setAddressTooltip(t("copy_wallet_address")), 500);
+  };
+
+  function formatWalletAddress(address: string) {
+    if (address.length > 12) {
+      return address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length);
+    }
+    return address;
+  }
 
   return (
     <Box {...props}>
@@ -43,12 +66,16 @@ function Header(props: HeaderProps) {
               textAlign: "center"
             }}
           >
-            <Typography variant="h6" component="span" align="center" margin={{ sm: "2px", md: "4px" }}>
-              Wallet 1
-            </Typography>
-            <Typography variant="h6" component="span" color="gray" align="center" margin={{ sm: "2px", md: "4px" }}>
-              (HRT...F52)
-            </Typography>
+            <Tooltip title={addressTooltip} onMouseLeave={resetAddressTooltip}>
+              <ButtonBase onClick={handleClickCopyAddress}>
+                <Typography variant="h6" component="span" align="center" margin={{ sm: "2px", md: "4px" }}>
+                  {wallet.id}
+                </Typography>
+                <Typography variant="h6" component="span" color="gray" align="center" margin={{ sm: "2px", md: "4px" }}>
+                  ({formatWalletAddress(wallet.address)})
+                </Typography>
+              </ButtonBase>
+            </Tooltip>
           </Box>
           {location.pathname !== "/" && (
             <IconButton color="inherit" onClick={handleGoToBack}>

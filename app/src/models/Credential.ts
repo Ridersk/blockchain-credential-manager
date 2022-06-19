@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
-import { solanaWeb3 } from "services/solana/solanaWeb3";
+import getSolanaWorkspace from "services/solana/solanaWeb3";
 import { decryptData } from "utils/aes-encryption";
 
-const { userKeypair } = solanaWeb3();
+const { userKeypair } = getSolanaWorkspace();
 
 interface CredentialParameters {
   uid: anchor.BN;
