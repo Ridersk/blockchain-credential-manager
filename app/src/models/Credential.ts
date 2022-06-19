@@ -1,5 +1,5 @@
 import * as anchor from "@project-serum/anchor";
-import { solanaWeb3 } from "services/solanaWeb3";
+import { solanaWeb3 } from "services/solana/solanaWeb3";
 import { decryptData } from "utils/aes-encryption";
 
 const { userKeypair } = solanaWeb3();

@@ -1,6 +1,6 @@
 import { List, ListItem } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getCredentials } from "services/solana-web3/getCredentials";
+import { getCredentials } from "services/credentials-program/getCredentials";
 import CredentialCard from "./credential-card";
 import { Credential } from "models/Credential";
 

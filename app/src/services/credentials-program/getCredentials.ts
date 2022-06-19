@@ -1,4 +1,4 @@
-import { solanaWeb3 } from "../solanaWeb3";
+import { solanaWeb3 } from "../solana/solanaWeb3";
 import { Credential } from "models/Credential";
 import bs58 from "bs58";
 

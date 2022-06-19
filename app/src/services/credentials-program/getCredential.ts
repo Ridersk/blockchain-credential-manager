@@ -1,4 +1,4 @@
-import { solanaWeb3 } from "../solanaWeb3";
+import { solanaWeb3 } from "../solana/solanaWeb3";
 import { web3 } from "@project-serum/anchor";
 import { Credential } from "models/Credential";
 

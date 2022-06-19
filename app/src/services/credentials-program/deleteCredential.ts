@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 
-import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
+import { solanaWeb3 } from "../solana/solanaWeb3";
 
 const { program, userKeypair } = solanaWeb3();
 
