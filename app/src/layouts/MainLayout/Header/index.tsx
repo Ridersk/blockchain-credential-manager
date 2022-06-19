@@ -88,4 +88,4 @@ function Header(props: HeaderProps) {
   );
 }
 
-export default styled(Header)();
+export default styled(Header)({});

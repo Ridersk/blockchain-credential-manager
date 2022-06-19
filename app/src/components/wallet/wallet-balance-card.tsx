@@ -10,7 +10,7 @@ interface WalletBalanceCardProps {
 }
 
 const WalletBalanceCard = (props: WalletBalanceCardProps) => {
-  const { dataLoaded = true, balance } = props;
+  const { dataLoaded = true, balance, ...otherProps } = props;
   const [loading, setLoading] = useState(false);
   const [pairPrice, setPairPrice] = useState("0");
 
@@ -30,7 +30,7 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
   }, [balance]);
 
   return (
-    <Card {...props}>
+    <Card {...otherProps}>
       <CardContent
         sx={{
           display: "flex",
@@ -78,4 +78,4 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
   );
 };
 
-export default styled(WalletBalanceCard)();
+export default styled(WalletBalanceCard)<WalletBalanceCardProps>({});

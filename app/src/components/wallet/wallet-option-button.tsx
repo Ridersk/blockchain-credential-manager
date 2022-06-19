@@ -1,6 +1,5 @@
-import { Box, Button, styled, ButtonProps } from "@mui/material";
+import { Button, styled, ButtonProps } from "@mui/material";
 import { SxProps } from "@mui/system";
-import { useNavigate } from "react-router-dom";
 
 interface WalletOptionButtonProps extends ButtonProps {
   title: string;
@@ -29,4 +28,4 @@ const WalletOptionButton = (props: WalletOptionButtonProps) => {
   );
 };
 
-export default styled(WalletOptionButton)();
+export default styled(WalletOptionButton)({});

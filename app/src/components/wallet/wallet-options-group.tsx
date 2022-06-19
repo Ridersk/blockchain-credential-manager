@@ -48,4 +48,4 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
   );
 };
 
-export default styled(WalletOptionsGroup)();
+export default styled(WalletOptionsGroup)({});
