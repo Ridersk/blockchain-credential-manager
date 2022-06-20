@@ -3,8 +3,8 @@ use anchor_lang::prelude::*;
 use crate::{
     errors::CustomErrorCode,
     states::credential::{
-        CredentialAccount, CREDENTIAL_DESCRIPTION_SIZE, CREDENTIAL_LABEL_SIZE,
-        CREDENTIAL_SECRET_SIZE, CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
+        CredentialAccount, CREDENTIAL_DESCRIPTION_SIZE, CREDENTIAL_ICON_URL_SIZE,
+        CREDENTIAL_LABEL_SIZE, CREDENTIAL_SECRET_SIZE, CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
     },
 };
 
@@ -14,6 +14,7 @@ pub fn process_save_credential(
     credential_uid: u64,
     title: String,
     url: String,
+    icon_url: String,
     label: String,
     secret: String,
     description: String,
@@ -27,6 +28,11 @@ pub fn process_save_credential(
     )?;
 
     let curr_timestamp: i64 = Clock::get().unwrap().unix_timestamp;
+    let mut icon_url_formatted = icon_url.clone();
+
+    if icon_url.chars().count() > CREDENTIAL_ICON_URL_SIZE {
+        icon_url_formatted = String::from("");
+    }
 
     credential_account.owner = owner_key;
     credential_account.uid = credential_uid;
@@ -34,6 +40,7 @@ pub fn process_save_credential(
     credential_account.label = label;
     credential_account.secret = secret;
     credential_account.url = url;
+    credential_account.icon_url = icon_url_formatted;
     credential_account.description = description;
     credential_account.created_at = curr_timestamp;
     credential_account.updated_at = curr_timestamp;

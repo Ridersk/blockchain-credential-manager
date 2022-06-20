@@ -24,7 +24,7 @@ const WalletDetailsPanel = () => {
   return (
     <Box>
       <WalletBalanceCard dataLoaded={!loading} balance={balance} sx={{ marginBottom: "24px" }} />
-      <WalletOptionsGroup sx={{ marginBottom: "24px" }} />
+      <WalletOptionsGroup sx={{ marginBottom: "12px", marginTop: "12px" }} />
     </Box>
   );
 };

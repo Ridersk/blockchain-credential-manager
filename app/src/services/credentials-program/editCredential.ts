@@ -11,16 +11,27 @@ interface EditCredentialParameters {
   uid: number;
   title: string;
   url: string;
+  iconUrl: string;
   label: string;
   secret: string;
   description: string;
 }
 
-export const editCredential = async ({ credentialPubKey, uid, title, url, label, secret, description }: EditCredentialParameters) => {
+export const editCredential = async ({
+  credentialPubKey,
+  uid,
+  iconUrl = "",
+  title,
+  url,
+  label,
+  secret,
+  description
+}: EditCredentialParameters) => {
   await program.rpc.editCredential(
     new anchor.BN(uid),
     title,
     url,
+    iconUrl,
     encryptData(userKeypair.secretKey, label),
     encryptData(userKeypair.secretKey, secret),
     description,

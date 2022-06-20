@@ -38,7 +38,7 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
       sx={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "center"
+        justifyContent: { xs: "space-between", sm: "center" }
       }}
     >
       <WalletOptionButton title={t("btn_add_credential")} onClick={goToCreateCredentialPage} />

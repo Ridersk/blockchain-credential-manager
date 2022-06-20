@@ -47,7 +47,14 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
     <List>
       {(loading ? Array.from(new Array<Credential>(5)) : list).map((item, index) => (
         <ListItem sx={{ display: "block", padding: "8px 0px 8px 0px" }} key={index}>
-          <CredentialCard dataLoaded={!!item} credentialKey={item?.publicKey} url={item?.url} label={item?.label} secret={item?.secret} />
+          <CredentialCard
+            dataLoaded={!!item}
+            credentialKey={item?.publicKey}
+            url={item?.url}
+            iconUrl={item?.iconUrl}
+            label={item?.label}
+            secret={item?.secret}
+          />
         </ListItem>
       ))}
     </List>

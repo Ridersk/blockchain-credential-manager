@@ -5,10 +5,14 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
     const passwordElement = document.querySelector('input[type="password"]');
     // First input in a form that contains a password
     const labelElement = passwordElement.closest("form").querySelector("input");
+
+    console.log("CONTENT URL:", window.location.href);
+    console.log("CONTENT SCRIPT FAVICON:", document.querySelector("head > link[rel$='icon']")?.href);
+
     sendResponse({
       data: {
-        password: passwordElement.value,
-        label: labelElement.value
+        label: labelElement.value,
+        password: passwordElement.value
       }
     });
   } else sendResponse({});

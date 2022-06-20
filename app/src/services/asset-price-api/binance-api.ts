@@ -51,20 +51,25 @@ const getPrice = async ({ base = "sol", target, balance }: GetPriceProps): Promi
   const balanceConverted = assetPrice * balance;
   return {
     price: balanceConverted,
-    formattedPrice: formatBalance(balanceConverted, targetObject.symbol, targetObject.locale)
+    formattedPrice: formatPriceSymbol(balanceConverted, targetObject.symbol, targetObject.locale)
   };
 };
 
-function formatBalance(balance: number, symbol: string, locale: string) {
-  try {
+function formatPriceSymbol(balance: number, symbol: string, locale: string) {
+  if (balance != 0) {
     return `${symbol} ${balance.toLocaleString(locale, {
       minimumIntegerDigits: 2,
       useGrouping: true,
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })}`;
-  } catch (_) {
-    return `${symbol} 0`;
   }
+  return `${symbol} ${balance.toLocaleString(locale, {
+    minimumIntegerDigits: 1,
+    useGrouping: true,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
 }
 
 export default getPrice;

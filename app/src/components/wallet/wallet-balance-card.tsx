@@ -18,10 +18,8 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
     async function handleGetCurrentPrice() {
       try {
         setLoading(true);
-        if (balance) {
-          const priceDetails = await getPrice({ target: "brl", balance });
-          setPairPrice(priceDetails.formattedPrice);
-        }
+        const priceDetails = await getPrice({ target: "brl", balance });
+        setPairPrice(priceDetails.formattedPrice);
         setLoading(false);
       } catch (err) {}
     }

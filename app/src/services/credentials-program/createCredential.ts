@@ -12,12 +12,13 @@ const CREDENTIAL_NAMESPACE = "credential";
 interface NewCredentialParameters {
   title: string;
   url: string;
+  iconUrl?: string;
   label: string;
   secret: string;
   description: string;
 }
 
-export const createCredential = async ({ title, url, label, secret, description }: NewCredentialParameters) => {
+export const createCredential = async ({ title, url, iconUrl = "", label, secret, description }: NewCredentialParameters) => {
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 
@@ -25,6 +26,7 @@ export const createCredential = async ({ title, url, label, secret, description 
     credentialPda.uid,
     title,
     url,
+    iconUrl,
     encryptData(userKeypair.secretKey, label),
     encryptData(userKeypair.secretKey, secret),
     description,

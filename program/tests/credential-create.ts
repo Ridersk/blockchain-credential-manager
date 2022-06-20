@@ -2,7 +2,12 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
-import { decryptData, encryptData, getPdaParams, requestAirdrop } from "./utils/testing-utils";
+import {
+  decryptData,
+  encryptData,
+  getPdaParams,
+  requestAirdrop,
+} from "./utils/testing-utils";
 
 const { SystemProgram, Keypair } = anchor.web3;
 
@@ -27,6 +32,7 @@ describe("credential-creation", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -35,6 +41,7 @@ describe("credential-creation", () => {
       credentialPda.uid,
       title,
       url,
+      iconUrl,
       encryptData(owner.secretKey, label),
       encryptData(owner.secretKey, secret),
       description,
@@ -65,6 +72,7 @@ describe("credential-creation", () => {
     );
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
+    assert.equal(iconUrl, credentialAccountData.iconUrl);
     assert.notEqual(label, credentialAccountData.label);
     assert.equal(
       label,
@@ -86,6 +94,7 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(51);
     const url = "https://github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -95,6 +104,7 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,
@@ -126,6 +136,7 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(101);
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -135,6 +146,7 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,
@@ -166,6 +178,7 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "x".repeat(101);
     const secret = "password123";
     const description = "Github Login";
@@ -175,6 +188,7 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,
@@ -206,6 +220,7 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "x".repeat(48);
     const secret = "x".repeat(101);
     const description = "Github Login";
@@ -215,6 +230,7 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,
@@ -246,6 +262,7 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
     const description = "x".repeat(101);
@@ -257,6 +274,7 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,

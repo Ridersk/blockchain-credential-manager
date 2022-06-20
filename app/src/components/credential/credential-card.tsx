@@ -1,6 +1,7 @@
 import EditIcon from "@mui/icons-material/Edit";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Avatar, Box, Card, CardContent, IconButton, Skeleton, Typography, useTheme } from "@mui/material";
+import LandscapeIcon from "@mui/icons-material/Landscape";
+import { Avatar, Box, Card, CardContent, IconButton, Skeleton, Typography } from "@mui/material";
 import { copyTextToClipboard } from "utils/clipboard";
 import { useNavigate } from "react-router-dom";
 
@@ -8,11 +9,12 @@ interface Props {
   dataLoaded?: boolean;
   credentialKey: string;
   url: string;
+  iconUrl?: string;
   label: string;
   secret: string;
 }
 
-const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }: Props) => {
+const CredentialCard = ({ dataLoaded = true, credentialKey, url, iconUrl = "", label, secret }: Props) => {
   const navigate = useNavigate();
 
   const handleClickCopySecret = () => {
@@ -23,15 +25,25 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }
     navigate({ pathname: "/credential", search: `?cred=${credentialKey}` });
   };
 
+  function renderAvatar() {
+    if (iconUrl) {
+      console.log("ICONURL:", iconUrl);
+      return <Avatar src={iconUrl} sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }} />;
+    } else {
+      return (
+        <Avatar sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}>
+          <LandscapeIcon />
+        </Avatar>
+      );
+    }
+  }
+
   return (
     <Card>
       <CardContent sx={{ display: "flex", padding: { xs: "4px", md: "16px" } }}>
         <Box sx={{ width: "16%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           {dataLoaded ? (
-            <Avatar
-              src="https://github.githubassets.com/favicons/favicon.svg"
-              sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}
-            />
+            renderAvatar()
           ) : (
             <Skeleton variant="circular" animation="wave" sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }} />
           )}

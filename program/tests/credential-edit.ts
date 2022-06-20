@@ -2,7 +2,12 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
-import { decryptData, encryptData, getPdaParams, requestAirdrop } from "./utils/testing-utils";
+import {
+  decryptData,
+  encryptData,
+  getPdaParams,
+  requestAirdrop,
+} from "./utils/testing-utils";
 
 const { SystemProgram, Keypair } = anchor.web3;
 
@@ -30,6 +35,7 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -38,6 +44,7 @@ describe("credential-edition", () => {
       credentialPda.uid,
       title,
       url,
+      iconUrl,
       encryptData(owner.secretKey, label),
       encryptData(owner.secretKey, secret),
       description,
@@ -58,6 +65,7 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
     const description = "Github Login [UPDATED]";
@@ -66,6 +74,7 @@ describe("credential-edition", () => {
       credentialPda.uid,
       title,
       url,
+      iconUrl,
       encryptData(owner.secretKey, label),
       encryptData(owner.secretKey, secret),
       description,
@@ -95,6 +104,7 @@ describe("credential-edition", () => {
     );
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
+    assert.equal(iconUrl, credentialAccountData.iconUrl);
     assert.notEqual(label, credentialAccountData.label);
     assert.equal(
       label,
@@ -115,6 +125,7 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
     const description = "Github Login [UPDATED]";
@@ -124,6 +135,7 @@ describe("credential-edition", () => {
         credentialPda.uid,
         title,
         url,
+        iconUrl,
         encryptData(owner.secretKey, label),
         encryptData(owner.secretKey, secret),
         description,
