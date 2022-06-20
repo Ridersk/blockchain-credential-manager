@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
 
-import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
 
-const { program, userKeypair } = solanaWeb3();
+const { program, userKeypair } = getSolanaWorkspace();
 
 interface DeleteCredentialProps {
   credentialPubKey: anchor.web3.PublicKey;

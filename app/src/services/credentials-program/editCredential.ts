@@ -2,28 +2,36 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import { solanaWeb3, requestAirdrop } from "../solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
 
-const { program, userKeypair } = solanaWeb3();
+const { program, userKeypair } = getSolanaWorkspace();
 
 interface EditCredentialParameters {
   credentialPubKey: anchor.web3.PublicKey;
   uid: number;
   title: string;
   url: string;
+  iconUrl: string;
   label: string;
   secret: string;
   description: string;
 }
 
-export const editCredential = async ({ credentialPubKey, uid, title, url, label, secret, description }: EditCredentialParameters) => {
-  // Request Airdrop for user wallet
-  await requestAirdrop(program, userKeypair);
-
+export const editCredential = async ({
+  credentialPubKey,
+  uid,
+  iconUrl = "",
+  title,
+  url,
+  label,
+  secret,
+  description
+}: EditCredentialParameters) => {
   await program.rpc.editCredential(
     new anchor.BN(uid),
     title,
     url,
+    iconUrl,
     encryptData(userKeypair.secretKey, label),
     encryptData(userKeypair.secretKey, secret),
     description,

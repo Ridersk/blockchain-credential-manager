@@ -6,7 +6,7 @@ import Header from "./Header";
 const MainLayout = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Header />
+      <Header sx={{ marginBottom: "32px" }} />
       <Container sx={{ width: { xs: "400px", sm: "100%" }, height: { xs: "600px", sm: "100%" } }}>
         <Outlet />
       </Container>

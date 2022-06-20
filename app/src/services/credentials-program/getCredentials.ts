@@ -1,8 +1,7 @@
-import { solanaWeb3 } from "../solanaWeb3";
+import getSolanaWorkspace from "../solana/solanaWeb3";
 import { Credential } from "models/Credential";
-import bs58 from "bs58";
 
-const { program, userKeypair } = solanaWeb3();
+const { program, userKeypair } = getSolanaWorkspace();
 
 interface FilterMemcmp {
   offset: number;
