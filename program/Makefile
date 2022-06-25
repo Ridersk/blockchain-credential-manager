@@ -23,7 +23,7 @@ show-net:
 ### 1.2
 # Setup a fake solana cluster on localnet
 start-localnet-cluster:
-	solana-test-validator
+	solana-test-validator --limit-ledger-size 100000
 
 ### 2
 gen-account:

@@ -23,10 +23,14 @@
   "operation_unknown_error": "Error processing request.",
   "required_field": "Required field",
   "search_credentials": "Search credentials",
+  "tab_activity": "Activity",
+  "tab_vault": "Vault",
+  "transaction_credential_created": "Credential Created",
+  "transaction_credential_edited": "Credential Edited",
+  "transaction_credential_deleted": "Credential Deleted",
+  "transaction_amount_received": "Received {{solAmount}} SOL",
   "warning_delete_credential_title": "Do you want to delete the credential?",
   "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the wallet. It will not be possible to retrieve the credential once it has been removed.",
   "warning_default_cancel": "Cancel",
-  "warning_default_accept": "Accept",
-  "tab_activity": "Activity",
-  "tab_vault": "Vault"
+  "warning_default_accept": "Accept"
 }

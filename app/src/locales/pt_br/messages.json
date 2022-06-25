@@ -23,10 +23,14 @@
   "operation_unknown_error": "Erro ao processar requisição.",
   "required_field": "Campo obrigatório",
   "search_credentials": "Buscar credenciais",
+  "tab_activity": "Atividade",
+  "tab_vault": "Cofre",
+  "transaction_credential_created": "Credencial Criada",
+  "transaction_credential_edited": "Credencial Editada",
+  "transaction_credential_deleted": "Credencial Deletada",
+  "transaction_amount_received": "Recebeu {{solAmount}} SOL",
   "warning_delete_credential_title": "Deseja apagar a credencial?",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a carteira. Não será possível recuperar a credencial depois de removida.",
   "warning_default_cancel": "Cancelar",
-  "warning_default_accept": "Aceitar",
-  "tab_activity": "Atividade",
-  "tab_vault": "Cofre"
+  "warning_default_accept": "Aceitar"
 }

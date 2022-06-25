@@ -9,7 +9,7 @@ import bs58 from "bs58";
 
 const clusterUrl = process.env.REACT_APP_CLUSTER_URL || "devnet";
 const preflightCommitment = "processed";
-const commitment = "processed";
+const commitment = "confirmed";
 const programID = new PublicKey(idl.metadata.address);
 
 interface SolanaWeb3Workspace {
