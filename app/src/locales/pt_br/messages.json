@@ -26,5 +26,7 @@
   "warning_delete_credential_title": "Deseja apagar a credencial?",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a carteira. Não será possível recuperar a credencial depois de removida.",
   "warning_default_cancel": "Cancelar",
-  "warning_default_accept": "Aceitar"
+  "warning_default_accept": "Aceitar",
+  "tab_activity": "Atividade",
+  "tab_vault": "Cofre"
 }

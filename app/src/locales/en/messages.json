@@ -26,5 +26,7 @@
   "warning_delete_credential_title": "Do you want to delete the credential?",
   "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the wallet. It will not be possible to retrieve the credential once it has been removed.",
   "warning_default_cancel": "Cancel",
-  "warning_default_accept": "Accept"
+  "warning_default_accept": "Accept",
+  "tab_activity": "Activity",
+  "tab_vault": "Vault"
 }
