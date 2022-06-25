@@ -39,12 +39,18 @@ export const getPdaParams = async (
 
 export const requestAirdrop = async (owner: anchor.web3.Keypair) => {
   // Request airdrop of 1 SOL
-  await program.provider.connection.confirmTransaction(
-    await program.provider.connection.requestAirdrop(
-      owner.publicKey,
-      1000000000
-    )
+  const connection = program.provider.connection;
+  const latestBlockHash = await connection.getLatestBlockhash();
+  const airdropSignature = await connection.requestAirdrop(
+    owner.publicKey,
+    1000000000
   );
+
+  await connection.confirmTransaction({
+    blockhash: latestBlockHash.blockhash,
+    lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+    signature: airdropSignature,
+  });
 };
 
 export const encryptData = (secretKey: Uint8Array, data: string) => {

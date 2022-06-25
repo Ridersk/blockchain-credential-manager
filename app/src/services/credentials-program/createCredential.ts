@@ -22,23 +22,23 @@ export const createCredential = async ({ title, url, iconUrl = "", label, secret
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 
-  await program.rpc.createCredential(
-    credentialPda.uid,
-    title,
-    url,
-    iconUrl,
-    encryptData(userKeypair.secretKey, label),
-    encryptData(userKeypair.secretKey, secret),
-    description,
-    {
-      accounts: {
-        credentialAccount: credentialAccountKey,
-        owner: userKeypair.publicKey,
-        systemProgram: programId
-      },
-      signers: [userKeypair]
-    }
-  );
+  await program.methods
+    .createCredential(
+      credentialPda.uid,
+      title,
+      url,
+      iconUrl,
+      encryptData(userKeypair.secretKey, label),
+      encryptData(userKeypair.secretKey, secret),
+      description
+    )
+    .accounts({
+      credentialAccount: credentialAccountKey,
+      owner: userKeypair.publicKey,
+      systemProgram: programId
+    })
+    .signers([userKeypair])
+    .rpc();
 
   // Fetch credential created account
   let credentialAccount = await program.account.credentialAccount.fetch(credentialAccountKey);

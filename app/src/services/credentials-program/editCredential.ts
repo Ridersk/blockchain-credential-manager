@@ -27,22 +27,22 @@ export const editCredential = async ({
   secret,
   description
 }: EditCredentialParameters) => {
-  await program.rpc.editCredential(
-    new anchor.BN(uid),
-    title,
-    url,
-    iconUrl,
-    encryptData(userKeypair.secretKey, label),
-    encryptData(userKeypair.secretKey, secret),
-    description,
-    {
-      accounts: {
-        credentialAccount: credentialPubKey,
-        owner: userKeypair.publicKey
-      },
-      signers: [userKeypair]
-    }
-  );
+  await program.methods
+    .editCredential(
+      new anchor.BN(uid),
+      title,
+      url,
+      iconUrl,
+      encryptData(userKeypair.secretKey, label),
+      encryptData(userKeypair.secretKey, secret),
+      description
+    )
+    .accounts({
+      credentialAccount: credentialPubKey,
+      owner: userKeypair.publicKey
+    })
+    .signers([userKeypair])
+    .rpc();
 
   // Fetch credential edited account
   let credentialAccount = await program.account.credentialAccount.fetch(credentialPubKey);
