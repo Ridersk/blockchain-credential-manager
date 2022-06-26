@@ -12,14 +12,14 @@ interface FilterOption {
   memcmp: FilterMemcmp;
 }
 
-export const getCredentials = async (
+export default async function getCredentials(
   filters: Array<FilterOption> = []
-): Promise<Array<Credential>> => {
+): Promise<Array<Credential>> {
   filters.push(ownerFilter(userKeypair.publicKey.toBase58()));
   const credentials = await program.account.credentialAccount.all(filters);
 
   return credentials.map((credential) => new Credential(credential.publicKey, credential.account));
-};
+}
 
 export const ownerFilter = (ownerBase58PublicKey: string): FilterOption => ({
   memcmp: {

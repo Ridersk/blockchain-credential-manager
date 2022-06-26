@@ -17,19 +17,19 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { createCredential } from "services/credentials-program/createCredential";
-import { copyTextToClipboard } from "utils/clipboard";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import useNotification from "hooks/useNotification";
 import { AnchorError } from "@project-serum/anchor";
-import { getCredential } from "services/credentials-program/getCredential";
 import bs58 from "bs58";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { editCredential } from "services/credentials-program/editCredential";
 import { useTranslation } from "react-i18next";
-import { deleteCredential } from "services/credentials-program/deleteCredential";
+import useNotification from "hooks/useNotification";
+import createCredential from "services/credentials-program/createCredential";
+import editCredential from "services/credentials-program/editCredential";
+import deleteCredential from "services/credentials-program/deleteCredential";
+import getCredential from "services/credentials-program/getCredential";
+import { copyTextToClipboard } from "utils/clipboard";
 import CredentialDeletionWarningModal from "components/credential/credential-warning-delete";
 import { formatHomeUrl } from "utils/url";
 
@@ -115,7 +115,7 @@ const CredentialCreation = () => {
       let credentialAccount;
       setLoading(true);
       if (isUpdate && credentialPubKey && uid) {
-        credentialAccount = await editCredential({
+        await editCredential({
           credentialPubKey: credentialPubKey,
           uid: uid,
           title: values.title,
@@ -130,7 +130,7 @@ const CredentialCreation = () => {
           variant: "info"
         });
       } else {
-        credentialAccount = await createCredential({
+        await createCredential({
           title: values.title,
           url: values.currentPageUrl,
           iconUrl: faviconUrl,

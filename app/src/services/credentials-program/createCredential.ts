@@ -18,14 +18,14 @@ interface NewCredentialParameters {
   description: string;
 }
 
-export const createCredential = async ({
+export default async function createCredential({
   title,
   url,
   iconUrl = "",
   label,
   secret,
   description
-}: NewCredentialParameters) => {
+}: NewCredentialParameters) {
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 
@@ -51,7 +51,7 @@ export const createCredential = async ({
   let credentialAccount = await program.account.credentialAccount.fetch(credentialAccountKey);
 
   return new Credential(credentialAccountKey, credentialAccount);
-};
+}
 
 interface PDAParameters {
   uid: anchor.BN;
