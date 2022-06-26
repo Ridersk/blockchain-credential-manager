@@ -27,7 +27,6 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, iconUrl = "", l
 
   function renderAvatar() {
     if (iconUrl) {
-      console.log("ICONURL:", iconUrl);
       return <Avatar src={iconUrl} sx={{ width: { xs: 40, md: 64 }, height: { xs: 40, md: 64 } }} />;
     } else {
       return (

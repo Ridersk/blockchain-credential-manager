@@ -1,6 +1,6 @@
 // project imports
 import MainLayout from "layouts/MainLayout";
-import CredentialCreation from "pages/credential-creation";
+import CredentialCreation from "pages/credential-form";
 import Home from "pages/home";
 
 // ==============================|| ROUTING ||============================== //

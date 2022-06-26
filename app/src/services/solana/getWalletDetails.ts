@@ -14,7 +14,5 @@ export const getWalletDetails = async (): Promise<WalletDetails> => {
   const walletAdress = walletPublicKey.toBase58();
   const balance: number = (walletInfo?.lamports || 0) / LAMPORTS_PER_SOL;
 
-  console.log("WALLET DETAILS:", walletInfo);
-
   return { address: walletAdress, balance };
 };

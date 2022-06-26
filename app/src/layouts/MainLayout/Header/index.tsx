@@ -47,9 +47,9 @@ function Header(props: HeaderProps) {
   }
 
   return (
-    <Box {...props}>
+    <Box {...props} sx={{ height: "48px" }}>
       <AppBar
-        position="static"
+        position="fixed"
         color="inherit"
         sx={{
           bgcolor: theme.palette.background.default,

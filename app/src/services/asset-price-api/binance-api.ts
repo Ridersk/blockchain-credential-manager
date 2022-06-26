@@ -44,9 +44,7 @@ const getPrice = async ({ base = "sol", target, balance }: GetPriceProps): Promi
   try {
     const response = await axios.get(priceAvgEndpoint);
     assetPrice = +response.data.price;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (_) {}
 
   const balanceConverted = assetPrice * balance;
   return {

@@ -29,6 +29,8 @@
   "transaction_credential_edited": "Credential Edited",
   "transaction_credential_deleted": "Credential Deleted",
   "transaction_amount_received": "Received {{solAmount}} SOL",
+  "transaction_generic_success": "Success",
+  "transaction_generic_error": "Error",
   "warning_delete_credential_title": "Do you want to delete the credential?",
   "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the wallet. It will not be possible to retrieve the credential once it has been removed.",
   "warning_default_cancel": "Cancel",

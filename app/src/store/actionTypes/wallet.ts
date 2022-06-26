@@ -4,8 +4,9 @@ export enum WalletActionType {
 }
 
 export interface WalletData {
-  id: string;
-  address: string;
+  id?: string;
+  address?: string;
+  balance?: number;
 }
 
 interface setWallet {

@@ -63,9 +63,5 @@ const getPdaParams = async (namespace: string, author: anchor.web3.Keypair): Pro
     program.programId
   );
 
-  console.log("USER Key Pair:", author);
-  console.log("UID:", uid.toArray("be", 8));
-  console.log("ACCOUNT KEY:", accountKey);
-
   return { uid, accountKey, bump };
 };

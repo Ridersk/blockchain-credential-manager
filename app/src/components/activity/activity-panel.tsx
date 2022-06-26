@@ -1,5 +1,5 @@
 import { Box, List, ListItem } from "@mui/material";
-import { FunctionComponent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import getActivities, { Activity } from "services/solana/getActivities";
 import CircularProgress from "@mui/material/CircularProgress";
 import ActivityCard from "./activity-card";
@@ -9,10 +9,12 @@ enum InstructionTypeTitle {
   "CREATE_CREDENTIAL" = "transaction_credential_created",
   "EDIT_CREDENTIAL" = "transaction_credential_edited",
   "DELETE_CREDENTIAL" = "transaction_credential_deleted",
-  "TRANSFER" = "transaction_amount_received"
+  "TRANSFER" = "transaction_amount_received",
+  "SUCCESS" = "transaction_generic_success",
+  "ERROR" = "transaction_generic_error"
 }
 
-export const ActivityPanel: FunctionComponent = () => {
+export const ActivityPanel = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<Activity[]>([]);
@@ -22,7 +24,6 @@ export const ActivityPanel: FunctionComponent = () => {
       setLoading(true);
       const transactions = await getActivities();
       setTransactions(transactions);
-      console.log("PARSED ACTIVITIES:", transactions);
       setLoading(false);
     })();
   }, []);

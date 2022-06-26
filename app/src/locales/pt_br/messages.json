@@ -29,6 +29,8 @@
   "transaction_credential_edited": "Credencial Editada",
   "transaction_credential_deleted": "Credencial Deletada",
   "transaction_amount_received": "Recebeu {{solAmount}} SOL",
+  "transaction_generic_success": "Sucesso",
+  "transaction_generic_error": "Erro",
   "warning_delete_credential_title": "Deseja apagar a credencial?",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a carteira. Não será possível recuperar a credencial depois de removida.",
   "warning_default_cancel": "Cancelar",
