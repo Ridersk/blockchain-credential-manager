@@ -9,8 +9,6 @@ import { ReactNode } from "react";
 
 // ==============================|| AUTHENTICATION CARD WRAPPER ||============================== //
 
-// type Props = React.HTMLProps<HTMLDivElement>;
-
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }

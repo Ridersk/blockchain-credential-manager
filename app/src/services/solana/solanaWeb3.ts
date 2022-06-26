@@ -62,7 +62,7 @@ export default function getSolanaWorkspace(): SolanaWeb3Workspace {
 
   const connection = new Connection(clusterUrl, commitment);
   const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
-  const program = new Program<BlockchainCredentialManager>(idl, programID, provider);
+  const program = new Program<BlockchainCredentialManager>(idl as any, programID, provider);
 
   return {
     userKeypair: walletKeyPair!,

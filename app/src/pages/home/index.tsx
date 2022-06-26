@@ -15,9 +15,20 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ textAlign: "center", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+    <Container
+      maxWidth="sm"
+      sx={{ textAlign: "center", minHeight: "100%", display: "flex", flexDirection: "column" }}
+    >
       <WalletDetailsPanel />
-      <Box sx={{ width: "100%", typography: "body1", flex: 1, display: "flex", flexDirection: "column" }}>
+      <Box
+        sx={{
+          width: "100%",
+          typography: "body1",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column"
+        }}
+      >
         <TabContext value={value}>
           <Tabs
             value={value}
@@ -33,7 +44,10 @@ const Home = () => {
           <TabPanel value="vault" sx={{ padding: 0, flex: 1 }}>
             <CredentialsPanel />
           </TabPanel>
-          <TabPanel value="activity" sx={{ padding: 0, flex: 1, display: "flex", flexDirection: "column" }}>
+          <TabPanel
+            value="activity"
+            sx={{ padding: 0, flex: 1, display: "flex", flexDirection: "column" }}
+          >
             <ActivityPanel />
           </TabPanel>
         </TabContext>

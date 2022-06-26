@@ -17,7 +17,20 @@ type Props = React.HTMLProps<HTMLDivElement> & {
 };
 
 const SubCard = forwardRef<HTMLDivElement, Props>(
-  ({ children, content, contentClass, darkTitle, secondary, sx = {}, contentSX = {}, title, ...others }, ref) => {
+  (
+    {
+      children,
+      content,
+      contentClass,
+      darkTitle,
+      secondary,
+      sx = {},
+      contentSX = {},
+      title,
+      ...others
+    },
+    ref
+  ) => {
     const theme = useTheme();
 
     return (
@@ -34,8 +47,20 @@ const SubCard = forwardRef<HTMLDivElement, Props>(
         // {...others}
       >
         {/* card header and action */}
-        {!darkTitle && title && <CardHeader sx={{ p: 2.5 }} title={<Typography variant="h5">{title}</Typography>} action={secondary} />}
-        {darkTitle && title && <CardHeader sx={{ p: 2.5 }} title={<Typography variant="h4">{title}</Typography>} action={secondary} />}
+        {!darkTitle && title && (
+          <CardHeader
+            sx={{ p: 2.5 }}
+            title={<Typography variant="h5">{title}</Typography>}
+            action={secondary}
+          />
+        )}
+        {darkTitle && title && (
+          <CardHeader
+            sx={{ p: 2.5 }}
+            title={<Typography variant="h4">{title}</Typography>}
+            action={secondary}
+          />
+        )}
 
         {/* content & header divider */}
         {title && (

@@ -7,7 +7,11 @@ export type CredentialDeletionWarningProps = {
   onAccept: () => void;
 };
 
-const CredentialDeletionWarningModal = ({ open, onCancel, onAccept }: CredentialDeletionWarningProps) => {
+const CredentialDeletionWarningModal = ({
+  open,
+  onCancel,
+  onAccept
+}: CredentialDeletionWarningProps) => {
   const { t } = useTranslation();
 
   return (

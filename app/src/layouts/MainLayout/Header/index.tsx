@@ -41,7 +41,9 @@ function Header(props: HeaderProps) {
 
   function formatWalletAddress(address: string) {
     if (address.length > 12) {
-      return address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length);
+      return (
+        address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length)
+      );
     }
     return address;
   }
@@ -68,10 +70,21 @@ function Header(props: HeaderProps) {
           >
             <Tooltip title={addressTooltip} onMouseLeave={resetAddressTooltip}>
               <ButtonBase onClick={handleClickCopyAddress}>
-                <Typography variant="h6" component="span" align="center" margin={{ sm: "2px", md: "4px" }}>
+                <Typography
+                  variant="h6"
+                  component="span"
+                  align="center"
+                  margin={{ sm: "2px", md: "4px" }}
+                >
                   {wallet.id}
                 </Typography>
-                <Typography variant="h6" component="span" color="gray" align="center" margin={{ sm: "2px", md: "4px" }}>
+                <Typography
+                  variant="h6"
+                  component="span"
+                  color="gray"
+                  align="center"
+                  margin={{ sm: "2px", md: "4px" }}
+                >
                   ({formatWalletAddress(wallet.address)})
                 </Typography>
               </ButtonBase>

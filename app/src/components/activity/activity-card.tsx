@@ -12,7 +12,13 @@ interface Props {
   status?: "success" | "received" | "error";
 }
 
-const ActivityCard = ({ title, txSignature, fromAddress, toAddress, status = "success" }: Props) => {
+const ActivityCard = ({
+  title,
+  txSignature,
+  fromAddress,
+  toAddress,
+  status = "success"
+}: Props) => {
   const { t } = useTranslation();
   const renderIcon = () => {
     switch (status) {
@@ -27,8 +33,18 @@ const ActivityCard = ({ title, txSignature, fromAddress, toAddress, status = "su
 
   return (
     <Card>
-      <CardContent sx={{ display: "flex", padding: { xs: "8px !important", md: "16px !important" } }}>
-        <Box sx={{ width: "16%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <CardContent
+        sx={{ display: "flex", padding: { xs: "8px !important", md: "16px !important" } }}
+      >
+        <Box
+          sx={{
+            width: "16%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
           <IconButton
             href={`https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=${process.env.REACT_APP_CLUSTER_URL}`}
             target="_blank"
@@ -36,7 +52,15 @@ const ActivityCard = ({ title, txSignature, fromAddress, toAddress, status = "su
             {renderIcon()}
           </IconButton>
         </Box>
-        <Box sx={{ flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden" }}>
+        <Box
+          sx={{
+            flex: "1",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            overflow: "hidden"
+          }}
+        >
           <Typography component="div" variant="h6" noWrap>
             {title}
           </Typography>

@@ -18,7 +18,14 @@ interface NewCredentialParameters {
   description: string;
 }
 
-export const createCredential = async ({ title, url, iconUrl = "", label, secret, description }: NewCredentialParameters) => {
+export const createCredential = async ({
+  title,
+  url,
+  iconUrl = "",
+  label,
+  secret,
+  description
+}: NewCredentialParameters) => {
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 
@@ -54,7 +61,10 @@ interface PDAParameters {
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
-const getPdaParams = async (namespace: string, author: anchor.web3.Keypair): Promise<PDAParameters> => {
+const getPdaParams = async (
+  namespace: string,
+  author: anchor.web3.Keypair
+): Promise<PDAParameters> => {
   const uid = new anchor.BN(parseInt((Date.now() / 1000).toString()));
   const uidBuffer = uid.toArray("be", 8);
 

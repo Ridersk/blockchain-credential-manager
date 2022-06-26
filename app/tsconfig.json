@@ -17,6 +17,6 @@
     "jsx": "react-jsx",
     "baseUrl": "src"
   },
-  "include": ["src"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "types": ["chrome"]
 }

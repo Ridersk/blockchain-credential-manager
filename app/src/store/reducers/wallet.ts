@@ -12,7 +12,10 @@ export const initialState = {
   balance: 0
 };
 
-const customizationReducer = (state: WalletState = initialState, action: WalletAction): WalletState => {
+const customizationReducer = (
+  state: WalletState = initialState,
+  action: WalletAction
+): WalletState => {
   switch (action.type) {
     case WalletActionType.SET_WALLET:
       return {

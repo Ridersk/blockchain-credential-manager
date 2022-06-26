@@ -9,7 +9,10 @@ interface NotificationAlert {
 }
 
 const useNotification = (): ((data: NotificationAlert) => void) => {
-  const [notification, setNotification] = useState<NotificationAlert>({ message: "", variant: "info" });
+  const [notification, setNotification] = useState<NotificationAlert>({
+    message: "",
+    variant: "info"
+  });
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const action = (key: SnackbarKey) => (
     <Fragment>

@@ -33,7 +33,11 @@ interface GetPriceResponse {
   formattedPrice: string;
 }
 
-const getPrice = async ({ base = "sol", target, balance }: GetPriceProps): Promise<GetPriceResponse> => {
+const getPrice = async ({
+  base = "sol",
+  target,
+  balance
+}: GetPriceProps): Promise<GetPriceResponse> => {
   const baseId = Assets[base].id;
   const targetObject = Assets[target];
   const targetId = targetObject.id;

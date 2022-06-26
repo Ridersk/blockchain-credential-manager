@@ -16,7 +16,15 @@ export type WarningModalProps = {
   onAccept: () => void;
 };
 
-const WarningModal = ({ open, title, description, cancelText, acceptText, onCancel, onAccept }: WarningModalProps) => {
+const WarningModal = ({
+  open,
+  title,
+  description,
+  cancelText,
+  acceptText,
+  onCancel,
+  onAccept
+}: WarningModalProps) => {
   const { t } = useTranslation();
   const handleCancel = () => onCancel();
   const handleAccept = () => onAccept();
@@ -50,14 +58,28 @@ const WarningModal = ({ open, title, description, cancelText, acceptText, onCanc
           }}
         >
           <Box>
-            <Typography id="transition-modal-title" variant="h6" component="h2" align="center" sx={{ mb: 4 }}>
+            <Typography
+              id="transition-modal-title"
+              variant="h6"
+              component="h2"
+              align="center"
+              sx={{ mb: 4 }}
+            >
               {title}
             </Typography>
-            <Typography id="transition-modal-description" variant="body1" color="gray" align="center" sx={{ mb: 4 }}>
+            <Typography
+              id="transition-modal-description"
+              variant="body1"
+              color="gray"
+              align="center"
+              sx={{ mb: 4 }}
+            >
               {description}
             </Typography>
           </Box>
-          <Box sx={{ flex: 1, flexDirection: "column", display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{ flex: 1, flexDirection: "column", display: "flex", justifyContent: "flex-end" }}
+          >
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
               <Button onClick={handleCancel} color="secondary" variant="contained" size="medium">
                 {cancelText || t("warning_default_cancel")}

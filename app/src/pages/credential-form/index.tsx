@@ -1,4 +1,8 @@
-import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon, ContentCopy as ContentCopyIcon } from "@mui/icons-material";
+import {
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  ContentCopy as ContentCopyIcon
+} from "@mui/icons-material";
 import {
   Box,
   Container,
@@ -121,7 +125,10 @@ const CredentialCreation = () => {
           secret: values.credentialSecret,
           description: values.description
         });
-        sendNotification({ message: t("operation_credential_edited_successfully"), variant: "info" });
+        sendNotification({
+          message: t("operation_credential_edited_successfully"),
+          variant: "info"
+        });
       } else {
         credentialAccount = await createCredential({
           title: values.title,
@@ -131,7 +138,10 @@ const CredentialCreation = () => {
           secret: values.credentialSecret,
           description: values.description
         });
-        sendNotification({ message: t("operation_credential_created_successfully"), variant: "info" });
+        sendNotification({
+          message: t("operation_credential_created_successfully"),
+          variant: "info"
+        });
       }
       goToPreviousPage();
     } catch (err) {
@@ -149,7 +159,10 @@ const CredentialCreation = () => {
     try {
       if (isUpdate && credentialPubKey && uid) {
         await deleteCredential({ credentialPubKey: credentialPubKey });
-        sendNotification({ message: t("operation_credential_deleted_successfully"), variant: "info" });
+        sendNotification({
+          message: t("operation_credential_deleted_successfully"),
+          variant: "info"
+        });
       }
       goToPreviousPage();
     } catch (err) {
@@ -175,7 +188,11 @@ const CredentialCreation = () => {
 
   return (
     <div>
-      <CredentialDeletionWarningModal open={modalOpen} onCancel={() => setModalOpen(false)} onAccept={handleDeleteCredential} />
+      <CredentialDeletionWarningModal
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onAccept={handleDeleteCredential}
+      />
 
       <Container maxWidth="sm">
         <Box my={4}>
@@ -310,7 +327,11 @@ const CredentialCreation = () => {
                   label={t("credential_form_secret")}
                   endAdornment={
                     <InputAdornment position="end">
-                      <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
                         {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </IconButton>
                       <IconButton
@@ -339,7 +360,9 @@ const CredentialCreation = () => {
                   marginTop: 2
                 }}
               >
-                <InputLabel htmlFor="credential-notes">{t("credential_form_description")}</InputLabel>
+                <InputLabel htmlFor="credential-notes">
+                  {t("credential_form_description")}
+                </InputLabel>
                 <OutlinedInput
                   id="credential-notes"
                   type="text"
@@ -400,7 +423,13 @@ const CredentialCreation = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <LoadingButton disabled={isSubmitting} size="medium" variant="contained" color="info" onClick={goToPreviousPage}>
+                  <LoadingButton
+                    disabled={isSubmitting}
+                    size="medium"
+                    variant="contained"
+                    color="info"
+                    onClick={goToPreviousPage}
+                  >
                     {t("form_cancel")}
                   </LoadingButton>
                   <LoadingButton

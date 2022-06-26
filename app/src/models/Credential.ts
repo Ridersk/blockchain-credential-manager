@@ -24,7 +24,10 @@ export class Credential {
   private _secret: string;
   description: string;
 
-  constructor(publicKey: anchor.web3.PublicKey, { uid, title, url, iconUrl = "", label, secret, description }: CredentialParameters) {
+  constructor(
+    publicKey: anchor.web3.PublicKey,
+    { uid, title, url, iconUrl = "", label, secret, description }: CredentialParameters
+  ) {
     this._publicKey = publicKey;
     this.uid = uid.toNumber();
     this.title = title;

@@ -21,7 +21,13 @@ const WalletOptionButton = (props: WalletOptionButtonProps) => {
       color="primary"
       size="large"
       onClick={handleOnClick}
-      sx={{ backgroundColor: "#27293D", fontSize: "12px", height: "64px", textTransform: "none", flex: { xs: 1, sm: "none" } }}
+      sx={{
+        backgroundColor: "#27293D",
+        fontSize: "12px",
+        height: "64px",
+        textTransform: "none",
+        flex: { xs: 1, sm: "none" }
+      }}
     >
       {title}
     </Button>

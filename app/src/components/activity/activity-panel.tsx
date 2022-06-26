@@ -32,7 +32,14 @@ export const ActivityPanel = () => {
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
       {loading ? (
         <Box
-          sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", alignItems: "center" }}
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center"
+          }}
         >
           <CircularProgress color="secondary" />
         </Box>
@@ -41,7 +48,10 @@ export const ActivityPanel = () => {
           {transactions.map((transaction, index) => (
             <ListItem sx={{ display: "block", padding: "8px 0px 8px 0px" }} key={index}>
               <ActivityCard
-                title={t(InstructionTypeTitle[transaction.type as keyof typeof InstructionTypeTitle], transaction.extraParams)}
+                title={t(
+                  InstructionTypeTitle[transaction.type as keyof typeof InstructionTypeTitle],
+                  transaction.extraParams
+                )}
                 txSignature={transaction.txSignature}
                 toAddress={transaction.toAddress}
                 fromAddress={transaction.fromAddress}

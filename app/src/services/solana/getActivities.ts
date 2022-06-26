@@ -1,4 +1,9 @@
-import { ParsedInstruction, PartiallyDecodedInstruction, ParsedMessageAccount, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  ParsedInstruction,
+  PartiallyDecodedInstruction,
+  ParsedMessageAccount,
+  LAMPORTS_PER_SOL
+} from "@solana/web3.js";
 import base58 from "bs58";
 import getSolanaWorkspace from "../solana/solanaWeb3";
 
@@ -28,7 +33,9 @@ export type Activity = {
 
 const getActivities = async (): Promise<Activity[]> => {
   const signatures = await connection.getSignaturesForAddress(userKeypair.publicKey);
-  const transactions = await program.provider.connection.getParsedTransactions(signatures.map((signature) => signature.signature));
+  const transactions = await program.provider.connection.getParsedTransactions(
+    signatures.map((signature) => signature.signature)
+  );
 
   let activities: Activity[] = [];
   for (const index in transactions) {
@@ -48,7 +55,13 @@ const getActivities = async (): Promise<Activity[]> => {
       const instructionData = programInstruction.data;
 
       convertB58ToPrettyHex(programInstruction.data);
-      transactionType = InstructionTypeCode[convertB58ToPrettyHex(instructionData).substring(0, 16) as keyof typeof InstructionTypeCode];
+      transactionType =
+        InstructionTypeCode[
+          convertB58ToPrettyHex(instructionData).substring(
+            0,
+            16
+          ) as keyof typeof InstructionTypeCode
+        ];
       fromAddress = accounts[0].pubkey.toBase58();
       toAddress = accounts[1].pubkey.toBase58();
       status = transactionError ? "error" : "success";
@@ -58,12 +71,15 @@ const getActivities = async (): Promise<Activity[]> => {
         const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
         const instructionParsedData = programInstruction.parsed;
 
-        transactionType = InstructionTypeCode[instructionParsedData.type as keyof typeof InstructionTypeCode];
+        transactionType =
+          InstructionTypeCode[instructionParsedData.type as keyof typeof InstructionTypeCode];
         fromAddress = instructionParsedData.info.source;
         toAddress = instructionParsedData.info.destination;
         extraParams = { solAmount: instructionParsedData.info.lamports / LAMPORTS_PER_SOL };
       } catch (error) {
-        transactionType = !transactionError ? InstructionTypeCode.success : InstructionTypeCode.error;
+        transactionType = !transactionError
+          ? InstructionTypeCode.success
+          : InstructionTypeCode.error;
       } finally {
         direction = "input";
         status = transactionError ? "error" : "received";

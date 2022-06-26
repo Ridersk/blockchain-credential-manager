@@ -12,7 +12,9 @@ interface FilterOption {
   memcmp: FilterMemcmp;
 }
 
-export const getCredentials = async (filters: Array<FilterOption> = []): Promise<Array<Credential>> => {
+export const getCredentials = async (
+  filters: Array<FilterOption> = []
+): Promise<Array<Credential>> => {
   filters.push(ownerFilter(userKeypair.publicKey.toBase58()));
   const credentials = await program.account.credentialAccount.all(filters);
 

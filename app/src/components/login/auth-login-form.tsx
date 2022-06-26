@@ -32,7 +32,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useTypedSelector } from "hooks/useTypedSelector";
 
-// const Google = require("../../assets/images/icons/social-google.svg");
 import Google from "../../assets/images/icons/social-google.svg";
 
 // ============================|| FORM LOGIN ||============================ //
@@ -74,7 +73,13 @@ const AuthLogin = ({ ...others }) => {
             }}
           >
             <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-              <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
+              <img
+                src={Google}
+                alt="google"
+                width={16}
+                height={16}
+                style={{ marginRight: matchDownSM ? 8 : 16 }}
+              />
             </Box>
             Sign in with Google
           </Button>
@@ -144,8 +149,14 @@ const AuthLogin = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
-            <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography }}>
-              <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+            <FormControl
+              fullWidth
+              error={Boolean(touched.email && errors.email)}
+              sx={{ ...theme.typography }}
+            >
+              <InputLabel htmlFor="outlined-adornment-email-login">
+                Email Address / Username
+              </InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="email"
@@ -163,7 +174,11 @@ const AuthLogin = ({ ...others }) => {
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography }}>
+            <FormControl
+              fullWidth
+              error={Boolean(touched.password && errors.password)}
+              sx={{ ...theme.typography }}
+            >
               <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-password-login"
@@ -197,11 +212,20 @@ const AuthLogin = ({ ...others }) => {
             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
               <FormControlLabel
                 control={
-                  <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
+                  <Checkbox
+                    checked={checked}
+                    onChange={(event) => setChecked(event.target.checked)}
+                    name="checked"
+                    color="primary"
+                  />
                 }
                 label="Remember me"
               />
-              <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: "none", cursor: "pointer" }}>
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                sx={{ textDecoration: "none", cursor: "pointer" }}
+              >
                 Forgot Password?
               </Typography>
             </Stack>
@@ -212,7 +236,15 @@ const AuthLogin = ({ ...others }) => {
             )}
 
             <Box sx={{ mt: 2 }}>
-              <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+              <Button
+                disableElevation
+                disabled={isSubmitting}
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+                color="secondary"
+              >
                 Sign in
               </Button>
             </Box>

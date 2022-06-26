@@ -17,7 +17,10 @@ function App() {
   useEffect(() => {
     async function handleUpdateKeypair() {
       const walletKeyPair = await getSolanaWorkspace().userKeypair;
-      dispatch({ type: WalletActionType.SET_WALLET, data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() } });
+      dispatch({
+        type: WalletActionType.SET_WALLET,
+        data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }
+      });
     }
 
     handleUpdateKeypair();

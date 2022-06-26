@@ -52,16 +52,34 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
               sx={{ width: { xs: 48, md: 64 }, height: { xs: 48, md: 64 } }}
             />
           ) : (
-            <Skeleton variant="circular" animation="wave" sx={{ width: { xs: 48, md: 64 }, height: { xs: 48, md: 64 } }} />
+            <Skeleton
+              variant="circular"
+              animation="wave"
+              sx={{ width: { xs: 48, md: 64 }, height: { xs: 48, md: 64 } }}
+            />
           )}
         </Box>
-        <Box sx={{ flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden" }}>
+        <Box
+          sx={{
+            flex: "1",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            overflow: "hidden"
+          }}
+        >
           {dataLoaded && !loading ? (
             <Typography component="div" variant="h4" noWrap>
               {fiatPrice}
             </Typography>
           ) : (
-            <Skeleton variant="text" animation="wave" height={32} width="40%" sx={{ alignSelf: "center" }} />
+            <Skeleton
+              variant="text"
+              animation="wave"
+              height={32}
+              width="40%"
+              sx={{ alignSelf: "center" }}
+            />
           )}
 
           {dataLoaded ? (
@@ -69,7 +87,13 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
               {balance} SOL
             </Typography>
           ) : (
-            <Skeleton variant="text" animation="wave" height={32} width="60%" sx={{ alignSelf: "center" }} />
+            <Skeleton
+              variant="text"
+              animation="wave"
+              height={32}
+              width="60%"
+              sx={{ alignSelf: "center" }}
+            />
           )}
         </Box>
       </CardContent>
