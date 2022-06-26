@@ -27,11 +27,10 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, iconUrl = "", l
 
   function renderAvatar() {
     if (iconUrl) {
-      console.log("ICONURL:", iconUrl);
-      return <Avatar src={iconUrl} sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }} />;
+      return <Avatar src={iconUrl} sx={{ width: { xs: 40, md: 64 }, height: { xs: 40, md: 64 } }} />;
     } else {
       return (
-        <Avatar sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}>
+        <Avatar sx={{ width: { xs: 40, md: 64 }, height: { xs: 40, md: 64 } }}>
           <LandscapeIcon />
         </Avatar>
       );
@@ -40,8 +39,8 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, iconUrl = "", l
 
   return (
     <Card>
-      <CardContent sx={{ display: "flex", padding: { xs: "4px", md: "16px" } }}>
-        <Box sx={{ width: "16%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <CardContent sx={{ display: "flex", padding: { xs: "8px !important", md: "16px !important" } }}>
+        <Box sx={{ width: "24%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           {dataLoaded ? (
             renderAvatar()
           ) : (

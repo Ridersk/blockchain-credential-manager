@@ -5,8 +5,9 @@ import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
 
 const requestAirdrop = async (program: Program<BlockchainCredentialManager>, author: Keypair) => {
   // Request airdrop of 1 SOL
-  await program.provider.connection.confirmTransaction(await program.provider.connection.requestAirdrop(author.publicKey, 1000000000));
-  console.log("Airdrop Provided!!!");
+  const connection = program.provider.connection;
+  const airdropSignature = await connection.requestAirdrop(author.publicKey, 1000000000);
+  await connection.confirmTransaction(airdropSignature);
 };
 
 export default requestAirdrop;

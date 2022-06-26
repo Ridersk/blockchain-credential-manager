@@ -9,11 +9,12 @@ interface DeleteCredentialProps {
 }
 
 export const deleteCredential = async ({ credentialPubKey }: DeleteCredentialProps) => {
-  await program.rpc.deleteCredential({
-    accounts: {
+  await program.methods
+    .deleteCredential()
+    .accounts({
       credentialAccount: credentialPubKey,
       owner: userKeypair.publicKey
-    },
-    signers: [userKeypair]
-  });
+    })
+    .signers([userKeypair])
+    .rpc();
 };

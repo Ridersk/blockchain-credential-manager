@@ -22,23 +22,23 @@ export const createCredential = async ({ title, url, iconUrl = "", label, secret
   const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
   const credentialAccountKey = credentialPda.accountKey;
 
-  await program.rpc.createCredential(
-    credentialPda.uid,
-    title,
-    url,
-    iconUrl,
-    encryptData(userKeypair.secretKey, label),
-    encryptData(userKeypair.secretKey, secret),
-    description,
-    {
-      accounts: {
-        credentialAccount: credentialAccountKey,
-        owner: userKeypair.publicKey,
-        systemProgram: programId
-      },
-      signers: [userKeypair]
-    }
-  );
+  await program.methods
+    .createCredential(
+      credentialPda.uid,
+      title,
+      url,
+      iconUrl,
+      encryptData(userKeypair.secretKey, label),
+      encryptData(userKeypair.secretKey, secret),
+      description
+    )
+    .accounts({
+      credentialAccount: credentialAccountKey,
+      owner: userKeypair.publicKey,
+      systemProgram: programId
+    })
+    .signers([userKeypair])
+    .rpc();
 
   // Fetch credential created account
   let credentialAccount = await program.account.credentialAccount.fetch(credentialAccountKey);
@@ -62,10 +62,6 @@ const getPdaParams = async (namespace: string, author: anchor.web3.Keypair): Pro
     [Buffer.from(namespace), author.publicKey.toBuffer(), Buffer.from(uidBuffer)],
     program.programId
   );
-
-  console.log("USER Key Pair:", author);
-  console.log("UID:", uid.toArray("be", 8));
-  console.log("ACCOUNT KEY:", accountKey);
 
   return { uid, accountKey, bump };
 };

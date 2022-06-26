@@ -2,24 +2,25 @@ import { Avatar, Box, Card, CardContent, Skeleton, styled, Typography } from "@m
 import { SxProps } from "@mui/system";
 import { useEffect, useState } from "react";
 import getPrice from "services/asset-price-api/binance-api";
+import { useTypedSelector } from "hooks/useTypedSelector";
 
 interface WalletBalanceCardProps {
   dataLoaded?: boolean;
-  balance: number;
   sx?: SxProps;
 }
 
 const WalletBalanceCard = (props: WalletBalanceCardProps) => {
-  const { dataLoaded = true, balance, ...otherProps } = props;
+  const { dataLoaded = true, ...otherProps } = props;
+  const balance = useTypedSelector((state) => state.wallet.balance);
   const [loading, setLoading] = useState(false);
-  const [pairPrice, setPairPrice] = useState("0");
+  const [fiatPrice, setFiatPrice] = useState("");
 
   useEffect(() => {
     async function handleGetCurrentPrice() {
       try {
         setLoading(true);
         const priceDetails = await getPrice({ target: "brl", balance });
-        setPairPrice(priceDetails.formattedPrice);
+        setFiatPrice(priceDetails.formattedPrice);
         setLoading(false);
       } catch (err) {}
     }
@@ -55,9 +56,9 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
           )}
         </Box>
         <Box sx={{ flex: "1", display: "flex", flexDirection: "column", justifyContent: "center", overflow: "hidden" }}>
-          {dataLoaded ? (
+          {dataLoaded && !loading ? (
             <Typography component="div" variant="h4" noWrap>
-              {pairPrice}
+              {fiatPrice}
             </Typography>
           ) : (
             <Skeleton variant="text" animation="wave" height={32} width="40%" sx={{ alignSelf: "center" }} />

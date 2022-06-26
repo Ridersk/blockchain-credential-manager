@@ -91,8 +91,6 @@ const CredentialCreation = () => {
           setFaviconUrl(tab.favIconUrl || "");
           setInitialLabel(response.data.label);
           setInitialPassword(response.data.password);
-          console.log("CURRENT URL:", response.data.url);
-          console.log("FAVICON:", response.data.faviconUrl);
         });
       }
     }
@@ -209,7 +207,7 @@ const CredentialCreation = () => {
         >
           {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
             <form noValidate onSubmit={handleSubmit}>
-              <FormControl fullWidth error={Boolean(touched.credentialLabel && errors.credentialLabel)}>
+              <FormControl fullWidth error={Boolean(touched.title && errors.title)}>
                 <InputLabel htmlFor="credential-title">{t("credential_form_title")}</InputLabel>
                 <OutlinedInput
                   id="credential-title"
@@ -230,7 +228,7 @@ const CredentialCreation = () => {
 
               <FormControl
                 fullWidth
-                error={Boolean(touched.credentialLabel && errors.credentialLabel)}
+                error={Boolean(touched.currentPageUrl && errors.currentPageUrl)}
                 sx={{
                   marginTop: 2
                 }}
@@ -336,7 +334,7 @@ const CredentialCreation = () => {
 
               <FormControl
                 fullWidth
-                error={Boolean(touched.credentialLabel && errors.credentialLabel)}
+                error={Boolean(touched.description && errors.description)}
                 sx={{
                   marginTop: 2
                 }}
