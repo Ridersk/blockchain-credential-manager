@@ -2,6 +2,7 @@ import SuccessIcon from "@mui/icons-material/Done";
 import ReceivedIcon from "@mui/icons-material/CallReceivedRounded";
 import ErrorIcon from "@mui/icons-material/ErrorOutlineRounded";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const ActivityCard = ({ title, txSignature, fromAddress, toAddress, status = "success" }: Props) => {
+  const { t } = useTranslation();
   const renderIcon = () => {
     switch (status) {
       case "success":
@@ -41,13 +43,13 @@ const ActivityCard = ({ title, txSignature, fromAddress, toAddress, status = "su
 
           {fromAddress && (
             <Typography component="div" variant="subtitle2" noWrap>
-              De: {fromAddress}
+              {t("transaction_from")}: {fromAddress}
             </Typography>
           )}
 
           {toAddress && (
             <Typography component="div" variant="subtitle2" noWrap>
-              Para: {toAddress}
+              {t("transaction_to")}: {toAddress}
             </Typography>
           )}
         </Box>
