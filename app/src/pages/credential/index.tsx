@@ -1,19 +1,4 @@
-import {
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  ContentCopy as ContentCopyIcon
-} from "@mui/icons-material";
-import {
-  Box,
-  Container,
-  FormControl,
-  FormHelperText,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Typography
-} from "@mui/material";
+import { Box, Container, FormHelperText, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
@@ -29,9 +14,10 @@ import createCredential from "services/credentials-program/createCredential";
 import editCredential from "services/credentials-program/editCredential";
 import deleteCredential from "services/credentials-program/deleteCredential";
 import getCredential from "services/credentials-program/getCredential";
-import { copyTextToClipboard } from "utils/clipboard";
 import CredentialDeletionWarningModal from "components/credential/credential-warning-delete";
 import { formatHomeUrl } from "utils/url";
+import { SecretInput } from "components/ui/form/inputs/secret-input";
+import { FormInput } from "components/ui/form/inputs/form-input";
 
 interface FormValues {
   title: string;
@@ -41,7 +27,7 @@ interface FormValues {
   description: string;
 }
 
-const CredentialCreation = () => {
+const CredentialPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, _] = useSearchParams();
@@ -53,7 +39,6 @@ const CredentialCreation = () => {
   const [initialPassword, setInitialPassword] = useState("");
   const [initialDescription, setInitialDescription] = useState("");
   const [faviconUrl, setFaviconUrl] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
@@ -112,7 +97,6 @@ const CredentialCreation = () => {
      */
 
     try {
-      let credentialAccount;
       setLoading(true);
       if (isUpdate && credentialPubKey && uid) {
         await editCredential({
@@ -178,14 +162,6 @@ const CredentialCreation = () => {
     setModalOpen(true);
   };
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleClickCopyInput = (value: string) => {
-    copyTextToClipboard(value);
-  };
-
   return (
     <div>
       <CredentialDeletionWarningModal
@@ -224,176 +200,73 @@ const CredentialCreation = () => {
         >
           {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
             <form noValidate onSubmit={handleSubmit}>
-              <FormControl fullWidth error={Boolean(touched.title && errors.title)}>
-                <InputLabel htmlFor="credential-title">{t("credential_form_title")}</InputLabel>
-                <OutlinedInput
-                  id="credential-title"
-                  type="text"
-                  value={values.title}
-                  name="title"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  label={t("credential_form_title")}
-                  inputProps={{ maxLength: 50 }}
-                />
-                {touched.title && errors.title && (
-                  <FormHelperText error id="credential-title-helper">
-                    {errors.title}
-                  </FormHelperText>
-                )}
-              </FormControl>
+              <FormInput
+                type="text"
+                id="credential-title"
+                fieldName="title"
+                label={t("credential_form_title")}
+                value={values.title}
+                error={Boolean(touched.title && errors.title)}
+                errorMessage={errors.title}
+                inputProps={{ maxLength: 50 }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
 
-              <FormControl
-                fullWidth
+              <FormInput
+                type="text"
+                id="credential-url"
+                fieldName="currentPageUrl"
+                label={t("credential_form_url")}
+                value={values.currentPageUrl}
                 error={Boolean(touched.currentPageUrl && errors.currentPageUrl)}
-                sx={{
-                  marginTop: 2
-                }}
-              >
-                <InputLabel htmlFor="credential-url">{t("credential_form_url")}</InputLabel>
-                <OutlinedInput
-                  id="credential-url"
-                  type="text"
-                  value={values.currentPageUrl}
-                  name="currentPageUrl"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{ maxLength: 100 }}
-                  label={t("credential_form_url")}
-                />
-                {touched.currentPageUrl && errors.currentPageUrl && (
-                  <FormHelperText error id="credential-url-helper">
-                    {errors.currentPageUrl}
-                  </FormHelperText>
-                )}
-              </FormControl>
+                errorMessage={errors.currentPageUrl}
+                inputProps={{ maxLength: 100 }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
 
-              <FormControl
-                fullWidth
+              <FormInput
+                type="text"
+                id="credential-label"
+                fieldName="credentialLabel"
+                label={t("credential_form_label")}
+                value={values.credentialLabel}
                 error={Boolean(touched.credentialLabel && errors.credentialLabel)}
-                sx={{
-                  marginTop: 2
-                }}
-              >
-                <InputLabel htmlFor="credential-label" variant="outlined">
-                  {t("credential_form_label")}
-                </InputLabel>
-                <OutlinedInput
-                  id="credential-label"
-                  type="text"
-                  value={values.credentialLabel}
-                  name="credentialLabel"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{ maxLength: 100 }}
-                  label={t("credential_form_label")}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="copy credential label value"
-                        onClick={() => {
-                          handleClickCopyInput(values.credentialLabel);
-                        }}
-                        edge="end"
-                      >
-                        <ContentCopyIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-                {touched.credentialLabel && errors.credentialLabel && (
-                  <FormHelperText error id="credential-label-helper">
-                    {errors.credentialLabel}
-                  </FormHelperText>
-                )}
-              </FormControl>
+                errorMessage={errors.credentialLabel}
+                valueCopy={true}
+                inputProps={{ maxLength: 100 }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
 
-              <FormControl
-                fullWidth
+              <SecretInput
+                id="credential-secret"
+                fieldName="credentialSecret"
+                label={t("credential_form_secret")}
+                value={values.credentialSecret}
                 error={Boolean(touched.credentialSecret && errors.credentialSecret)}
-                sx={{
-                  marginTop: 2
-                }}
-              >
-                <InputLabel htmlFor="credential-secret">{t("credential_form_secret")}</InputLabel>
-                <OutlinedInput
-                  id="credential-secret"
-                  type={showPassword ? "text" : "password"}
-                  value={values.credentialSecret}
-                  name="credentialSecret"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{ maxLength: 100 }}
-                  label={t("credential_form_secret")}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                      </IconButton>
-                      <IconButton
-                        aria-label="copy credential secret value"
-                        onClick={() => {
-                          handleClickCopyInput(values.credentialSecret);
-                        }}
-                        edge="end"
-                      >
-                        <ContentCopyIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-                {touched.credentialSecret && errors.credentialSecret && (
-                  <FormHelperText error id="credential-secret-helper">
-                    {errors.credentialSecret}
-                  </FormHelperText>
-                )}
-              </FormControl>
+                errorMessage={errors.credentialSecret}
+                inputProps={{ maxLength: 100 }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
 
-              <FormControl
-                fullWidth
+              <FormInput
+                type="text"
+                id="credential-notes"
+                fieldName="description"
+                label={t("credential_form_description")}
+                value={values.description}
                 error={Boolean(touched.description && errors.description)}
-                sx={{
-                  marginTop: 2
-                }}
-              >
-                <InputLabel htmlFor="credential-notes">
-                  {t("credential_form_description")}
-                </InputLabel>
-                <OutlinedInput
-                  id="credential-notes"
-                  type="text"
-                  value={values.description}
-                  name="description"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  label={t("credential_form_description")}
-                  multiline
-                  maxRows={2}
-                  inputProps={{ maxLength: 100 }}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="copy notes value"
-                        onClick={() => {
-                          handleClickCopyInput(values.description);
-                        }}
-                        edge="end"
-                      >
-                        <ContentCopyIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-                {touched.description && errors.description && (
-                  <FormHelperText error id="credential-notes-helper">
-                    {errors.description}
-                  </FormHelperText>
-                )}
-              </FormControl>
+                errorMessage={errors.description}
+                valueCopy={true}
+                multiline
+                maxRows={2}
+                inputProps={{ maxLength: 100 }}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
 
               {isUpdate && credentialPubKey && (
                 <Typography variant="body2" component="div" color="gray">
@@ -453,4 +326,4 @@ const CredentialCreation = () => {
   );
 };
 
-export default CredentialCreation;
+export default CredentialPage;

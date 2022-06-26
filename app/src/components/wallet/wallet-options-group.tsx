@@ -33,7 +33,7 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
       dispatch({ type: WalletActionType.SET_WALLET, data: { balance: walletDetails.balance } });
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {
-      sendNotification({ message: t("operation_deposit_error"), variant: "info" });
+      sendNotification({ message: t("operation_deposit_error"), variant: "error" });
     }
   };
 
