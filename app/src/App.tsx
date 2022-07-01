@@ -9,18 +9,29 @@ import getSolanaWorkspace from "services/solana/solanaWeb3";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { WalletActionType } from "store/actionTypes";
+import { useNavigate } from "react-router";
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const customization = useTypedSelector((state) => state.customization);
+
+  const goToRegisterPage = () => {
+    navigate({ pathname: "/register" });
+  };
 
   useEffect(() => {
     async function handleUpdateKeypair() {
-      const walletKeyPair = await getSolanaWorkspace().userKeypair;
-      dispatch({
-        type: WalletActionType.SET_WALLET,
-        data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }
-      });
+      const walletKeyPair = getSolanaWorkspace().userKeypair;
+
+      if (walletKeyPair) {
+        dispatch({
+          type: WalletActionType.SET_WALLET,
+          data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }
+        });
+      } else {
+        goToRegisterPage();
+      }
     }
 
     handleUpdateKeypair();

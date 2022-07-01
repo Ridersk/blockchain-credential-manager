@@ -3,10 +3,10 @@ import { lazy } from "react";
 // project imports
 import Loadable from "components/ui/loader/loadable";
 import MinimalLayout from "layouts/MinimalLayout";
+import WalletRegister from "pages/wallet-register";
 
 // login routing
 const AuthLogin = Loadable(lazy(() => import("pages/authentication")));
-// const AuthRegister = Loadable(lazy(() => import("pages/authentication/Register")));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
@@ -21,8 +21,7 @@ const AuthenticationRoutes = {
     },
     {
       path: "/register",
-      //   element: <AuthRegister />
-      element: <div>Register Page</div>
+      element: <WalletRegister />
     }
   ]
 };
