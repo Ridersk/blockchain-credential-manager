@@ -14,8 +14,8 @@ import React from "react";
 export interface Props extends OutlinedInputProps {
   type?: string;
   id: string;
-  fieldName: string;
-  label: string;
+  name?: string;
+  label?: string;
   value?: string;
   error?: boolean;
   errorMessage?: string;
@@ -28,7 +28,7 @@ export interface Props extends OutlinedInputProps {
 export const FormInput = ({
   type = "text",
   id,
-  fieldName,
+  name,
   label,
   value,
   error = false,
@@ -74,7 +74,7 @@ export const FormInput = ({
         id={id}
         type={type}
         value={value}
-        name={fieldName}
+        name={name}
         onBlur={onBlur}
         onChange={onChange}
         label={label}

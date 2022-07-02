@@ -203,7 +203,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-title"
-                fieldName="title"
+                name="title"
                 label={t("credential_form_title")}
                 value={values.title}
                 error={Boolean(touched.title && errors.title)}
@@ -216,7 +216,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-url"
-                fieldName="currentPageUrl"
+                name="currentPageUrl"
                 label={t("credential_form_url")}
                 value={values.currentPageUrl}
                 error={Boolean(touched.currentPageUrl && errors.currentPageUrl)}
@@ -229,7 +229,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-label"
-                fieldName="credentialLabel"
+                name="credentialLabel"
                 label={t("credential_form_label")}
                 value={values.credentialLabel}
                 error={Boolean(touched.credentialLabel && errors.credentialLabel)}
@@ -242,7 +242,7 @@ const CredentialPage = () => {
 
               <SecretInput
                 id="credential-secret"
-                fieldName="credentialSecret"
+                name="credentialSecret"
                 label={t("credential_form_secret")}
                 value={values.credentialSecret}
                 error={Boolean(touched.credentialSecret && errors.credentialSecret)}
@@ -255,7 +255,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-notes"
-                fieldName="description"
+                name="description"
                 label={t("credential_form_description")}
                 value={values.description}
                 error={Boolean(touched.description && errors.description)}

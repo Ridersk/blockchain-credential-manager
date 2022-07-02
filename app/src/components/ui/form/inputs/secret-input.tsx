@@ -10,7 +10,7 @@ interface Props extends TextInputProps {}
 
 export const SecretInput = ({
   id,
-  fieldName,
+  name,
   label,
   value,
   error = false,
@@ -28,7 +28,7 @@ export const SecretInput = ({
     <FormInput
       type={showPassword ? "text" : "password"}
       id={id}
-      fieldName={fieldName}
+      name={name}
       label={label}
       value={value}
       error={error}

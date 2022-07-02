@@ -8,8 +8,8 @@ import { useTypedSelector } from "hooks/useTypedSelector";
 import getSolanaWorkspace from "services/solana/solanaWeb3";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { WalletActionType } from "store/actionTypes";
 import { useNavigate } from "react-router";
+import { setWallet } from "store/actionCreators";
 
 function App() {
   const dispatch = useDispatch();
@@ -25,10 +25,7 @@ function App() {
       const walletKeyPair = getSolanaWorkspace().userKeypair;
 
       if (walletKeyPair) {
-        dispatch({
-          type: WalletActionType.SET_WALLET,
-          data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }
-        });
+        dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }));
       } else {
         goToRegisterPage();
       }

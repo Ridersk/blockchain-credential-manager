@@ -4,11 +4,13 @@ export interface WalletState {
   id: string;
   address: string;
   balance: number;
+  mnemonic: string;
 }
 
 export const initialState = {
   id: "Wallet 1",
   address: "1111111111111",
+  mnemonic: "",
   balance: 0
 };
 
