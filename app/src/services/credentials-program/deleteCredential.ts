@@ -8,7 +8,7 @@ interface DeleteCredentialProps {
   credentialPubKey: anchor.web3.PublicKey;
 }
 
-export const deleteCredential = async ({ credentialPubKey }: DeleteCredentialProps) => {
+export default async function deleteCredential({ credentialPubKey }: DeleteCredentialProps) {
   await program.methods
     .deleteCredential()
     .accounts({
@@ -17,4 +17,4 @@ export const deleteCredential = async ({ credentialPubKey }: DeleteCredentialPro
     })
     .signers([userKeypair])
     .rpc();
-};
+}

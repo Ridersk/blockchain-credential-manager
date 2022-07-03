@@ -7,6 +7,7 @@ export interface WalletData {
   id?: string;
   address?: string;
   balance?: number;
+  mnemonic?: string;
 }
 
 interface setWallet {

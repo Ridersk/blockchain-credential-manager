@@ -1,8 +1,8 @@
 import { List, ListItem } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getCredentials } from "services/credentials-program/getCredentials";
 import CredentialCard from "./credential-card";
 import { Credential } from "models/Credential";
+import getCredentials from "services/credentials-program/getCredentials";
 
 const CREDENTIALS = [
   { url: "github.com", label: "metavault@gmail.com", secret: "teste" },

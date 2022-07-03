@@ -15,7 +15,7 @@ url = "https://anchor.projectserum.com"
 
 [provider]
 cluster = "localnet"
-wallet = "/home/lucas/.config/solana/id.json"
+wallet = "~/.config/solana/id.json"
 
 [workspace]
 types = "../app/src/idl"

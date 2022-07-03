@@ -1,4 +1,4 @@
-export function copyTextToClipboard(text) {
+export function copyTextToClipboard(text: string) {
   if (!navigator.clipboard) {
     fallbackCopyTextToClipboard(text);
     return;
@@ -13,7 +13,7 @@ export function copyTextToClipboard(text) {
   );
 }
 
-function fallbackCopyTextToClipboard(text) {
+function fallbackCopyTextToClipboard(text: string) {
   var textArea = document.createElement("textarea");
   textArea.value = text;
 

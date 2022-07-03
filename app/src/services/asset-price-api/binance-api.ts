@@ -33,11 +33,11 @@ interface GetPriceResponse {
   formattedPrice: string;
 }
 
-const getPrice = async ({
+export default async function getPrice({
   base = "sol",
   target,
   balance
-}: GetPriceProps): Promise<GetPriceResponse> => {
+}: GetPriceProps): Promise<GetPriceResponse> {
   const baseId = Assets[base].id;
   const targetObject = Assets[target];
   const targetId = targetObject.id;
@@ -55,7 +55,7 @@ const getPrice = async ({
     price: balanceConverted,
     formattedPrice: formatPriceSymbol(balanceConverted, targetObject.symbol, targetObject.locale)
   };
-};
+}
 
 function formatPriceSymbol(balance: number, symbol: string, locale: string) {
   if (balance != 0) {
@@ -73,5 +73,3 @@ function formatPriceSymbol(balance: number, symbol: string, locale: string) {
     maximumFractionDigits: 2
   })}`;
 }
-
-export default getPrice;

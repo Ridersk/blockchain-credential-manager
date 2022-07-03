@@ -1,6 +1,6 @@
 // project imports
 import MainLayout from "layouts/MainLayout";
-import CredentialCreation from "pages/credential-form";
+import CredentialPage from "pages/credential";
 import Home from "pages/home";
 
 // ==============================|| ROUTING ||============================== //
@@ -15,7 +15,7 @@ const MainRoutes = {
     },
     {
       path: "/credential",
-      element: <CredentialCreation />
+      element: <CredentialPage />
     }
   ]
 };

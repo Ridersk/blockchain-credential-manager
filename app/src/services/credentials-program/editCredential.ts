@@ -17,7 +17,7 @@ interface EditCredentialParameters {
   description: string;
 }
 
-export const editCredential = async ({
+export default async function editCredential({
   credentialPubKey,
   uid,
   iconUrl = "",
@@ -26,7 +26,7 @@ export const editCredential = async ({
   label,
   secret,
   description
-}: EditCredentialParameters) => {
+}: EditCredentialParameters) {
   await program.methods
     .editCredential(
       new anchor.BN(uid),
@@ -48,4 +48,4 @@ export const editCredential = async ({
   let credentialAccount = await program.account.credentialAccount.fetch(credentialPubKey);
 
   return new Credential(credentialPubKey, credentialAccount);
-};
+}

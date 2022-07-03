@@ -8,7 +8,7 @@ import getSolanaWorkspace from "services/solana/solanaWeb3";
 import requestAirdrop from "services/solana/requestAirdrop";
 import { getWalletDetails } from "services/solana/getWalletDetails";
 import useNotification from "hooks/useNotification";
-import { WalletActionType } from "store/actionTypes";
+import { setWallet } from "store/actionCreators";
 
 const { program, userKeypair } = getSolanaWorkspace();
 
@@ -30,10 +30,10 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
     try {
       await requestAirdrop(program, userKeypair);
       const walletDetails = await getWalletDetails();
-      dispatch({ type: WalletActionType.SET_WALLET, data: { balance: walletDetails.balance } });
+      dispatch(setWallet({ balance: walletDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {
-      sendNotification({ message: t("operation_deposit_error"), variant: "info" });
+      sendNotification({ message: t("operation_deposit_error"), variant: "error" });
     }
   };
 

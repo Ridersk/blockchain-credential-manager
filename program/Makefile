@@ -9,6 +9,9 @@ install-dependencies:
 	sh -c "$$(curl -sSfL https://release.solana.com/stable/install)" && . ~/.profile &&\
 	cargo install --git https://github.com/project-serum/anchor anchor-cli --locked
 
+set-solana-env:
+	export PATH="$PATH:$HOME/.local/share/solana/install/active_release/bin/"
+
 ###### Switch Networks
 ### 1.1
 switch-localhost:

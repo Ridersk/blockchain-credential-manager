@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    container_name: blockchain-credential-program
+    ports:
+      - 8899:8899
+    volumes:
+      - .:/program
