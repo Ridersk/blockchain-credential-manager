@@ -10,24 +10,36 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
+import { walletLogged } from "utils/wallet-manager";
 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const customization = useTypedSelector((state) => state.customization);
 
-  const goToRegisterPage = () => {
-    navigate({ pathname: "/register" });
+  const goToWelcomePage = () => {
+    navigate({ pathname: "/welcome" });
+  };
+
+  const goToLoginPage = () => {
+    navigate({ pathname: "/login" });
   };
 
   useEffect(() => {
     async function handleUpdateKeypair() {
       const walletKeyPair = getSolanaWorkspace().userKeypair;
 
+      // Check if user is registered
       if (walletKeyPair) {
         dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }));
       } else {
-        goToRegisterPage();
+        goToWelcomePage();
+        return;
+      }
+
+      // Check if user is logged
+      if (!walletLogged()) {
+        goToLoginPage();
       }
     }
 

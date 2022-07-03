@@ -74,7 +74,7 @@ function Header(props: HeaderProps) {
                   variant="h6"
                   component="span"
                   align="center"
-                  margin={{ sm: "2px", md: "4px" }}
+                  margin={{ xs: "2px", md: "4px" }}
                 >
                   {wallet.id}
                 </Typography>
@@ -83,7 +83,7 @@ function Header(props: HeaderProps) {
                   component="span"
                   color="gray"
                   align="center"
-                  margin={{ sm: "2px", md: "4px" }}
+                  margin={{ xs: "2px", md: "4px" }}
                 >
                   ({formatWalletAddress(wallet.address)})
                 </Typography>
