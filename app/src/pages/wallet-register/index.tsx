@@ -8,17 +8,18 @@ import WalletShowMnemonic from "components/wallet-creation/show-mnemonic";
 import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
-import { registerNewWallet } from "utils/wallet-generator";
+import { performLogin, registerNewWallet } from "utils/wallet-manager";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
 import { useDispatch } from "react-redux";
+import useNotification from "hooks/useNotification";
 
 const WALLET_MODEL = {
   formId: "walletForm",
   formField: {
     password: {
       name: "password",
-      label: "wallet_password",
+      label: "wallet_new_password",
       requiredErrorMessage: "wallet_password_required",
       minSizeErrorMessage: "wallet_password_min_size"
     },
@@ -86,6 +87,7 @@ const VALIDATION_SCHEMA = [
 const WalletRegister = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const sendNotification = useNotification();
   const [activeStep, setActiveStep] = useState<number>(0);
   const currentValidationSchema = VALIDATION_SCHEMA[activeStep];
   const steps = [
@@ -104,20 +106,32 @@ const WalletRegister = () => {
   };
 
   async function submitForm(values: WalletFormParams, actions: FormikHelpers<WalletFormParams>) {
-    const walletKeyPair = await registerNewWallet(
-      values.mnemonic as string,
-      values.password as string
-    );
-    actions.setSubmitting(false);
-    dispatch(setWallet({ id: "Wallet", address: walletKeyPair.publicKey.toBase58() }));
-    navigate({ pathname: "/" });
+    try {
+      const walletKeyPair = await registerNewWallet(
+        values.mnemonic as string,
+        values.password as string
+      );
+      actions.setSubmitting(false);
+      dispatch(setWallet({ id: "Wallet", address: walletKeyPair.publicKey.toBase58() }));
+      if (await performLogin(values.password as string)) {
+        sendNotification({
+          message: t("wallet_register_successfully"),
+          variant: "success"
+        });
+        navigate({ pathname: "/" });
+      }
+    } catch (err) {
+      sendNotification({
+        message: t("unexpected_error"),
+        variant: "error"
+      });
+    }
   }
 
   const handleSubmit = async (
     values: WalletFormParams,
     actions: FormikHelpers<WalletFormParams>
   ) => {
-    console.log("SUBMIT");
     if (isLastStep) {
       submitForm(values, actions);
     } else {
