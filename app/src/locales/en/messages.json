@@ -2,9 +2,12 @@
   "btn_add_credential": "Add",
   "btn_deposit": "Deposit",
   "btn_generate_credential": "Generate",
+  "btn_import_vault": "Import vault",
+  "btn_login_unlock": "Unlock",
   "btn_multistep_back": "Back",
   "btn_multistep_next": "Next",
   "btn_multistep_confirm": "Confirm",
+  "btn_new_vault": "Create vault",
   "copy_wallet_address": "Copy wallet address!",
   "create_credential": "Create credential",
   "credential_form_title": "Title",
@@ -62,5 +65,6 @@
   "warning_default_cancel": "Cancel",
   "warning_default_accept": "Accept",
   "welcome_back": "Welcome back!",
+  "welcome_new_user": "New to MetaVault?",
   "unexpected_error": "Unexpected error"
 }

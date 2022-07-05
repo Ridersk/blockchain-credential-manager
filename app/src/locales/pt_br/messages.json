@@ -2,9 +2,12 @@
   "btn_add_credential": "Adicionar",
   "btn_deposit": "Depositar",
   "btn_generate_credential": "Gerar",
+  "btn_import_vault": "Importar cofre",
+  "btn_login_unlock": "Desbloquear",
   "btn_multistep_back": "Voltar",
   "btn_multistep_next": "Próximo",
   "btn_multistep_confirm": "Confirmar",
+  "btn_new_vault": "Criar cofre",
   "copy_wallet_address": "Copiar endereço da carteira!",
   "create_credential": "Criar credencial",
   "credential_form_title": "Título",
@@ -62,5 +65,6 @@
   "warning_default_cancel": "Cancelar",
   "warning_default_accept": "Aceitar",
   "welcome_back": "Bem vindo novamente!",
+  "welcome_new_user": "Novo no MetaVault?",
   "unexpected_error": "Erro inesperado"
 }

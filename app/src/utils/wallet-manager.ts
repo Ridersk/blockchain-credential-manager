@@ -29,7 +29,10 @@ export async function performLogin(password: string) {
   const hashedSavedPassword = getCookie("walletPassword");
   const loginSuccess = hashPassword(password) == hashedSavedPassword;
 
-  updateSessionExpiration();
+  if (loginSuccess) {
+    updateSessionExpiration();
+  }
+
   return loginSuccess;
 }
 
