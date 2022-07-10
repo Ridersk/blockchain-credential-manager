@@ -1,7 +1,5 @@
-import getSolanaWorkspace from "../solana/solanaWeb3";
+import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
 import { Credential } from "models/Credential";
-
-const { program, userKeypair } = getSolanaWorkspace();
 
 interface FilterMemcmp {
   offset: number;
@@ -15,6 +13,7 @@ interface FilterOption {
 export default async function getCredentials(
   filters: Array<FilterOption> = []
 ): Promise<Array<Credential>> {
+  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
   filters.push(ownerFilter(userKeypair.publicKey.toBase58()));
   const credentials = await program.account.credentialAccount.all(filters);
 

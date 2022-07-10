@@ -1,14 +1,13 @@
 import * as anchor from "@project-serum/anchor";
 
-import getSolanaWorkspace from "../solana/solanaWeb3";
-
-const { program, userKeypair } = getSolanaWorkspace();
+import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
 
 interface DeleteCredentialProps {
   credentialPubKey: anchor.web3.PublicKey;
 }
 
 export default async function deleteCredential({ credentialPubKey }: DeleteCredentialProps) {
+  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
   await program.methods
     .deleteCredential()
     .accounts({

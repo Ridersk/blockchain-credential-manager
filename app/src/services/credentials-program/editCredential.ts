@@ -2,9 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
-import getSolanaWorkspace from "../solana/solanaWeb3";
-
-const { program, userKeypair } = getSolanaWorkspace();
+import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
 
 interface EditCredentialParameters {
   credentialPubKey: anchor.web3.PublicKey;
@@ -27,6 +25,7 @@ export default async function editCredential({
   secret,
   description
 }: EditCredentialParameters) {
+  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
   await program.methods
     .editCredential(
       new anchor.BN(uid),

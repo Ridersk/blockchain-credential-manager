@@ -5,7 +5,7 @@ import { theme } from "themes";
 import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
 import { useTypedSelector } from "hooks/useTypedSelector";
-import getSolanaWorkspace from "services/solana/solanaWeb3";
+import workspace, { initWorkspace } from "services/solana/solanaWeb3";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
@@ -27,7 +27,8 @@ function App() {
 
   useEffect(() => {
     async function handleUpdateKeypair() {
-      const walletKeyPair = getSolanaWorkspace().userKeypair;
+      await initWorkspace();
+      const walletKeyPair = workspace()?.userKeypair;
 
       // Check if user is registered
       if (walletKeyPair) {
@@ -38,7 +39,7 @@ function App() {
       }
 
       // Check if user is logged
-      if (!walletLogged()) {
+      if (!(await walletLogged())) {
         goToLoginPage();
       }
     }

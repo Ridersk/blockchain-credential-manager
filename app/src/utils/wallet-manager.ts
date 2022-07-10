@@ -1,9 +1,9 @@
 import { generateMnemonic, mnemonicToSeed } from "bip39";
 import { web3 } from "@project-serum/anchor";
-import { deleteCookie, getCookie, setCookie } from "utils/cookie";
 import bs58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { SHA256 } from "crypto-js";
+import extensionStorage from "./storage";
 
 export function generateWalletMnemonic(): string {
   return generateMnemonic();
@@ -11,7 +11,7 @@ export function generateWalletMnemonic(): string {
 
 export async function registerNewWallet(mnemonic: string, password: string): Promise<Keypair> {
   const walletKeyPair = await generateWalletKeypair(mnemonic);
-  saveWalletData(bs58.encode(walletKeyPair.secretKey), hashPassword(password));
+  await saveWalletData(bs58.encode(walletKeyPair.secretKey), hashPassword(password));
   return walletKeyPair;
 }
 
@@ -20,40 +20,40 @@ export async function generateWalletKeypair(mnemonic: string): Promise<Keypair> 
   return web3.Keypair.fromSeed(new Uint8Array(seed.toJSON().data.slice(0, 32)));
 }
 
-export function saveWalletData(walletSecretKey: string, password: string) {
-  setCookie("userSecret", walletSecretKey);
-  setCookie("walletPassword", password);
+export async function saveWalletData(walletSecretKey: string, password: string) {
+  await extensionStorage.setData("userSecret", walletSecretKey);
+  await extensionStorage.setData("walletPassword", password);
 }
 
 export async function performLogin(password: string) {
-  const hashedSavedPassword = getCookie("walletPassword");
+  const hashedSavedPassword = await extensionStorage.getData("walletPassword");
   const loginSuccess = hashPassword(password) == hashedSavedPassword;
 
   if (loginSuccess) {
-    updateSessionExpiration();
+    await updateSessionExpiration();
   }
 
   return loginSuccess;
 }
 
-export function walletLogged() {
-  const sessionExpiration = Number(getCookie("sessionExpiration"));
+export async function walletLogged() {
+  const sessionExpiration = Number(await extensionStorage.getData("sessionExpiration"));
 
   if (!sessionExpiration || sessionExpiration < Date.now()) {
-    clearWalletSession();
+    await clearWalletSession();
     return false;
   }
 
-  updateSessionExpiration();
+  await updateSessionExpiration();
   return true;
 }
 
-export function updateSessionExpiration() {
-  setCookie("sessionExpiration", String(calculateSessionExpiration()));
+async function updateSessionExpiration() {
+  await extensionStorage.setData("sessionExpiration", String(calculateSessionExpiration()));
 }
 
-function clearWalletSession() {
-  deleteCookie("sessionExpiration");
+async function clearWalletSession() {
+  await extensionStorage.deleteData("sessionExpiration");
 }
 
 function calculateSessionExpiration(): number {

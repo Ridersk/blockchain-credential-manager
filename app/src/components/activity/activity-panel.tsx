@@ -22,8 +22,7 @@ export const ActivityPanel = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const transactions = await getActivities();
-      setTransactions(transactions);
+      setTransactions(await getActivities());
       setLoading(false);
     })();
   }, []);

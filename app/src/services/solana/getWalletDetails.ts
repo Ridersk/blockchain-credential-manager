@@ -1,7 +1,5 @@
-import getSolanaWorkspace from "../solana/solanaWeb3";
+import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-
-const { connection, userKeypair } = getSolanaWorkspace();
 
 interface WalletDetails {
   address: string;
@@ -9,6 +7,7 @@ interface WalletDetails {
 }
 
 export const getWalletDetails = async (): Promise<WalletDetails> => {
+  const { connection, userKeypair } = workspace() as SolanaWeb3Workspace;
   const walletPublicKey = userKeypair.publicKey;
   const walletInfo = await connection.getAccountInfo(walletPublicKey);
   const walletAdress = walletPublicKey.toBase58();

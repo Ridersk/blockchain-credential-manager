@@ -1,8 +1,6 @@
 import * as anchor from "@project-serum/anchor";
-import getSolanaWorkspace from "services/solana/solanaWeb3";
+import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
 import { decryptData } from "utils/aes-encryption";
-
-const { userKeypair } = getSolanaWorkspace();
 
 interface CredentialParameters {
   uid: anchor.BN;
@@ -43,10 +41,12 @@ export class Credential {
   }
 
   get label() {
+    const { userKeypair } = workspace() as SolanaWeb3Workspace;
     return decryptData(userKeypair.secretKey, this._label);
   }
 
   get secret() {
+    const { userKeypair } = workspace() as SolanaWeb3Workspace;
     return decryptData(userKeypair.secretKey, this._secret);
   }
 }

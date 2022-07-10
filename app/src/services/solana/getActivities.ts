@@ -5,9 +5,7 @@ import {
   LAMPORTS_PER_SOL
 } from "@solana/web3.js";
 import base58 from "bs58";
-import getSolanaWorkspace from "../solana/solanaWeb3";
-
-const { connection, userKeypair, program } = getSolanaWorkspace();
+import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
 
 enum InstructionTypeCode {
   "cd4a3cd43fc6c46d" = "CREATE_CREDENTIAL",
@@ -32,6 +30,7 @@ export type Activity = {
 };
 
 const getActivities = async (): Promise<Activity[]> => {
+  const { connection, userKeypair, program } = workspace() as SolanaWeb3Workspace;
   const signatures = await connection.getSignaturesForAddress(userKeypair.publicKey);
   const transactions = await program.provider.connection.getParsedTransactions(
     signatures.map((signature) => signature.signature)
