@@ -10,17 +10,25 @@ export class ExtensionLocalStorage extends BaseStorage {
     await chrome.storage.local.set({ [name]: val });
   }
 
-  async getData(name: string): Promise<string | object | null | undefined> {
-    // let data = null;
-    // chrome.storage.local.get(name, function (response) {
-    //   data = response[name];
-    // });
+  async getData(name: string, tryConvert?: boolean): Promise<string | object | null | undefined> {
+    const data = (await chrome.storage.local.get(name))[name];
 
-    const response = await chrome.storage.local.get(name);
-    return response[name];
+    try {
+      if (!tryConvert) throw Error();
+      return JSON.parse(data);
+    } catch (err) {
+      return data;
+    }
   }
 
   async deleteData(name: string): Promise<void> {
     await chrome.storage.local.remove(name);
+  }
+
+  async getAllData(): Promise<string | object | null | undefined> {
+    // chrome.storage.local.get(null, function (results) {
+    //   console.log(results);
+    // });
+    return chrome.storage.local.get(null);
   }
 }

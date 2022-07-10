@@ -17,7 +17,7 @@ export class CookieStorage extends BaseStorage {
     document.cookie = key + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
   }
 
-  async getData(key: string): Promise<string | object | null | undefined> {
+  async getData(key: string, tryConvert?: boolean): Promise<string | object | null | undefined> {
     const data = "; " + document.cookie;
     const parts = data.split("; " + key + "=");
 
@@ -25,6 +25,7 @@ export class CookieStorage extends BaseStorage {
       const cookieData = parts.pop()?.split(";").shift();
 
       try {
+        if (!tryConvert) throw Error();
         return JSON.parse(cookieData as string);
       } catch (err) {
         return cookieData;

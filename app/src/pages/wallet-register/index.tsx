@@ -119,8 +119,14 @@ const WalletRegister = () => {
           variant: "success"
         });
         navigate({ pathname: "/" });
+      } else {
+        sendNotification({
+          message: t("wallet_login_incorrect_password"),
+          variant: "error"
+        });
       }
     } catch (err) {
+      console.log(err);
       sendNotification({
         message: t("unexpected_error"),
         variant: "error"

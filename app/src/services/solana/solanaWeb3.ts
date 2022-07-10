@@ -6,6 +6,7 @@ import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
 import idl from "idl/blockchain_credential_manager.json";
 import bs58 from "bs58";
 import extensionStorage from "utils/storage";
+import { getUserKeypair } from "utils/wallet-manager";
 
 const clusterUrl = process.env.REACT_APP_CLUSTER_URL || "devnet";
 const preflightCommitment = "processed";
@@ -39,24 +40,6 @@ export class WalletCustom implements Wallet {
     return this.payer.publicKey;
   }
 }
-
-// ************************************************************************
-const getUserKeypair = async (): Promise<Keypair | null> => {
-  let userKeypair: Keypair | null = null;
-  const secretBs58Saved: string = (await extensionStorage.getData("userSecret")) as string;
-  if (secretBs58Saved) {
-    const secret = bs58.decode(secretBs58Saved);
-    userKeypair = Keypair.fromSecretKey(secret);
-  }
-
-  // else {
-  //   userKeypair = Keypair.generate();
-  //   setCookie("userSecret", bs58.encode(userKeypair.secretKey));
-  // }
-
-  return userKeypair;
-};
-// ************************************************************************
 
 let workspace: SolanaWeb3Workspace | null = null;
 
