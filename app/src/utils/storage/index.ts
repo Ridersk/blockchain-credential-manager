@@ -1,9 +1,9 @@
 import { BaseStorage } from "./baseStorage";
-import { CookieStorage } from "./cookieStorage";
+import { LocalStorage } from "./browserLocalStorage";
 import { ExtensionLocalStorage } from "./extensionLocalStorage";
 
-const extensionStorage: BaseStorage = chrome.storage?.local
+const selectedStorage: BaseStorage = chrome.storage?.local
   ? new ExtensionLocalStorage()
-  : new CookieStorage();
+  : new LocalStorage();
 
-export default extensionStorage;
+export default selectedStorage;

@@ -5,7 +5,7 @@ import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { performLogin } from "utils/wallet-manager";
+import { getVaultManager } from "utils/wallet-manager/wallet-manager";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -19,8 +19,9 @@ const Login = () => {
 
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
+    const vaultManager = getVaultManager();
     try {
-      if (await performLogin(values.password)) {
+      if (await vaultManager.unlockVault(values.password)) {
         navigate({ pathname: "/" });
         sendNotification({
           message: t("wallet_login_successfully"),

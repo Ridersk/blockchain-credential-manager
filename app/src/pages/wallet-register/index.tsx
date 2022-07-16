@@ -8,7 +8,7 @@ import WalletShowMnemonic from "components/wallet-creation/show-mnemonic";
 import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
-import { performLogin, registerNewWallet } from "utils/wallet-manager";
+import { getVaultManager } from "utils/wallet-manager/wallet-manager";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
 import { useDispatch } from "react-redux";
@@ -107,13 +107,14 @@ const WalletRegister = () => {
 
   async function submitForm(values: WalletFormParams, actions: FormikHelpers<WalletFormParams>) {
     try {
-      const walletKeyPair = await registerNewWallet(
+      const vaultManager = getVaultManager();
+      const walletKeyPair = await vaultManager.registerNewWallet(
         values.mnemonic as string,
         values.password as string
       );
       actions.setSubmitting(false);
       dispatch(setWallet({ id: "Wallet", address: walletKeyPair.publicKey.toBase58() }));
-      if (await performLogin(values.password as string)) {
+      if (await vaultManager.unlockVault(values.password as string)) {
         sendNotification({
           message: t("wallet_register_successfully"),
           variant: "success"
@@ -126,7 +127,6 @@ const WalletRegister = () => {
         });
       }
     } catch (err) {
-      console.log(err);
       sendNotification({
         message: t("unexpected_error"),
         variant: "error"

@@ -4,9 +4,6 @@ import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
 import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
 
 import idl from "idl/blockchain_credential_manager.json";
-import bs58 from "bs58";
-import extensionStorage from "utils/storage";
-import { getUserKeypair } from "utils/wallet-manager";
 
 const clusterUrl = process.env.REACT_APP_CLUSTER_URL || "devnet";
 const preflightCommitment = "processed";
@@ -19,7 +16,24 @@ export interface SolanaWeb3Workspace {
   program: Program<BlockchainCredentialManager>;
 }
 
-export class WalletCustom implements Wallet {
+let workspace: SolanaWeb3Workspace | null = null;
+
+export async function initWorkspace(walletKeyPair: Keypair): Promise<void> {
+  const wallet = new WalletCustomWrapper(walletKeyPair);
+  const connection = new Connection(clusterUrl, commitment);
+  const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
+  const program = new Program<BlockchainCredentialManager>(idl as any, programID, provider);
+
+  workspace = {
+    userKeypair: walletKeyPair,
+    connection,
+    program
+  };
+}
+
+export default () => workspace;
+
+class WalletCustomWrapper implements Wallet {
   constructor(readonly payer: Keypair) {
     this.payer = payer;
   }
@@ -40,22 +54,3 @@ export class WalletCustom implements Wallet {
     return this.payer.publicKey;
   }
 }
-
-let workspace: SolanaWeb3Workspace | null = null;
-
-export async function initWorkspace(): Promise<void> {
-  const walletKeyPair = await getUserKeypair();
-  const wallet = new WalletCustom(walletKeyPair as Keypair);
-
-  const connection = new Connection(clusterUrl, commitment);
-  const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
-  const program = new Program<BlockchainCredentialManager>(idl as any, programID, provider);
-
-  workspace = {
-    userKeypair: walletKeyPair as Keypair,
-    connection,
-    program
-  };
-}
-
-export default () => workspace;

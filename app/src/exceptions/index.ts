@@ -4,7 +4,13 @@ export class WalletInternallError extends Error {
   }
 }
 
-export class WalletIncorrectPasswordError extends Error {
+export class VaultNoKeyringFoundError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
+export class VaultIncorrectPasswordError extends Error {
   constructor(message?: string) {
     super(message);
   }
