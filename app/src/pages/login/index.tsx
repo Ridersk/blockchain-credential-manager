@@ -17,11 +17,29 @@ const Login = () => {
   const navigate = useNavigate();
   const sendNotification = useNotification();
 
+  const savePasswordToBackground = async (userPassword: string) => {
+    console.log("SEND PASSWORD:", userPassword);
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "savePassword",
+        data: {
+          password: userPassword
+        }
+      });
+      const password = response?.data?.password;
+      console.log("SAVED PASSWORD:", password);
+      return password;
+    } catch (err) {
+      console.log("Error on save password:", err);
+    }
+  };
+
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     const vaultManager = getVaultManager();
     try {
       if (await vaultManager.unlockVault(values.password)) {
+        await savePasswordToBackground(values.password);
         navigate({ pathname: "/" });
         sendNotification({
           message: t("wallet_login_successfully"),

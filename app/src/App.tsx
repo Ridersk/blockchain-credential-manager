@@ -24,11 +24,21 @@ function App() {
     navigate({ pathname: "/login" });
   };
 
+  const getPasswordFromBackground = async () => {
+    const response = await chrome.runtime.sendMessage({
+      action: "getPassword"
+    });
+    const password = response?.data?.password;
+    console.log("RECEIVED PASSWORD:", password);
+    return password;
+  };
+
   useEffect(() => {
     async function setupVault() {
       try {
         const vaultManager = await initVaultManager();
-        await vaultManager.unlockVault("00000000");
+        // await vaultManager.unlockVault("00000000");
+        await vaultManager.unlockVault(await getPasswordFromBackground());
         const walletKeyPair = await vaultManager.getCurrentAccountKeypair();
         await initWorkspace(walletKeyPair as any);
         dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair?.publicKey.toBase58() }));
