@@ -1,15 +1,8 @@
-const interval = setInterval(() => {
+export const interval = setInterval(() => {
   clearInterval(interval);
-  // fetch(chrome.runtime.getURL("popup_credentials/index.html"))
-  //   .then((result) => result.text())
-  //   .then((html) => {
-  //     document.querySelector('input[type="password"]').insertAdjacentHTML("beforebegin", html);
-  //   });
 
   const passwordInput = document.querySelector('input[type="password"]');
   const labelInput = passwordInput.closest("form").querySelector("input");
-
-  window.highlight()
 
   if (passwordInput) {
     const size = passwordInput.offsetHeight * 0.8;

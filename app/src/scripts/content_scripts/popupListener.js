@@ -1,4 +1,5 @@
 // Responsible to handle extension popup requests
+
 chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   if (request.action == "getCredentials") {
     // Password in a form
@@ -14,3 +15,5 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
     });
   } else sendResponse({});
 });
+
+export default {};

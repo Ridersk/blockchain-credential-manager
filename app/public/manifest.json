@@ -22,8 +22,7 @@
         "https://*/*"
       ],
       "js": [
-        "./content_scripts/loadInputButtons.js",
-        "./content_scripts/popupListener.js"
+        "./contentscript.js"
       ],
       "css": [
         "popup_credentials/styles.css"
