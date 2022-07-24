@@ -25,11 +25,11 @@ function App() {
 
   const getWalletFromBackgroundAction = async () => {
     const response = await chrome.runtime.sendMessage({
-      action: "getKeypair"
+      action: "getCurrentWallet"
     });
-    const keypair = response?.data?.keypair;
+    const publicKey = response?.data?.publicKey;
     const status = response?.data?.status;
-    console.log("RECEIVED WALLET:", keypair);
+    console.log("RECEIVED WALLET:", publicKey);
 
     if (status === "NOT_FOUND") {
       throw new VaultNoKeyringFoundError(status);
@@ -39,17 +39,17 @@ function App() {
       throw new VaultLockedError("LOCKED");
     }
 
-    return keypair;
+    return publicKey;
   };
 
   useEffect(() => {
     async function setupVault() {
       try {
-        const walletKeyPair = await getWalletFromBackgroundAction();
+        const publicKey = await getWalletFromBackgroundAction();
 
         // CALL ACTION TO GET WALLET KEYPAIR
-        await initWorkspace(walletKeyPair);
-        dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair?.publicKey.toBase58() }));
+        // await initWorkspace(walletKeyPair);
+        dispatch(setWallet({ id: "Wallet 1", address: publicKey }));
       } catch (err) {
         console.log(err);
         if (err instanceof VaultNoKeyringFoundError) {

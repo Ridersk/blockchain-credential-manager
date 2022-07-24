@@ -1,13 +1,11 @@
 import { combineReducers } from "redux";
 
-// reducer import
-import customizationReducer from "./customization";
+// reducer imports
 import walletReducer from "./wallet";
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
 const reducers = combineReducers({
-  customization: customizationReducer,
   wallet: walletReducer
 });
 

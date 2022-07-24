@@ -1,9 +1,6 @@
 import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
-// project imports
-import Customization from "../Customization";
-
 // ==============================|| MINIMAL LAYOUT ||============================== //
 
 const MinimalLayout: React.FC = (): JSX.Element => (
@@ -17,7 +14,6 @@ const MinimalLayout: React.FC = (): JSX.Element => (
     }}
   >
     <Outlet />
-    {/* <Customization /> */}
   </Container>
 );
 

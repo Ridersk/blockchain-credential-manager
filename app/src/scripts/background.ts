@@ -52,7 +52,7 @@ async function messageHandler(request: any) {
         unlocked: true
       }
     };
-  } else if (request.action === "getKeypair") {
+  } else if (request.action === "getCurrentWallet") {
     let status;
     let keypair;
     try {
@@ -67,7 +67,7 @@ async function messageHandler(request: any) {
     }
     return {
       data: {
-        keypair,
+        publicKey: keypair?.publicKey.toBase58(),
         status
       }
     };

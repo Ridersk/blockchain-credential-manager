@@ -1,6 +1,6 @@
-// action - customization reducer
+// action - wallet reducer
 export enum WalletActionType {
-  SET_WALLET = "@customization/SET_WALLET"
+  SET_WALLET = "@wallet/SET_WALLET"
 }
 
 export interface WalletData {
