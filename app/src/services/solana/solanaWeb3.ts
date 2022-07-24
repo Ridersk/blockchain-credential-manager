@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Keypair, Transaction } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
 
 import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
@@ -11,21 +11,21 @@ const commitment = "confirmed";
 const programID = new PublicKey(idl.metadata.address);
 
 export interface SolanaWeb3Workspace {
-  userKeypair: Keypair;
+  publicKey: PublicKey;
   connection: Connection;
   program: Program<BlockchainCredentialManager>;
 }
 
 let workspace: SolanaWeb3Workspace | null = null;
 
-export async function initWorkspace(walletKeyPair: Keypair): Promise<void> {
-  const wallet = new WalletCustomWrapper(walletKeyPair);
+export async function initWorkspace(publicKey: string): Promise<void> {
+  const wallet = await getWalletSignerFromBackgroundAction();
   const connection = new Connection(clusterUrl, commitment);
   const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
   const program = new Program<BlockchainCredentialManager>(idl as any, programID, provider);
 
   workspace = {
-    userKeypair: walletKeyPair,
+    publicKey: new PublicKey(publicKey),
     connection,
     program
   };
@@ -33,24 +33,11 @@ export async function initWorkspace(walletKeyPair: Keypair): Promise<void> {
 
 export default () => workspace;
 
-class WalletCustomWrapper implements Wallet {
-  constructor(readonly payer: Keypair) {
-    this.payer = payer;
-  }
-
-  async signTransaction(tx: Transaction): Promise<Transaction> {
-    tx.partialSign(this.payer);
-    return tx;
-  }
-
-  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
-    return txs.map((t) => {
-      t.partialSign(this.payer);
-      return t;
-    });
-  }
-
-  get publicKey(): PublicKey {
-    return this.payer.publicKey;
-  }
-}
+const getWalletSignerFromBackgroundAction = async (): Promise<Wallet> => {
+  const response = await chrome.runtime.sendMessage({
+    action: "getWalletSigner"
+  });
+  const walletSigner: Wallet = response?.data.walletSigner;
+  console.log("[POPUP] Wallet Signer:", walletSigner);
+  return walletSigner;
+};

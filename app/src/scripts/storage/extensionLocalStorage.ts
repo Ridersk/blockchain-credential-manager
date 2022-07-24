@@ -15,9 +15,6 @@ export class ExtensionLocalStorage extends BaseStorage {
   }
 
   async getAllData(): Promise<any> {
-    // chrome.storage.local.get(null, function (results) {
-    //   console.log(results);
-    // });
     return chrome.storage.local.get(null);
   }
 }

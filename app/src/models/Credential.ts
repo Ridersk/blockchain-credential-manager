@@ -1,6 +1,4 @@
 import * as anchor from "@project-serum/anchor";
-import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
-import { decryptData } from "utils/aes-encryption";
 
 interface CredentialParameters {
   uid: anchor.BN;
@@ -41,12 +39,34 @@ export class Credential {
   }
 
   get label() {
-    const { userKeypair } = workspace() as SolanaWeb3Workspace;
-    return decryptData(userKeypair.secretKey, this._label);
+    return (async () => {
+      try {
+        return (await decryptDataFromBackgroundAction({ label: this._label })).label;
+      } catch (e) {
+        return "UNDEFINED LABEL";
+      }
+    })();
   }
 
   get secret() {
-    const { userKeypair } = workspace() as SolanaWeb3Workspace;
-    return decryptData(userKeypair.secretKey, this._secret);
+    return (async () => {
+      try {
+        return (await decryptDataFromBackgroundAction({ secret: this._secret })).secret;
+      } catch (e) {
+        return "UNDEFINED LABEL";
+      }
+    })();
   }
 }
+
+const decryptDataFromBackgroundAction = async (encryptedData: {
+  [key: string]: string;
+}): Promise<{ [key: string]: string }> => {
+  const response = await chrome.runtime.sendMessage({
+    action: "decryptData",
+    data: encryptedData
+  });
+  const decryptedData: { [key: string]: string } = response?.data;
+  console.log("RECEIVED DECRYPTED DATA:", decryptedData);
+  return decryptedData;
+};

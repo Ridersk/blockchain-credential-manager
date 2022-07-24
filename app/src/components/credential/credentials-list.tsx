@@ -13,28 +13,56 @@ interface Props {
   textFilter?: string;
 }
 
+type CredentialAttributes = {
+  publicKey: string;
+  url: string;
+  iconUrl: string;
+  label: string;
+  secret: string;
+};
+
 const CredentialsList = ({ textFilter = "" }: Props) => {
   const [loading, setLoading] = useState(false);
-  const [list, setList] = useState<Array<Credential>>([]);
+  const [list, setList] = useState<Array<CredentialAttributes>>([]);
 
-  const filterCredentials = (credentials: Array<Credential>) => {
+  const filterCredentials = async (credentials: Array<Credential>) => {
     if (textFilter) {
       const searchText = textFilter.toLowerCase();
       return credentials?.filter(
-        (item) =>
+        async (item) =>
           item.title.toLowerCase().includes(searchText) ||
           item.url.toLowerCase().includes(searchText) ||
-          item.label.toLowerCase().includes(searchText)
+          (await item.label).toLowerCase().includes(searchText)
       );
     }
     return credentials;
+  };
+
+  const formatCredentials = async (
+    credentials: Array<Credential>
+  ): Promise<CredentialAttributes[]> => {
+    return Promise.all(
+      credentials.map(async (item) => {
+        const label = await item.label;
+        const secret = await item.secret;
+        return {
+          publicKey: item?.publicKey,
+          url: item?.url,
+          iconUrl: item?.iconUrl,
+          label,
+          secret
+        };
+      })
+    );
   };
 
   useEffect(() => {
     async function getCredentialsList() {
       try {
         setLoading(true);
-        const credentials = filterCredentials(await getCredentials());
+        const credentials = await formatCredentials(
+          await filterCredentials(await getCredentials())
+        );
         setList(credentials);
         setLoading(false);
       } catch (err) {}
@@ -52,8 +80,8 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
             credentialKey={item?.publicKey}
             url={item?.url}
             iconUrl={item?.iconUrl}
-            label={item?.label}
-            secret={item?.secret}
+            label={item?.label as string}
+            secret={item?.secret as string}
           />
         </ListItem>
       ))}

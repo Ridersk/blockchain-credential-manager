@@ -16,25 +16,7 @@ const Login = () => {
   const navigate = useNavigate();
   const sendNotification = useNotification();
 
-  const savePasswordToBackground = async (userPassword: string) => {
-    console.log("SEND PASSWORD:", userPassword);
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: "savePassword",
-        data: {
-          password: userPassword
-        }
-      });
-      const password = response?.data?.password;
-      console.log("SAVED PASSWORD:", password);
-      return password;
-    } catch (err) {
-      console.log("Error on save password:", err);
-    }
-  };
-
   const unlockVaultBackgroundAction = async (password: string) => {
-    console.log("UNLOCK VAULT:", password);
     try {
       const response = await chrome.runtime.sendMessage({
         action: "unlockVault",
@@ -43,7 +25,6 @@ const Login = () => {
         }
       });
       const unlocked = response?.data?.unlocked;
-      console.log("UNLOCKED VAULT:", unlocked);
       return unlocked;
     } catch (err) {
       console.log("Error on unlock vault:", err);
@@ -54,7 +35,6 @@ const Login = () => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     try {
       if (await unlockVaultBackgroundAction(values.password)) {
-        await savePasswordToBackground(values.password);
         navigate({ pathname: "/" });
         sendNotification({
           message: t("wallet_login_successfully"),

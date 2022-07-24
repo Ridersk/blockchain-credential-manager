@@ -1,5 +1,4 @@
 import * as anchor from "@project-serum/anchor";
-import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
 import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
@@ -25,9 +24,10 @@ export default async function createCredential({
   secret,
   description
 }: NewCredentialParameters) {
-  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
-  const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, userKeypair);
+  const { program, publicKey } = workspace() as SolanaWeb3Workspace;
+  const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, publicKey.toBuffer());
   const credentialAccountKey = credentialPda.accountKey;
+  const encryptedCredentials = await encryptDataFromBackgroundAction({ label, secret });
 
   await program.methods
     .createCredential(
@@ -35,16 +35,15 @@ export default async function createCredential({
       title,
       url,
       iconUrl,
-      encryptData(userKeypair.secretKey, label),
-      encryptData(userKeypair.secretKey, secret),
+      encryptedCredentials.label,
+      encryptedCredentials.secret,
       description
     )
     .accounts({
       credentialAccount: credentialAccountKey,
-      owner: userKeypair.publicKey,
+      owner: publicKey,
       systemProgram: programId
     })
-    .signers([userKeypair])
     .rpc();
 
   // Fetch credential created account
@@ -63,16 +62,28 @@ window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const getPdaParams = async (
   namespace: string,
-  author: anchor.web3.Keypair
+  authorPublicKeyBuffer: Buffer
 ): Promise<PDAParameters> => {
   const { program } = workspace() as SolanaWeb3Workspace;
   const uid = new anchor.BN(parseInt((Date.now() / 1000).toString()));
   const uidBuffer = uid.toArray("be", 8);
 
   const [accountKey, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(namespace), author.publicKey.toBuffer(), Buffer.from(uidBuffer)],
+    [Buffer.from(namespace), authorPublicKeyBuffer, Buffer.from(uidBuffer)],
     program.programId
   );
 
   return { uid, accountKey, bump };
+};
+
+const encryptDataFromBackgroundAction = async (data: {
+  [key: string]: string;
+}): Promise<{ [key: string]: string }> => {
+  const response = await chrome.runtime.sendMessage({
+    action: "encryptData",
+    data
+  });
+  const encryptedData: { [key: string]: string } = response?.data;
+  console.log("RECEIVED ENCRYPTED DATA:", encryptedData);
+  return encryptedData;
 };

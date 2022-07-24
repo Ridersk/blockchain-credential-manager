@@ -8,8 +8,8 @@ export interface WalletState {
 }
 
 export const initialState = {
-  id: "Wallet 1",
-  address: "1111111111111",
+  id: "Wallet 0",
+  address: "",
   mnemonic: "",
   balance: 0
 };

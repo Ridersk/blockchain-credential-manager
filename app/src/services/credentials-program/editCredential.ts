@@ -1,5 +1,4 @@
 import * as anchor from "@project-serum/anchor";
-import { encryptData } from "utils/aes-encryption";
 import { Credential } from "models/Credential";
 
 import workspace, { SolanaWeb3Workspace } from "../solana/solanaWeb3";
@@ -25,22 +24,23 @@ export default async function editCredential({
   secret,
   description
 }: EditCredentialParameters) {
-  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
+  const { program, publicKey } = workspace() as SolanaWeb3Workspace;
+  const encryptedCredentials = await encryptDataFromBackgroundAction({ label, secret });
+
   await program.methods
     .editCredential(
       new anchor.BN(uid),
       title,
       url,
       iconUrl,
-      encryptData(userKeypair.secretKey, label),
-      encryptData(userKeypair.secretKey, secret),
+      encryptedCredentials.label,
+      encryptedCredentials.secret,
       description
     )
     .accounts({
       credentialAccount: credentialPubKey,
-      owner: userKeypair.publicKey
+      owner: publicKey
     })
-    .signers([userKeypair])
     .rpc();
 
   // Fetch credential edited account
@@ -48,3 +48,15 @@ export default async function editCredential({
 
   return new Credential(credentialPubKey, credentialAccount);
 }
+
+const encryptDataFromBackgroundAction = async (data: {
+  [key: string]: string;
+}): Promise<{ [key: string]: string }> => {
+  const response = await chrome.runtime.sendMessage({
+    action: "encryptData",
+    data
+  });
+  const encryptedData: { [key: string]: string } = response?.data;
+  console.log("RECEIVED ENCRYPTED DATA:", encryptedData);
+  return encryptedData;
+};

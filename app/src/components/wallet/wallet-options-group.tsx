@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import WalletOptionButton from "./wallet-option-button";
-import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
 import requestAirdrop from "services/solana/requestAirdrop";
 import { getWalletDetails } from "services/solana/getWalletDetails";
 import useNotification from "hooks/useNotification";
@@ -26,8 +25,7 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
 
   const handleRequestAirdrop = async () => {
     try {
-      const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
-      await requestAirdrop(program, userKeypair);
+      await requestAirdrop();
       const walletDetails = await getWalletDetails();
       dispatch(setWallet({ balance: walletDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });

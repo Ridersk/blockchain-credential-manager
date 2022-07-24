@@ -7,13 +7,12 @@ interface DeleteCredentialProps {
 }
 
 export default async function deleteCredential({ credentialPubKey }: DeleteCredentialProps) {
-  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
+  const { program, publicKey } = workspace() as SolanaWeb3Workspace;
   await program.methods
     .deleteCredential()
     .accounts({
       credentialAccount: credentialPubKey,
-      owner: userKeypair.publicKey
+      owner: publicKey
     })
-    .signers([userKeypair])
     .rpc();
 }

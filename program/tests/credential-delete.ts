@@ -26,9 +26,12 @@ describe("credential-deletion", () => {
   it("Can delete a existing credential account", async () => {
     // Creating credential
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials";
     const url = "https://github.com";
@@ -80,9 +83,12 @@ describe("credential-deletion", () => {
   it("Cannot delete a credential of another user", async () => {
     // Creating credential
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials";
     const url = "https://github.com";

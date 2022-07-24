@@ -108,7 +108,6 @@ const WalletRegister = () => {
     mnemonic: string,
     password: string
   ): Promise<string | undefined> => {
-    console.log("REGISTER WALLET:", mnemonic);
     try {
       const response = await chrome.runtime.sendMessage({
         action: "registerWallet",
@@ -118,7 +117,6 @@ const WalletRegister = () => {
         }
       });
       const publicKey: string = response?.data?.publicKey;
-      console.log("REGISTERED WALLET:", publicKey);
       return publicKey;
     } catch (err) {
       console.log("Error on register wallet:", err);
@@ -126,7 +124,6 @@ const WalletRegister = () => {
   };
 
   const unlockVaultBackgroundAction = async (password: string) => {
-    console.log("UNLOCK VAULT:", password);
     try {
       const response = await chrome.runtime.sendMessage({
         action: "unlockVault",
@@ -135,7 +132,6 @@ const WalletRegister = () => {
         }
       });
       const unlocked = response?.data?.unlocked;
-      console.log("UNLOCKED VAULT:", unlocked);
       return unlocked;
     } catch (err) {
       console.log("Error on unlock vault:", err);

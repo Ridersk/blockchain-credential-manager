@@ -30,8 +30,8 @@ export type Activity = {
 };
 
 const getActivities = async (): Promise<Activity[]> => {
-  const { connection, userKeypair, program } = workspace() as SolanaWeb3Workspace;
-  const signatures = await connection.getSignaturesForAddress(userKeypair.publicKey);
+  const { connection, publicKey, program } = workspace() as SolanaWeb3Workspace;
+  const signatures = await connection.getSignaturesForAddress(publicKey);
   const transactions = await program.provider.connection.getParsedTransactions(
     signatures.map((signature) => signature.signature)
   );

@@ -7,10 +7,9 @@ interface WalletDetails {
 }
 
 export const getWalletDetails = async (): Promise<WalletDetails> => {
-  const { connection, userKeypair } = workspace() as SolanaWeb3Workspace;
-  const walletPublicKey = userKeypair.publicKey;
-  const walletInfo = await connection.getAccountInfo(walletPublicKey);
-  const walletAdress = walletPublicKey.toBase58();
+  const { connection, publicKey } = workspace() as SolanaWeb3Workspace;
+  const walletInfo = await connection.getAccountInfo(publicKey);
+  const walletAdress = publicKey.toBase58();
   const balance: number = (walletInfo?.lamports || 0) / LAMPORTS_PER_SOL;
 
   return { address: walletAdress, balance };

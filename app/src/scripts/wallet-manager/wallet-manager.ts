@@ -1,5 +1,4 @@
 import bs58 from "bs58";
-import { Keypair } from "@solana/web3.js";
 import selectedStorage from "../storage";
 import {
   KeyringController,
@@ -10,6 +9,9 @@ import {
 import { MemoryStore } from "./memory-store";
 import { EncryptorInterface } from "./encryptor";
 import { WalletGenerator } from "./wallet-generator";
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { Wallet } from "@project-serum/anchor";
+import { decryptData, encryptData } from "../../utils/aes-encryption";
 
 type VaultState = {
   currentAccount: {
@@ -75,10 +77,57 @@ export class VaultManager {
   }
 
   async getCurrentAccountKeypair(): Promise<Keypair | null> {
-    const keyring = this._keyringController.getKeyring();
+    const keyring = await this._keyringController.getKeyring();
     const currentAccount = keyring?.accounts?.[0];
 
-    return this._getUserKeypairFromPrivateKeyEncoded(currentAccount.privateKey);
+    if (currentAccount) {
+      return this._getUserKeypairFromPrivateKeyEncoded(currentAccount?.privateKey);
+    }
+    return null;
+  }
+
+  async getCurrentWalletSigner() {
+    const walletKeyPair: Keypair = (await this.getCurrentAccountKeypair()) as Keypair;
+
+    if (walletKeyPair) {
+      return new WalletSigner(walletKeyPair);
+    }
+
+    return null;
+  }
+
+  async encryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
+    console.log("[BACKGROUND] MESSAGE TOBE ENCRYPTED:", data);
+    const vaultKeypair = await this.getCurrentAccountKeypair();
+
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        encryptData(vaultKeypair?.secretKey as Uint8Array, value)
+      ])
+    );
+
+    // return Object.keys(data).reduce(function (result: { [key: string]: string }, key: string) {
+    //   result[key] = encryptData(vaultKeypair?.secretKey as Uint8Array, data[key]);
+    //   return result;
+    // }, {});
+  }
+
+  async decryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
+    console.log("[BACKGROUND] MESSAGE TOBE DECRYPTED:", data);
+    const vaultKeypair = await this.getCurrentAccountKeypair();
+
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        decryptData(vaultKeypair?.secretKey as Uint8Array, value)
+      ])
+    );
+
+    // return Object.keys(data).reduce(function (result: { [key: string]: string }, key: string) {
+    //   result[key] = decryptData(vaultKeypair?.secretKey as Uint8Array, data[key]);
+    //   return result;
+    // }, {});
   }
 
   async _saveVaultData(password: string, mnemonic: string, accounts: WalletAccount[]) {
@@ -113,6 +162,28 @@ export class VaultManager {
     }
 
     return null;
+  }
+}
+
+class WalletSigner implements Wallet {
+  constructor(readonly payer: Keypair) {
+    this.payer = payer;
+  }
+
+  async signTransaction(tx: Transaction): Promise<Transaction> {
+    tx.partialSign(this.payer);
+    return tx;
+  }
+
+  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
+    return txs.map((t) => {
+      t.partialSign(this.payer);
+      return t;
+    });
+  }
+
+  get publicKey(): PublicKey {
+    return this.payer?.publicKey;
   }
 }
 

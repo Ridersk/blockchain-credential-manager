@@ -64,23 +64,25 @@ export class KeyringController {
     return encryptedVault;
   }
 
-  getKeyring(): Keyring {
-    if (!this._keyring) {
+  async getKeyring(): Promise<Keyring> {
+    const keyring = this._keyring || (await chrome.storage.session.get("keyring")).keyring;
+
+    if (!keyring) {
       throw new VaultLockedError("Keyring is locked");
     }
-    return this._keyring;
+    return keyring;
   }
 
   async _updateKeyring(password: string, vault: VaultKeyring) {
     this._password = password;
     this._keyring = vault;
 
+    await chrome.storage.session.set({ keyring: vault });
     await chrome.storage.session.set({ currPassword: password });
   }
 
   async getPassword() {
-    const session = await chrome.storage.session.get("currPassword");
-    return session.currPassword;
+    return this._password || (await chrome.storage.session.get("currPassword")).currPassword;
   }
 }
 

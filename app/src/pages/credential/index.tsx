@@ -57,8 +57,8 @@ const CredentialPage = () => {
         setUid(credential.uid);
         setInitialTitle(credential.title);
         setInitialUrl(credential.url);
-        setInitialLabel(credential.label);
-        setInitialPassword(credential.secret);
+        setInitialLabel(await credential.label);
+        setInitialPassword(await credential.secret);
         setInitialDescription(credential.description);
         setIsUpdate(true);
       }
@@ -129,6 +129,7 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
+      console.log(err);
       if (err instanceof AnchorError) {
         sendNotification({ message: err?.error?.errorMessage, variant: "error" });
       } else {

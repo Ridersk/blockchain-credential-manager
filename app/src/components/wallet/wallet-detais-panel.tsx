@@ -17,7 +17,9 @@ const WalletDetailsPanel = () => {
         const walletDetails = await getWalletDetails();
         dispatch(setWallet({ balance: walletDetails.balance }));
         setLoading(false);
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     handleGetWalletDetails();

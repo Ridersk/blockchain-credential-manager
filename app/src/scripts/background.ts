@@ -43,7 +43,7 @@ async function messageHandler(request: any) {
       request.data.mnemonic,
       request.data.password
     );
-    return { data: { publicKey: keypair.publicKey.toBase58() } };
+    return { data: { publicKey: keypair?.publicKey?.toBase58() } };
   } else if (request.action === "unlockVault") {
     const password = request.data.password;
     await vaultManager.unlockVault(password);
@@ -65,27 +65,31 @@ async function messageHandler(request: any) {
         status = "NOT_FOUND";
       }
     }
+
     return {
       data: {
-        publicKey: keypair?.publicKey.toBase58(),
+        publicKey: keypair?.publicKey?.toBase58(),
         status
       }
     };
-  } else if (request.action == "savePassword") {
-    await chrome.storage.session.set({ currPassword: request.data.password });
-
+  } else if (request.action === "encryptData") {
+    const data = request.data;
+    const encryptedData = await vaultManager.encryptMessage(data);
     return {
-      data: {
-        password: request.data.password
-      }
+      data: encryptedData
     };
-  } else if (request.action == "getPassword") {
-    const session = await chrome.storage.session.get("currPassword");
-    console.log("Retrieving...", session.currPassword);
-
+  } else if (request.action === "decryptData") {
+    const data = request.data;
+    const decryptedData = await vaultManager.decryptMessage(data);
+    return {
+      data: decryptedData
+    };
+  } else if (request.action === "getWalletSigner") {
+    const walletSigner = await vaultManager.getCurrentWalletSigner();
+    console.log("[BACKGROUND] Wallet Signer:", walletSigner);
     return {
       data: {
-        password: session.currPassword
+        walletSigner
       }
     };
   } else return {};

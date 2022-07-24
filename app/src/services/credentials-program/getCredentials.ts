@@ -13,11 +13,11 @@ interface FilterOption {
 export default async function getCredentials(
   filters: Array<FilterOption> = []
 ): Promise<Array<Credential>> {
-  const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
-  filters.push(ownerFilter(userKeypair.publicKey.toBase58()));
+  const { program, publicKey } = workspace() as SolanaWeb3Workspace;
+  filters.push(ownerFilter(publicKey.toBase58()));
   const credentials = await program.account.credentialAccount.all(filters);
 
-  return credentials.map((credential) => new Credential(credential.publicKey, credential.account));
+  return credentials.map((credential) => new Credential(credential?.publicKey, credential.account));
 }
 
 export const ownerFilter = (ownerBase58PublicKey: string): FilterOption => ({

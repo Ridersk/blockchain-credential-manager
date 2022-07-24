@@ -1,12 +1,10 @@
-import { Keypair } from "@solana/web3.js";
-import { Program } from "@project-serum/anchor";
+import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
 
-import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
-
-const requestAirdrop = async (program: Program<BlockchainCredentialManager>, author: Keypair) => {
+const requestAirdrop = async () => {
+  const { program, publicKey } = workspace() as SolanaWeb3Workspace;
   // Request airdrop of 1 SOL
   const connection = program.provider.connection;
-  const airdropSignature = await connection.requestAirdrop(author.publicKey, 1000000000);
+  const airdropSignature = await connection.requestAirdrop(publicKey, 1000000000);
   await connection.confirmTransaction(airdropSignature);
 };
 

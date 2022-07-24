@@ -5,7 +5,7 @@ import { theme } from "themes";
 import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
 import { initWorkspace } from "services/solana/solanaWeb3";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
@@ -14,6 +14,7 @@ import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const goToWelcomePage = () => {
     navigate({ pathname: "/welcome" });
@@ -23,13 +24,12 @@ function App() {
     navigate({ pathname: "/login" });
   };
 
-  const getWalletFromBackgroundAction = async () => {
+  const getWalletFromBackgroundAction = async (): Promise<string> => {
     const response = await chrome.runtime.sendMessage({
       action: "getCurrentWallet"
     });
     const publicKey = response?.data?.publicKey;
     const status = response?.data?.status;
-    console.log("RECEIVED WALLET:", publicKey);
 
     if (status === "NOT_FOUND") {
       throw new VaultNoKeyringFoundError(status);
@@ -45,10 +45,10 @@ function App() {
   useEffect(() => {
     async function setupVault() {
       try {
+        setLoading(true);
         const publicKey = await getWalletFromBackgroundAction();
 
-        // CALL ACTION TO GET WALLET KEYPAIR
-        // await initWorkspace(walletKeyPair);
+        await initWorkspace(publicKey);
         dispatch(setWallet({ id: "Wallet 1", address: publicKey }));
       } catch (err) {
         console.log(err);
@@ -57,6 +57,8 @@ function App() {
         } else {
           goToLoginPage();
         }
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -68,9 +70,7 @@ function App() {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <NavigationScroll>
-            <Routes />
-          </NavigationScroll>
+          <NavigationScroll>{!loading && <Routes />}</NavigationScroll>
         </ThemeProvider>
       </StyledEngineProvider>
     </div>
