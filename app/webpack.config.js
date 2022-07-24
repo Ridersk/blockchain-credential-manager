@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {
@@ -12,7 +13,10 @@ module.exports = {
     filename: "[name].js"
   },
   resolve: {
-    extensions: [".ts", ".js"]
+    extensions: [".ts", ".js"],
+    fallback: {
+      stream: require.resolve("stream-browserify")
+    }
   },
   module: {
     rules: [
@@ -23,5 +27,13 @@ module.exports = {
       }
     ]
   },
-  devtool: "cheap-module-source-map"
+  devtool: "cheap-module-source-map",
+  plugins: [
+    // fix "process is not defined" error:
+    // (do "npm install process" before running the build)
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+      Buffer: ["buffer", "Buffer"]
+    })
+  ]
 };

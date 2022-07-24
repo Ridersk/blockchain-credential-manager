@@ -117,13 +117,13 @@ export class VaultManager {
 }
 
 // TODO. Move Code to background.js
-let walletManagerInstance: VaultManager;
+let vaultManagerInstance: VaultManager;
 export async function initVaultManager(): Promise<VaultManager> {
   const keyring = (await selectedStorage.getData("keyring")) as KeyringSerialized;
-  walletManagerInstance = new VaultManager({ initState: { keyring } });
-  return walletManagerInstance;
+  vaultManagerInstance = new VaultManager({ initState: { keyring } });
+  return vaultManagerInstance;
 }
 
 export function getVaultManager(): VaultManager {
-  return walletManagerInstance;
+  return vaultManagerInstance;
 }

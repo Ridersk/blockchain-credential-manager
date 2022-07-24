@@ -9,8 +9,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
-import { initVaultManager } from "utils/wallet-manager/wallet-manager";
-import { VaultNoKeyringFoundError } from "exceptions";
+import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,23 +23,32 @@ function App() {
     navigate({ pathname: "/login" });
   };
 
-  const getPasswordFromBackground = async () => {
+  const getWalletFromBackgroundAction = async () => {
     const response = await chrome.runtime.sendMessage({
-      action: "getPassword"
+      action: "getKeypair"
     });
-    const password = response?.data?.password;
-    console.log("RECEIVED PASSWORD:", password);
-    return password;
+    const keypair = response?.data?.keypair;
+    const status = response?.data?.status;
+    console.log("RECEIVED WALLET:", keypair);
+
+    if (status === "NOT_FOUND") {
+      throw new VaultNoKeyringFoundError(status);
+    }
+
+    if (status !== "UNLOCKED") {
+      throw new VaultLockedError("LOCKED");
+    }
+
+    return keypair;
   };
 
   useEffect(() => {
     async function setupVault() {
       try {
-        const vaultManager = await initVaultManager();
-        // await vaultManager.unlockVault("00000000");
-        await vaultManager.unlockVault(await getPasswordFromBackground());
-        const walletKeyPair = await vaultManager.getCurrentAccountKeypair();
-        await initWorkspace(walletKeyPair as any);
+        const walletKeyPair = await getWalletFromBackgroundAction();
+
+        // CALL ACTION TO GET WALLET KEYPAIR
+        await initWorkspace(walletKeyPair);
         dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair?.publicKey.toBase58() }));
       } catch (err) {
         console.log(err);

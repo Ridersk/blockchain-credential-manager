@@ -8,7 +8,6 @@ import WalletShowMnemonic from "components/wallet-creation/show-mnemonic";
 import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
-import { getVaultManager } from "utils/wallet-manager/wallet-manager";
 import { useNavigate } from "react-router";
 import { setWallet } from "store/actionCreators";
 import { useDispatch } from "react-redux";
@@ -105,16 +104,53 @@ const WalletRegister = () => {
     setActiveStep(activeStep > 0 ? activeStep - 1 : 0);
   };
 
+  const registerNewWalletBackgroundAction = async (
+    mnemonic: string,
+    password: string
+  ): Promise<string | undefined> => {
+    console.log("REGISTER WALLET:", mnemonic);
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "registerWallet",
+        data: {
+          mnemonic,
+          password
+        }
+      });
+      const publicKey: string = response?.data?.publicKey;
+      console.log("REGISTERED WALLET:", publicKey);
+      return publicKey;
+    } catch (err) {
+      console.log("Error on register wallet:", err);
+    }
+  };
+
+  const unlockVaultBackgroundAction = async (password: string) => {
+    console.log("UNLOCK VAULT:", password);
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "unlockVault",
+        data: {
+          password
+        }
+      });
+      const unlocked = response?.data?.unlocked;
+      console.log("UNLOCKED VAULT:", unlocked);
+      return unlocked;
+    } catch (err) {
+      console.log("Error on unlock vault:", err);
+    }
+  };
+
   async function submitForm(values: WalletFormParams, actions: FormikHelpers<WalletFormParams>) {
     try {
-      const vaultManager = getVaultManager();
-      const walletKeyPair = await vaultManager.registerNewWallet(
+      const publicKey = await registerNewWalletBackgroundAction(
         values.mnemonic as string,
         values.password as string
       );
       actions.setSubmitting(false);
-      dispatch(setWallet({ id: "Wallet", address: walletKeyPair.publicKey.toBase58() }));
-      if (await vaultManager.unlockVault(values.password as string)) {
+      dispatch(setWallet({ id: "Wallet", address: publicKey }));
+      if (await unlockVaultBackgroundAction(values.password as string)) {
         sendNotification({
           message: t("wallet_register_successfully"),
           variant: "success"

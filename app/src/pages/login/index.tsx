@@ -5,7 +5,6 @@ import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { getVaultManager } from "utils/wallet-manager/wallet-manager";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -34,11 +33,27 @@ const Login = () => {
     }
   };
 
+  const unlockVaultBackgroundAction = async (password: string) => {
+    console.log("UNLOCK VAULT:", password);
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "unlockVault",
+        data: {
+          password
+        }
+      });
+      const unlocked = response?.data?.unlocked;
+      console.log("UNLOCKED VAULT:", unlocked);
+      return unlocked;
+    } catch (err) {
+      console.log("Error on unlock vault:", err);
+    }
+  };
+
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
-    const vaultManager = getVaultManager();
     try {
-      if (await vaultManager.unlockVault(values.password)) {
+      if (await unlockVaultBackgroundAction(values.password)) {
         await savePasswordToBackground(values.password);
         navigate({ pathname: "/" });
         sendNotification({

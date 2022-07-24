@@ -15,3 +15,9 @@ export class VaultIncorrectPasswordError extends Error {
     super(message);
   }
 }
+
+export class VaultLockedError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}

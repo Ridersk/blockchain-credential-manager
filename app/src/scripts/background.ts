@@ -1,4 +1,18 @@
-export {};
+import { VaultIncorrectPasswordError, VaultLockedError } from "../exceptions";
+import { VaultManager, initVaultManager } from "./wallet-manager/wallet-manager";
+
+let vaultManager: VaultManager;
+
+async function setupVault() {
+  vaultManager = await initVaultManager();
+  // await vaultManager.unlockVault(await getPasswordFromBackground());
+}
+
+setupVault();
+
+/*
+ * Old functions
+ */
 
 let counter: number = 0;
 
@@ -24,7 +38,40 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
 
 // let currPassword: string;
 async function messageHandler(request: any) {
-  if (request.action == "savePassword") {
+  if (request.action === "registerWallet") {
+    const keypair = await vaultManager.registerNewWallet(
+      request.data.mnemonic,
+      request.data.password
+    );
+    return { data: { publicKey: keypair.publicKey.toBase58() } };
+  } else if (request.action === "unlockVault") {
+    const password = request.data.password;
+    await vaultManager.unlockVault(password);
+    return {
+      data: {
+        unlocked: true
+      }
+    };
+  } else if (request.action === "getKeypair") {
+    let status;
+    let keypair;
+    try {
+      keypair = await vaultManager.getCurrentAccountKeypair();
+      status = "UNLOCKED";
+    } catch (err) {
+      if (err instanceof VaultLockedError || err instanceof VaultIncorrectPasswordError) {
+        status = "LOCKED";
+      } else {
+        status = "NOT_FOUND";
+      }
+    }
+    return {
+      data: {
+        keypair,
+        status
+      }
+    };
+  } else if (request.action == "savePassword") {
     await chrome.storage.session.set({ currPassword: request.data.password });
 
     return {

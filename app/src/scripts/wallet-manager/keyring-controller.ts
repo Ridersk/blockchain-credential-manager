@@ -1,7 +1,11 @@
 import { EncryptorInterface } from "./encryptor";
 import { MemoryStore } from "./memory-store";
 import passEncryptor from "browser-passworder";
-import { VaultIncorrectPasswordError, VaultNoKeyringFoundError } from "exceptions";
+import {
+  VaultIncorrectPasswordError,
+  VaultNoKeyringFoundError,
+  VaultLockedError
+} from "../../exceptions";
 
 export type KeyringSerialized = {
   vault: string;
@@ -42,7 +46,7 @@ export class KeyringController {
       }
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
-      this._updateKeyring(password, vault);
+      await this._updateKeyring(password, vault);
       return this._keyring;
     } catch (err) {
       if (err instanceof Error && err.message === "Incorrect password") {
@@ -62,14 +66,21 @@ export class KeyringController {
 
   getKeyring(): Keyring {
     if (!this._keyring) {
-      throw new Error("Keyring is not unlocked");
+      throw new VaultLockedError("Keyring is locked");
     }
     return this._keyring;
   }
 
-  _updateKeyring(password: string, vault: VaultKeyring) {
+  async _updateKeyring(password: string, vault: VaultKeyring) {
     this._password = password;
     this._keyring = vault;
+
+    await chrome.storage.session.set({ currPassword: password });
+  }
+
+  async getPassword() {
+    const session = await chrome.storage.session.get("currPassword");
+    return session.currPassword;
   }
 }
 
