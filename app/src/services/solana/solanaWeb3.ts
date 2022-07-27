@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
 
 import { BlockchainCredentialManager } from "idl/blockchain_credential_manager";
@@ -19,7 +19,7 @@ export interface SolanaWeb3Workspace {
 let workspace: SolanaWeb3Workspace | null = null;
 
 export async function initWorkspace(publicKey: string): Promise<void> {
-  const wallet = await getWalletSignerFromBackgroundAction();
+  const wallet = new WalletSigner(new Keypair());
   const connection = new Connection(clusterUrl, commitment);
   const provider = new AnchorProvider(connection, wallet, { preflightCommitment, commitment });
   const program = new Program<BlockchainCredentialManager>(idl as any, programID, provider);
@@ -33,11 +33,24 @@ export async function initWorkspace(publicKey: string): Promise<void> {
 
 export default () => workspace;
 
-const getWalletSignerFromBackgroundAction = async (): Promise<Wallet> => {
-  const response = await chrome.runtime.sendMessage({
-    action: "getWalletSigner"
-  });
-  const walletSigner: Wallet = response?.data.walletSigner;
-  console.log("[POPUP] Wallet Signer:", walletSigner);
-  return walletSigner;
-};
+class WalletSigner implements Wallet {
+  constructor(readonly payer: Keypair) {
+    this.payer = payer;
+  }
+
+  async signTransaction(tx: Transaction): Promise<Transaction> {
+    tx.partialSign(this.payer);
+    return tx;
+  }
+
+  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
+    return txs.map((t) => {
+      t.partialSign(this.payer);
+      return t;
+    });
+  }
+
+  get publicKey(): PublicKey {
+    return this.payer?.publicKey;
+  }
+}

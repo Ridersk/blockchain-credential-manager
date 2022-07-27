@@ -4,7 +4,9 @@ import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { updateWallet } from "store/actionCreators";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -15,6 +17,7 @@ const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
+  const dispatch = useDispatch();
 
   const unlockVaultBackgroundAction = async (password: string) => {
     try {
@@ -24,8 +27,13 @@ const Login = () => {
           password
         }
       });
-      const unlocked = response?.data?.unlocked;
-      return unlocked;
+      const isUnlocked = response?.data?.isUnlocked;
+
+      if (isUnlocked) {
+        dispatch(updateWallet({ id: "Wallet 1", address: "123" }));
+      }
+
+      return isUnlocked;
     } catch (err) {
       console.log("Error on unlock vault:", err);
     }
@@ -92,6 +100,7 @@ const Login = () => {
                   inputProps={{ maxLength: 100 }}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  valueCopy={false}
                 />
                 <Box
                   sx={{

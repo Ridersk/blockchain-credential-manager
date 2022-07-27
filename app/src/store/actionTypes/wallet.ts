@@ -1,6 +1,6 @@
 // action - wallet reducer
 export enum WalletActionType {
-  SET_WALLET = "@wallet/SET_WALLET"
+  UPDATE_WALLET = "@wallet/UPDATE_WALLET"
 }
 
 export interface WalletData {
@@ -10,9 +10,9 @@ export interface WalletData {
   mnemonic?: string;
 }
 
-interface setWallet {
-  type: WalletActionType.SET_WALLET;
+interface updateWallet {
+  type: WalletActionType.UPDATE_WALLET;
   data: WalletData;
 }
 
-export type WalletAction = setWallet;
+export type WalletAction = updateWallet;

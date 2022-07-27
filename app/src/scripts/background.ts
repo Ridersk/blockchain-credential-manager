@@ -5,7 +5,6 @@ let vaultManager: VaultManager;
 
 async function setupVault() {
   vaultManager = await initVaultManager();
-  // await vaultManager.unlockVault(await getPasswordFromBackground());
 }
 
 setupVault();
@@ -25,9 +24,13 @@ chrome.runtime.onInstalled.addListener(() => {
 // Listen for alarm
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "refresh") {
-    const session = await chrome.storage.session.get("currPassword");
-    console.log("Counter:", counter++, "Current Password:", session.currPassword);
-    chrome.action.setBadgeText({ text: String(counter) });
+    const session = await chrome.storage.session.get("password");
+    // console.log("Counter:", counter, "Current Password:", session.password);
+    // try {
+    //   vaultManager.getState();
+    // } catch (err) {}
+
+    chrome.action.setBadgeText({ text: String(counter++) });
   }
 });
 
@@ -36,7 +39,6 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   return true;
 });
 
-// let currPassword: string;
 async function messageHandler(request: any) {
   if (request.action === "registerWallet") {
     const keypair = await vaultManager.registerNewWallet(
@@ -46,17 +48,24 @@ async function messageHandler(request: any) {
     return { data: { publicKey: keypair?.publicKey?.toBase58() } };
   } else if (request.action === "unlockVault") {
     const password = request.data.password;
-    await vaultManager.unlockVault(password);
+    let isUnlocked = false;
+    try {
+      isUnlocked = await vaultManager.unlockVault(password);
+    } catch (err) {}
+
     return {
       data: {
-        unlocked: true
+        isUnlocked: isUnlocked
       }
     };
-  } else if (request.action === "getCurrentWallet") {
+  } else if (request.action === "getState") {
+    const state = vaultManager.getState();
+    return { data: state };
+  } else if (request.action === "getSelectedAddress") {
     let status;
     let keypair;
     try {
-      keypair = await vaultManager.getCurrentAccountKeypair();
+      keypair = await vaultManager.getSelectedAccountKeypair();
       status = "UNLOCKED";
     } catch (err) {
       if (err instanceof VaultLockedError || err instanceof VaultIncorrectPasswordError) {
@@ -83,14 +92,6 @@ async function messageHandler(request: any) {
     const decryptedData = await vaultManager.decryptMessage(data);
     return {
       data: decryptedData
-    };
-  } else if (request.action === "getWalletSigner") {
-    const walletSigner = await vaultManager.getCurrentWalletSigner();
-    console.log("[BACKGROUND] Wallet Signer:", walletSigner);
-    return {
-      data: {
-        walletSigner
-      }
     };
   } else return {};
 }

@@ -9,7 +9,7 @@ import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
-import { setWallet } from "store/actionCreators";
+import { updateWallet } from "store/actionCreators";
 import { useDispatch } from "react-redux";
 import useNotification from "hooks/useNotification";
 
@@ -145,7 +145,7 @@ const WalletRegister = () => {
         values.password as string
       );
       actions.setSubmitting(false);
-      dispatch(setWallet({ id: "Wallet", address: publicKey }));
+      dispatch(updateWallet({ id: "Wallet", address: publicKey }));
       if (await unlockVaultBackgroundAction(values.password as string)) {
         sendNotification({
           message: t("wallet_register_successfully"),

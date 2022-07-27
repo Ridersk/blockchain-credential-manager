@@ -19,7 +19,7 @@ const customizationReducer = (
   action: WalletAction
 ): WalletState => {
   switch (action.type) {
-    case WalletActionType.SET_WALLET:
+    case WalletActionType.UPDATE_WALLET:
       return {
         ...state,
         ...action.data

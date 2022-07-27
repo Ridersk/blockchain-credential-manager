@@ -8,7 +8,7 @@ import { initWorkspace } from "services/solana/solanaWeb3";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { setWallet } from "store/actionCreators";
+import { updateWallet } from "store/actionCreators";
 import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
 
 function App() {
@@ -24,9 +24,21 @@ function App() {
     navigate({ pathname: "/login" });
   };
 
+  const getStateFromBackgroundAction = async () => {
+    const response = await chrome.runtime.sendMessage({
+      action: "getState"
+    });
+
+    const isinitialed = response.data.isInitialized;
+
+    if (!isinitialed) {
+      throw new VaultNoKeyringFoundError();
+    }
+  };
+
   const getWalletFromBackgroundAction = async (): Promise<string> => {
     const response = await chrome.runtime.sendMessage({
-      action: "getCurrentWallet"
+      action: "getSelectedAddress"
     });
     const publicKey = response?.data?.publicKey;
     const status = response?.data?.status;
@@ -46,10 +58,11 @@ function App() {
     async function setupVault() {
       try {
         setLoading(true);
+        await getStateFromBackgroundAction();
         const publicKey = await getWalletFromBackgroundAction();
 
         await initWorkspace(publicKey);
-        dispatch(setWallet({ id: "Wallet 1", address: publicKey }));
+        dispatch(updateWallet({ id: "Wallet 1", address: publicKey }));
       } catch (err) {
         console.log(err);
         if (err instanceof VaultNoKeyringFoundError) {
