@@ -1,12 +1,13 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Container, Grid, Typography } from "@mui/material";
+import { unwrapResult } from "@reduxjs/toolkit";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { updateWallet } from "store/actionCreators";
+import { unlockVaultAction } from "store/actionCreators";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -17,32 +18,13 @@ const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
-  const dispatch = useDispatch();
-
-  const unlockVaultBackgroundAction = async (password: string) => {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: "unlockVault",
-        data: {
-          password
-        }
-      });
-      const isUnlocked = response?.data?.isUnlocked;
-
-      if (isUnlocked) {
-        dispatch(updateWallet({ id: "Wallet 1", address: "123" }));
-      }
-
-      return isUnlocked;
-    } catch (err) {
-      console.log("Error on unlock vault:", err);
-    }
-  };
+  const dispatch = useTypedDispatch();
 
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     try {
-      if (await unlockVaultBackgroundAction(values.password)) {
+      const isUnlocked: boolean = unwrapResult(await dispatch(unlockVaultAction(values.password)));
+      if (isUnlocked) {
         navigate({ pathname: "/" });
         sendNotification({
           message: t("wallet_login_successfully"),

@@ -4,7 +4,7 @@ import { getWalletDetails } from "services/solana/getWalletDetails";
 import WalletBalanceCard from "./wallet-balance-card";
 import WalletOptionsGroup from "./wallet-options-group";
 import { useDispatch } from "react-redux";
-import { updateWallet } from "store/actionCreators";
+import { updateWalletAction } from "store/actionCreators";
 
 const WalletDetailsPanel = () => {
   const dispatch = useDispatch();
@@ -15,10 +15,10 @@ const WalletDetailsPanel = () => {
       try {
         setLoading(true);
         const walletDetails = await getWalletDetails();
-        dispatch(updateWallet({ balance: walletDetails.balance }));
+        dispatch(updateWalletAction({ balance: walletDetails.balance }));
         setLoading(false);
       } catch (err) {
-        console.log(err);
+        console.log("[WalletDetails]", err);
       }
     }
 

@@ -1,6 +1,8 @@
 // action - wallet reducer
 export enum WalletActionType {
-  UPDATE_WALLET = "@wallet/UPDATE_WALLET"
+  UPDATE_WALLET = "@wallet/UPDATE_WALLET",
+  UNLOCK_VAULT = "@wallet/UNLOCK_VAULT",
+  CREATE_NEW_VAULT = "@wallet/CREATE_NEW_VAULT"
 }
 
 export interface WalletData {
@@ -10,9 +12,24 @@ export interface WalletData {
   mnemonic?: string;
 }
 
-interface updateWallet {
+export interface NewVaultData {
+  password: string;
+  mnemonic: string;
+}
+
+interface UpdateWallet {
   type: WalletActionType.UPDATE_WALLET;
   data: WalletData;
 }
 
-export type WalletAction = updateWallet;
+interface UnlockVault {
+  type: WalletActionType.UNLOCK_VAULT;
+  password: string;
+}
+
+interface CreateNewVault {
+  type: WalletActionType.UNLOCK_VAULT;
+  data: NewVaultData;
+}
+
+export type WalletAction = UpdateWallet | UnlockVault | CreateNewVault;

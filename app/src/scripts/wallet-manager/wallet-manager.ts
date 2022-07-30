@@ -3,24 +3,18 @@ import selectedStorage from "../storage";
 import {
   KeyringController,
   KeyringEncryptedSerialized,
-  VaultKeyring,
   WalletAccount
-} from "./keyring-controller";
-import { ComposableMemoryStore, MemoryStore } from "./memory-store";
+} from "./controllers/keyring-controller";
+import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
 import { WalletGenerator } from "./wallet-generator";
-import { Keypair } from "@solana/web3.js";
 import { decryptData, encryptData } from "../../utils/aes-encryption";
-
-type VaultState = {
-  currentAccount: {
-    address: string;
-  };
-};
+import { PreferencesController, PreferencesData } from "./controllers/preferences";
+import { ComposableStore } from "./store/composable-store";
 
 type VaultInitialState = {
   keyring: KeyringEncryptedSerialized;
-  vaultState?: VaultState;
+  preferences?: PreferencesData;
 };
 
 export type VaultManagerOpts = {
@@ -30,27 +24,46 @@ export type VaultManagerOpts = {
 
 export class VaultManager {
   private _keyringController: KeyringController;
-  private _memoryStore: ComposableMemoryStore<MemoryStore<any>>;
+  private _preferencesController: PreferencesController;
+  private _memoryStore: ComposableStore<MemoryStore<any>>;
 
   constructor(opts: VaultManagerOpts = {}) {
     const { initState, encryptor } = opts;
+
+    console.log("[Wallet] Init Keyring:", initState?.keyring);
+    console.log("[Wallet] Init Preferences:", initState?.preferences);
 
     this._keyringController = new KeyringController({
       initState: initState?.keyring || ({} as KeyringEncryptedSerialized),
       encryptor: encryptor
     });
 
-    this._memoryStore = new ComposableMemoryStore<any>({
+    this._preferencesController = new PreferencesController({
+      initState: initState?.preferences || ({} as PreferencesData)
+    });
+
+    this._memoryStore = new ComposableStore<any>({
       stores: {
-        keyring: this._keyringController.sessionStore
+        keyring: this._keyringController.sessionStore,
+        preferences: this._preferencesController.sessionStore
       }
     });
   }
 
-  async registerNewWallet(mnemonic: string, password: string): Promise<Keypair> {
+  async registerNewWallet(mnemonic: string, password: string) {
     const walletKeyPair = await WalletGenerator.generateWalletKeypair(mnemonic);
-    const accounts: WalletAccount[] = [{ privateKey: bs58.encode(walletKeyPair.secretKey) }];
-    await this._saveVaultData(password, mnemonic, accounts);
+    const accounts: WalletAccount[] = [
+      {
+        address: walletKeyPair.publicKey.toBase58(),
+        privateKey: bs58.encode(walletKeyPair.secretKey)
+      }
+    ];
+
+    await this._keyringController.createKeyring(password, {
+      mnemonic,
+      accounts
+    });
+    await this._preferencesController.setSelectedAddress(accounts[0].address);
     return walletKeyPair;
   }
 
@@ -60,31 +73,25 @@ export class VaultManager {
   }
 
   async isUnlocked() {
-    return this._keyringController.sessionStore.getState().isUnlocked;
+    return (await this._keyringController.sessionStore.getState()).isUnlocked;
   }
 
-  getState() {
-    const { vault } = this._keyringController.encryptedStore.getState();
+  async getState() {
+    const { vault } = await this._keyringController.persistentStore.getState();
     const isInitialized = Boolean(vault);
 
     return {
       isInitialized,
-      ...this._memoryStore.getState()
+      ...(await this._memoryStore.getState())
     };
   }
 
-  async getSelectedAccountKeypair(): Promise<Keypair | null> {
-    const keyring = await this._keyringController.getKeyring();
-    const currentAccount = keyring?.accounts?.[0];
-
-    if (currentAccount) {
-      return this._getUserKeypairFromPrivateKeyEncoded(currentAccount?.privateKey);
-    }
-    return null;
+  async getSelectedAccountKeypair() {
+    const selectedAddress = await this._preferencesController.getSelectedAddress();
+    return this._keyringController.getKeypairFromAddress(selectedAddress);
   }
 
   async encryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
-    console.log("[BACKGROUND] MESSAGE TOBE ENCRYPTED:", data);
     const vaultKeypair = await this.getSelectedAccountKeypair();
 
     return Object.fromEntries(
@@ -96,7 +103,6 @@ export class VaultManager {
   }
 
   async decryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
-    console.log("[BACKGROUND] MESSAGE TOBE DECRYPTED:", data);
     const vaultKeypair = await this.getSelectedAccountKeypair();
 
     return Object.fromEntries(
@@ -106,33 +112,13 @@ export class VaultManager {
       ])
     );
   }
-
-  async _saveVaultData(password: string, mnemonic: string, accounts: WalletAccount[]) {
-    const vaultKeyringData: VaultKeyring = {
-      mnemonic,
-      accounts
-    };
-    const encryptedVault = await this._keyringController.createKeyring(password, vaultKeyringData);
-    await selectedStorage.setData("keyring", { vault: encryptedVault });
-  }
-
-  _getUserKeypairFromPrivateKeyEncoded(privateKey: string): Keypair | null {
-    let userKeypair: Keypair;
-    if (privateKey) {
-      const secret = bs58.decode(privateKey);
-      userKeypair = Keypair.fromSecretKey(secret);
-      return userKeypair;
-    }
-
-    return null;
-  }
 }
 
 // TODO. Move Code to background.js
 let vaultManagerInstance: VaultManager;
 export async function initVaultManager(): Promise<VaultManager> {
-  const keyring = (await selectedStorage.getData("keyring")) as KeyringEncryptedSerialized;
-  vaultManagerInstance = new VaultManager({ initState: { keyring } });
+  const initState = (await selectedStorage.getData()) as VaultInitialState;
+  vaultManagerInstance = new VaultManager({ initState });
   return vaultManagerInstance;
 }
 

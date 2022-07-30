@@ -7,7 +7,7 @@ import WalletOptionButton from "./wallet-option-button";
 import requestAirdrop from "services/solana/requestAirdrop";
 import { getWalletDetails } from "services/solana/getWalletDetails";
 import useNotification from "hooks/useNotification";
-import { updateWallet } from "store/actionCreators";
+import { updateWalletAction } from "store/actionCreators";
 
 interface WalletOptionsGroupProps {
   sx?: SxProps;
@@ -27,7 +27,7 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
     try {
       await requestAirdrop();
       const walletDetails = await getWalletDetails();
-      dispatch(updateWallet({ balance: walletDetails.balance }));
+      dispatch(updateWalletAction({ balance: walletDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {
       sendNotification({ message: t("operation_deposit_error"), variant: "error" });

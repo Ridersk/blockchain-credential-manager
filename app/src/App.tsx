@@ -6,13 +6,14 @@ import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
 import { initWorkspace } from "services/solana/solanaWeb3";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { updateWallet } from "store/actionCreators";
-import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
+import { forceUpdateWalletAction } from "store/actionCreators";
+import { VaultNoKeyringFoundError } from "exceptions";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -24,47 +25,14 @@ function App() {
     navigate({ pathname: "/login" });
   };
 
-  const getStateFromBackgroundAction = async () => {
-    const response = await chrome.runtime.sendMessage({
-      action: "getState"
-    });
-
-    const isinitialed = response.data.isInitialized;
-
-    if (!isinitialed) {
-      throw new VaultNoKeyringFoundError();
-    }
-  };
-
-  const getWalletFromBackgroundAction = async (): Promise<string> => {
-    const response = await chrome.runtime.sendMessage({
-      action: "getSelectedAddress"
-    });
-    const publicKey = response?.data?.publicKey;
-    const status = response?.data?.status;
-
-    if (status === "NOT_FOUND") {
-      throw new VaultNoKeyringFoundError(status);
-    }
-
-    if (status !== "UNLOCKED") {
-      throw new VaultLockedError("LOCKED");
-    }
-
-    return publicKey;
-  };
-
   useEffect(() => {
     async function setupVault() {
       try {
         setLoading(true);
-        await getStateFromBackgroundAction();
-        const publicKey = await getWalletFromBackgroundAction();
-
+        const publicKey = unwrapResult(await dispatch(forceUpdateWalletAction()));
         await initWorkspace(publicKey);
-        dispatch(updateWallet({ id: "Wallet 1", address: publicKey }));
       } catch (err) {
-        console.log(err);
+        console.log("[App]", err);
         if (err instanceof VaultNoKeyringFoundError) {
           goToWelcomePage();
         } else {

@@ -129,7 +129,7 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
-      console.log(err);
+      console.log("[Credential]", err);
       if (err instanceof AnchorError) {
         sendNotification({ message: err?.error?.errorMessage, variant: "error" });
       } else {

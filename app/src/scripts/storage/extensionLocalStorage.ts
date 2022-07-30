@@ -1,17 +1,17 @@
 import { BaseStorage } from "./baseStorage";
 
 export class ExtensionLocalStorage extends BaseStorage {
-  async setData(name: string, val: string | object): Promise<void> {
-    await chrome.storage.local.set({ [name]: val });
+  async setData(key: string, val: any): Promise<void> {
+    await chrome.storage.local.set({ [key]: val });
   }
 
-  async getData(name: string): Promise<any> {
-    const data = (await chrome.storage.local.get(name))[name];
-    return data;
+  async getData(key?: string): Promise<any> {
+    const data = await chrome.storage.local.get(key);
+    return key ? data[key] : data;
   }
 
-  async deleteData(name: string): Promise<void> {
-    await chrome.storage.local.remove(name);
+  async deleteData(key: string): Promise<void> {
+    await chrome.storage.local.remove(key);
   }
 
   async getAllData(): Promise<any> {

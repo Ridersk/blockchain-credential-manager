@@ -10,6 +10,7 @@
     "@mui/material": "^5.8.0",
     "@mui/styled-engine-sc": "^5.8.0",
     "@project-serum/anchor": "~0.24.2",
+    "@reduxjs/toolkit": "^1.8.3",
     "@solana/web3.js": "~1.39.1",
     "@tabler/icons": "^1.68.0",
     "@testing-library/jest-dom": "^5.14.1",

@@ -1,11 +1,14 @@
-import { EncryptorInterface } from "./encryptor";
-import { MemoryStore } from "./memory-store";
+import { EncryptorInterface } from "../encryptor";
+import { MemoryStore } from "../store/memory-store";
 import passEncryptor from "browser-passworder";
 import {
   VaultIncorrectPasswordError,
   VaultNoKeyringFoundError,
   VaultLockedError
-} from "../../exceptions";
+} from "../../../exceptions";
+import { PersistentStore } from "../store/persistent-store";
+import { Keypair } from "@solana/web3.js";
+import bs58 from "bs58";
 
 export type KeyringEncryptedSerialized = {
   vault: string;
@@ -18,6 +21,7 @@ export type SessionVault = {
 };
 
 export type WalletAccount = {
+  address: string;
   privateKey: string;
 };
 
@@ -32,15 +36,15 @@ type KeyringControllerOpts = {
 };
 
 export class KeyringController {
-  encryptedStore: MemoryStore<KeyringEncryptedSerialized>;
+  persistentStore: PersistentStore<KeyringEncryptedSerialized>;
   sessionStore: MemoryStore<SessionVault>;
   private _encryptor: EncryptorInterface;
 
   constructor(opts: KeyringControllerOpts) {
     const { initState, encryptor } = opts;
 
-    this.encryptedStore = new MemoryStore<KeyringEncryptedSerialized>(initState);
-    this.sessionStore = new MemoryStore<SessionVault>({
+    this.persistentStore = new PersistentStore<KeyringEncryptedSerialized>("keyring", initState);
+    this.sessionStore = new MemoryStore<SessionVault>("keyring", {
       isUnlocked: false,
       keyring: null,
       password: null
@@ -50,16 +54,16 @@ export class KeyringController {
 
   async unlock(password: string) {
     try {
-      const encryptedVault: string = this.encryptedStore.getState().vault;
+      const encryptedVault: string = (await this.persistentStore.getState()).vault;
       if (!encryptedVault) {
         throw new VaultNoKeyringFoundError("Cannot unlock without a previous vault.");
       }
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
       await this._updateKeyring(password, vault);
-      return this.sessionStore.getState().keyring;
+      return (await this.sessionStore.getState()).keyring;
     } catch (err) {
-      console.log(err);
+      console.log("[Keyring]", err);
       if (err instanceof Error && err.message === "Incorrect password") {
         throw new VaultIncorrectPasswordError("Incorrect password");
       }
@@ -69,20 +73,28 @@ export class KeyringController {
 
   async createKeyring(password: string, keyring: VaultKeyring) {
     const encryptedVault = await this._encryptor.encrypt(password, keyring);
-    this.encryptedStore.putState({ vault: encryptedVault });
+    await this.persistentStore.putState({ vault: encryptedVault });
     this._updateKeyring(password, keyring);
 
     return encryptedVault;
   }
 
   async getKeyring(): Promise<VaultKeyring> {
-    // const keyring = this._keyring || (await chrome.storage.session.get("keyring")).keyring;
-    const keyring = this.sessionStore.getState().keyring;
+    const keyring = (await this.sessionStore.getState()).keyring;
 
     if (!keyring) {
       throw new VaultLockedError("Keyring is locked");
     }
     return keyring;
+  }
+
+  async getKeypairFromAddress(address: string): Promise<Keypair | null> {
+    const keyring = await this.getKeyring();
+    const account = keyring.accounts.find((_account) => _account.address === address);
+    if (!account) {
+      throw new Error("Account not found");
+    }
+    return this._getUserKeypairFromPrivateKeyEncoded(account.privateKey);
   }
 
   async _updateKeyring(password: string, vault: VaultKeyring) {
@@ -91,11 +103,17 @@ export class KeyringController {
       keyring: vault,
       password: password
     });
-    // this._password = password;
-    // this._keyring = vault;
+  }
 
-    // await chrome.storage.session.set({ keyring: vault });
-    // await chrome.storage.session.set({ password: password });
+  _getUserKeypairFromPrivateKeyEncoded(privateKey: string): Keypair | null {
+    let userKeypair: Keypair;
+    if (privateKey) {
+      const secret = bs58.decode(privateKey);
+      userKeypair = Keypair.fromSecretKey(secret);
+      return userKeypair;
+    }
+
+    return null;
   }
 }
 

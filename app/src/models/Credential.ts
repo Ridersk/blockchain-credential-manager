@@ -67,6 +67,5 @@ const decryptDataFromBackgroundAction = async (encryptedData: {
     data: encryptedData
   });
   const decryptedData: { [key: string]: string } = response?.data;
-  console.log("RECEIVED DECRYPTED DATA:", decryptedData);
   return decryptedData;
 };
