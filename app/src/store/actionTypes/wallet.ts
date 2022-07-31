@@ -28,7 +28,7 @@ interface UnlockVault {
 }
 
 interface CreateNewVault {
-  type: WalletActionType.UNLOCK_VAULT;
+  type: WalletActionType.CREATE_NEW_VAULT;
   data: NewVaultData;
 }
 

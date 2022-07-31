@@ -7,7 +7,16 @@ export class MemoryStore<T> implements StoreInterface {
   constructor(key: string, initState: T = {} as T) {
     this._key = key;
     this._state = initState;
-    this.putState(initState);
+    this.restoreState(initState);
+  }
+
+  async restoreState(initState: T) {
+    let state: T = await this.getState();
+    if (!state) {
+      this.putState(initState);
+      state = initState;
+    }
+    this._state = state;
   }
 
   async getState(): Promise<T> {

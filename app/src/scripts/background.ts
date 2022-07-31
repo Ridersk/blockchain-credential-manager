@@ -1,5 +1,13 @@
 import { VaultManager, initVaultManager } from "./wallet-manager/wallet-manager";
 
+// const { URL } = require("url");
+
+// const urlTeste = new URL("https://mysite.com");
+
+// if (urlTeste instanceof URL) {
+//   console.log("URL is valid");
+// }
+
 let vaultManager: VaultManager;
 
 async function setupVault() {
@@ -39,13 +47,7 @@ async function messageHandler(request: any) {
     );
     return { data: { publicKey: keypair?.publicKey?.toBase58() } };
   } else if (request.action === "unlockVault") {
-    let isUnlocked = false;
-    try {
-      isUnlocked = await vaultManager.unlockVault(request.data.password);
-    } catch (err) {
-      console.log("[Background]", err);
-    }
-
+    let isUnlocked = await vaultManager.unlockVault(request.data.password);
     return {
       data: {
         isUnlocked: isUnlocked
@@ -54,17 +56,37 @@ async function messageHandler(request: any) {
   } else if (request.action === "getState") {
     const state = await vaultManager.getState();
     return { data: state };
-  } else if (request.action === "encryptData") {
-    const data = request.data;
-    const encryptedData = await vaultManager.encryptMessage(data);
+  } else if (request.action === "createCredential") {
+    const credentialData = request.data;
+    const credential = await vaultManager.credentialsController?.createCredential(credentialData);
     return {
-      data: encryptedData
+      data: { credential }
     };
-  } else if (request.action === "decryptData") {
-    const data = request.data;
-    const decryptedData = await vaultManager.decryptMessage(data);
+  } else if (request.action === "editCredential") {
+    const credentialData = request.data;
+    const credential = await vaultManager.credentialsController?.editCredential(credentialData);
     return {
-      data: decryptedData
+      data: { credential }
+    };
+  } else if (request.action === "getCredential") {
+    const address = request?.data?.address;
+    const credential = await vaultManager.credentialsController?.getCredential(address);
+    return {
+      data: { credential }
+    };
+  } else if (request.action === "getCredentials") {
+    const credentialsController = vaultManager.credentialsController;
+    const credentials = await credentialsController?.getCredentials();
+    return {
+      data: {
+        credentials
+      }
+    };
+  } else if (request.action === "deleteCredential") {
+    const address = request?.data?.address;
+    await vaultManager.credentialsController?.deleteCredential(address);
+    return {
+      data: { deleted: true }
     };
   } else return {};
 }

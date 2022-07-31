@@ -1,6 +1,8 @@
 const path = require("path");
 const webpack = require("webpack");
 
+const { URL } = require("url");
+
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {
   mode: "development",
@@ -15,7 +17,16 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
     fallback: {
-      stream: require.resolve("stream-browserify")
+      stream: require.resolve("stream-browserify"),
+      os: require.resolve("os-browserify/browser"),
+      https: require.resolve("https-browserify"),
+      http: require.resolve("stream-http"),
+      // url: require.resolve("url/"),
+      buffer: require.resolve("buffer/"),
+      crypto: require.resolve("crypto-browserify"),
+      zlib: require.resolve("browserify-zlib"),
+      path: require.resolve("path-browserify"),
+      fs: require.resolve("browserify-fs")
     }
   },
   module: {
@@ -29,11 +40,13 @@ module.exports = {
   },
   devtool: "cheap-module-source-map",
   plugins: [
-    // fix "process is not defined" error:
-    // (do "npm install process" before running the build)
     new webpack.ProvidePlugin({
-      process: "process/browser",
+      process: require.resolve("process/browser"),
+      XMLHttpRequest: require.resolve("xhr2"),
+      // "window.WebSocket": require.resolve("ws"),
       Buffer: ["buffer", "Buffer"]
+      // url: require.resolve("url/")
+      // URL: ["url", "URL"]
     })
   ]
 };

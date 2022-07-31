@@ -1,7 +1,7 @@
 // Responsible to handle extension popup requests
 
 chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
-  if (request.action == "getCredentials") {
+  if (request.action == "getInputFormCredentials") {
     // Password in a form
     const passwordElement = document.querySelector('input[type="password"]');
     // First input in a form that contains a password

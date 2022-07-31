@@ -2,12 +2,9 @@ import { List, ListItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import CredentialCard from "./credential-card";
 import { Credential } from "models/Credential";
-import getCredentials from "services/credentials-program/getCredentials";
-
-const CREDENTIALS = [
-  { url: "github.com", label: "metavault@gmail.com", secret: "teste" },
-  { url: "github.com", label: "metavaultv2@gmail.com", secret: "teste2" }
-];
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { getCredentialsAction } from "store/actionCreators/credential";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 interface Props {
   textFilter?: string;
@@ -22,48 +19,41 @@ type CredentialAttributes = {
 };
 
 const CredentialsList = ({ textFilter = "" }: Props) => {
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<Array<CredentialAttributes>>([]);
 
-  const filterCredentials = async (credentials: Array<Credential>) => {
+  const filterCredentials = (credentials: Array<Credential>) => {
     if (textFilter) {
       const searchText = textFilter.toLowerCase();
       return credentials?.filter(
-        async (item) =>
+        (item) =>
           item.title.toLowerCase().includes(searchText) ||
           item.url.toLowerCase().includes(searchText) ||
-          (await item.label).toLowerCase().includes(searchText)
+          item.label.toLowerCase().includes(searchText)
       );
     }
     return credentials;
   };
 
-  const formatCredentials = async (
-    credentials: Array<Credential>
-  ): Promise<CredentialAttributes[]> => {
-    return Promise.all(
-      credentials.map(async (item) => {
-        const label = await item.label;
-        const secret = await item.secret;
-        return {
-          publicKey: item?.publicKey,
-          url: item?.url,
-          iconUrl: item?.iconUrl,
-          label,
-          secret
-        };
-      })
-    );
+  const formatCredentials = (credentials: Array<Credential>): CredentialAttributes[] => {
+    return credentials.map((item) => ({
+      publicKey: item?.publicKey,
+      url: item?.url,
+      iconUrl: item?.iconUrl,
+      label: item?.label,
+      secret: item?.secret
+    }));
   };
 
   useEffect(() => {
     async function getCredentialsList() {
       try {
         setLoading(true);
-        const credentials = await formatCredentials(
-          await filterCredentials(await getCredentials())
-        );
-        setList(credentials);
+        const credentials = unwrapResult(await dispatch(getCredentialsAction()));
+        const credentialsFormatted = formatCredentials(filterCredentials(credentials));
+        console.log("[CredentialsList] credentialsFormatted", credentialsFormatted);
+        setList(credentialsFormatted);
         setLoading(false);
       } catch (err) {}
     }
@@ -80,8 +70,8 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
             credentialKey={item?.publicKey}
             url={item?.url}
             iconUrl={item?.iconUrl}
-            label={item?.label as string}
-            secret={item?.secret as string}
+            label={item?.label}
+            secret={item?.secret}
           />
         </ListItem>
       ))}

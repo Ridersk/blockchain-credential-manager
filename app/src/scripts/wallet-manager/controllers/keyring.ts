@@ -85,6 +85,7 @@ export class KeyringController {
     if (!keyring) {
       throw new VaultLockedError("Keyring is locked");
     }
+
     return keyring;
   }
 

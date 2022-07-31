@@ -4,13 +4,13 @@ import {
   KeyringController,
   KeyringEncryptedSerialized,
   WalletAccount
-} from "./controllers/keyring-controller";
+} from "./controllers/keyring";
 import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
 import { WalletGenerator } from "./wallet-generator";
-import { decryptData, encryptData } from "../../utils/aes-encryption";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
+import { CredentialsController } from "./controllers/credentials";
 
 type VaultInitialState = {
   keyring: KeyringEncryptedSerialized;
@@ -26,12 +26,10 @@ export class VaultManager {
   private _keyringController: KeyringController;
   private _preferencesController: PreferencesController;
   private _memoryStore: ComposableStore<MemoryStore<any>>;
+  private _credentialsController?: CredentialsController;
 
   constructor(opts: VaultManagerOpts = {}) {
     const { initState, encryptor } = opts;
-
-    console.log("[Wallet] Init Keyring:", initState?.keyring);
-    console.log("[Wallet] Init Preferences:", initState?.preferences);
 
     this._keyringController = new KeyringController({
       initState: initState?.keyring || ({} as KeyringEncryptedSerialized),
@@ -48,6 +46,10 @@ export class VaultManager {
         preferences: this._preferencesController.sessionStore
       }
     });
+  }
+
+  get credentialsController() {
+    return this._credentialsController;
   }
 
   async registerNewWallet(mnemonic: string, password: string) {
@@ -68,8 +70,17 @@ export class VaultManager {
   }
 
   async unlockVault(password: string) {
-    const vaultData = await this._keyringController.unlock(password);
-    return Boolean(vaultData);
+    let unlocked = false;
+    try {
+      const vaultData = await this._keyringController.unlock(password);
+      unlocked = Boolean(vaultData);
+      if (unlocked) {
+        await this.fullUpdate();
+      }
+    } catch (e) {
+      console.log("[WalletManager] UnlockVault - Error:", e);
+    }
+    return unlocked;
   }
 
   async isUnlocked() {
@@ -87,30 +98,20 @@ export class VaultManager {
   }
 
   async getSelectedAccountKeypair() {
-    const selectedAddress = await this._preferencesController.getSelectedAddress();
-    return this._keyringController.getKeypairFromAddress(selectedAddress);
+    try {
+      const selectedAddress = await this._preferencesController.getSelectedAddress();
+      return this._keyringController.getKeypairFromAddress(selectedAddress);
+    } catch (e) {
+      return null;
+    }
   }
 
-  async encryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
-    const vaultKeypair = await this.getSelectedAccountKeypair();
+  async fullUpdate() {
+    const keypair = await this.getSelectedAccountKeypair();
 
-    return Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [
-        key,
-        encryptData(vaultKeypair?.secretKey as Uint8Array, value)
-      ])
-    );
-  }
-
-  async decryptMessage(data: { [key: string]: string }): Promise<{ [key: string]: string }> {
-    const vaultKeypair = await this.getSelectedAccountKeypair();
-
-    return Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [
-        key,
-        decryptData(vaultKeypair?.secretKey as Uint8Array, value)
-      ])
-    );
+    if (keypair) {
+      this._credentialsController = new CredentialsController(keypair);
+    }
   }
 }
 
@@ -119,6 +120,7 @@ let vaultManagerInstance: VaultManager;
 export async function initVaultManager(): Promise<VaultManager> {
   const initState = (await selectedStorage.getData()) as VaultInitialState;
   vaultManagerInstance = new VaultManager({ initState });
+  vaultManagerInstance.fullUpdate();
   return vaultManagerInstance;
 }
 

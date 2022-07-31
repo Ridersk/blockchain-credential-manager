@@ -22,13 +22,11 @@ export const forceUpdateWalletAction = createAsyncThunk<
   const preferences = response?.data?.preferences;
   const selectedAddress = preferences?.selectedAddress;
 
-  console.log("[Force Update]", response?.data);
-
   if (!isInitialized || !selectedAddress) {
     return thunkAPI.rejectWithValue(new VaultNoKeyringFoundError("Vault not initialized"));
   }
 
-  if (!keyring) {
+  if (!keyring?.isUnlocked) {
     return thunkAPI.rejectWithValue(new VaultLockedError("Vault locked"));
   }
 
@@ -57,6 +55,7 @@ export const unlockVaultAction = createAsyncThunk<boolean, string>(
     } catch (err) {
       console.log("[Wallet]", err);
     }
+
     return isUnlocked;
   }
 );
