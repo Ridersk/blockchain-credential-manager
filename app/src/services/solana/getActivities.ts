@@ -101,7 +101,6 @@ const getActivities = async (): Promise<Activity[]> => {
 
 function convertB58ToPrettyHex(b58Text: string): string {
   return Buffer.from(base58.decode(b58Text)).toString("hex");
-  // .replace(/(.{2})/g, "$1 ");
 }
 
 export default getActivities;

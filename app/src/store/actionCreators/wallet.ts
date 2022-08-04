@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
+import { initWorkspace } from "services/solana/solanaWeb3";
 import { NewVaultData, WalletActionType, WalletData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: WalletData) => ({
@@ -13,7 +14,7 @@ export const forceUpdateWalletAction = createAsyncThunk<
   {
     rejectValue: VaultNoKeyringFoundError | VaultLockedError;
   }
->("wallet/forceUpdateWallet", async (_, thunkAPI) => {
+>(WalletActionType.FORCE_UPDATE, async (_, thunkAPI) => {
   const response = await chrome.runtime.sendMessage({
     action: "getState"
   });
@@ -31,6 +32,7 @@ export const forceUpdateWalletAction = createAsyncThunk<
   }
 
   thunkAPI.dispatch(updateWalletAction({ id: "Wallet 1", address: selectedAddress }));
+  await initWorkspace(selectedAddress);
 
   return selectedAddress;
 });
@@ -39,21 +41,16 @@ export const unlockVaultAction = createAsyncThunk<boolean, string>(
   WalletActionType.UNLOCK_VAULT,
   async (password: string, thunkAPI): Promise<boolean> => {
     let isUnlocked = false;
-
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: "unlockVault",
-        data: {
-          password
-        }
-      });
-      isUnlocked = response?.data?.isUnlocked;
-
-      if (isUnlocked) {
-        await thunkAPI.dispatch(forceUpdateWalletAction());
+    const response = await chrome.runtime.sendMessage({
+      action: "unlockVault",
+      data: {
+        password
       }
-    } catch (err) {
-      console.log("[Wallet]", err);
+    });
+    isUnlocked = response?.data?.isUnlocked;
+
+    if (isUnlocked) {
+      await thunkAPI.dispatch(forceUpdateWalletAction());
     }
 
     return isUnlocked;
@@ -63,18 +60,14 @@ export const unlockVaultAction = createAsyncThunk<boolean, string>(
 export const createNewVaultAction = createAsyncThunk<void, NewVaultData>(
   WalletActionType.CREATE_NEW_VAULT,
   async ({ mnemonic, password }: NewVaultData, thunkAPI) => {
-    try {
-      await chrome.runtime.sendMessage({
-        action: "registerWallet",
-        data: {
-          mnemonic,
-          password
-        }
-      });
+    await chrome.runtime.sendMessage({
+      action: "registerWallet",
+      data: {
+        mnemonic,
+        password
+      }
+    });
 
-      await thunkAPI.dispatch(forceUpdateWalletAction());
-    } catch (err) {
-      console.log("[Wallet]", err);
-    }
+    await thunkAPI.dispatch(forceUpdateWalletAction());
   }
 );

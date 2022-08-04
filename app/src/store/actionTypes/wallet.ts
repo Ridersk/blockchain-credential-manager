@@ -1,6 +1,7 @@
 // action - wallet reducer
 export enum WalletActionType {
   UPDATE_WALLET = "@wallet/UPDATE_WALLET",
+  FORCE_UPDATE = "@wallet/FORCE_UPDATE",
   UNLOCK_VAULT = "@wallet/UNLOCK_VAULT",
   CREATE_NEW_VAULT = "@wallet/CREATE_NEW_VAULT"
 }

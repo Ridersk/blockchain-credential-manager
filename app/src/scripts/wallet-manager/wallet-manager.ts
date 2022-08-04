@@ -77,9 +77,7 @@ export class VaultManager {
       if (unlocked) {
         await this.fullUpdate();
       }
-    } catch (e) {
-      console.log("[WalletManager] UnlockVault - Error:", e);
-    }
+    } catch (e) {}
     return unlocked;
   }
 

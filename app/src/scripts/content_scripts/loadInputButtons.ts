@@ -2,11 +2,15 @@ export const interval = setInterval(() => {
   clearInterval(interval);
 
   try {
-    const passwordInput = document.querySelector('input[type="password"]');
-    const labelInput = passwordInput.closest("form").querySelector("input");
+    const passwordInput: HTMLInputElement = document.querySelector(
+      'input[type="password"]'
+    ) as HTMLInputElement;
+    const labelInput: HTMLInputElement = passwordInput
+      ?.closest("form")
+      ?.querySelector("input") as HTMLInputElement;
 
     if (passwordInput) {
-      const size = passwordInput.offsetHeight * 0.8;
+      const size = passwordInput?.offsetHeight * 0.8;
 
       const buttonContainer = document.createElement("div");
       buttonContainer.id = "bcm-credentials-container";
@@ -18,8 +22,8 @@ export const interval = setInterval(() => {
 
       buttonContainer.appendChild(buttonImg);
 
-      passwordInput.parentNode.insertBefore(buttonContainer.cloneNode(true), passwordInput);
-      labelInput.parentNode.insertBefore(buttonContainer.cloneNode(true), labelInput);
+      passwordInput?.parentNode?.insertBefore(buttonContainer.cloneNode(true), passwordInput);
+      labelInput?.parentNode?.insertBefore(buttonContainer.cloneNode(true), labelInput);
     }
   } catch (e) {}
 }, 500);

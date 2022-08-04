@@ -4,7 +4,6 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { theme } from "themes";
 import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
-import { initWorkspace } from "services/solana/solanaWeb3";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { forceUpdateWalletAction } from "store/actionCreators";
@@ -29,10 +28,8 @@ function App() {
     async function setupVault() {
       try {
         setLoading(true);
-        const publicKey = unwrapResult(await dispatch(forceUpdateWalletAction()));
-        await initWorkspace(publicKey);
+        unwrapResult(await dispatch(forceUpdateWalletAction()));
       } catch (err) {
-        console.log("[App]", err);
         if (err instanceof VaultNoKeyringFoundError) {
           goToWelcomePage();
         } else {

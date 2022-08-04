@@ -63,7 +63,6 @@ export class KeyringController {
       await this._updateKeyring(password, vault);
       return (await this.sessionStore.getState()).keyring;
     } catch (err) {
-      console.log("[Keyring]", err);
       if (err instanceof Error && err.message === "Incorrect password") {
         throw new VaultIncorrectPasswordError("Incorrect password");
       }

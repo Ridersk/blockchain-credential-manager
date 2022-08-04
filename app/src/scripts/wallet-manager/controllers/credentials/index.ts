@@ -7,6 +7,7 @@ import { BlockchainCredentialManager } from "../../../../idl/blockchain_credenti
 import { BaseLedgerProgram } from "../@shared/ledger/base-ledger-program";
 import { FilterOption, ownerFilter } from "./filters";
 import { encryptData, decryptData } from "../../../../utils/aes-encryption";
+import { sleep } from "../../../../utils/time";
 
 const CREDENTIAL_NAMESPACE = "credential";
 
@@ -67,6 +68,8 @@ export class CredentialsController {
     const encryptedLabel = encryptData(secretKey, label);
     const encryptedSecret = encryptData(secretKey, secret);
 
+    let status = "success";
+    let errorMessage = "";
     try {
       await this._ledgerProgram.program.methods
         .createCredential(
@@ -84,24 +87,22 @@ export class CredentialsController {
           systemProgram: SystemProgram.programId
         })
         .rpc();
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      if (!(e instanceof ReferenceError)) {
+        status = "error";
+        if (e.error && e.error.errorMessage) {
+          errorMessage = e.error?.errorMessage;
+        } else {
+          errorMessage = e.message;
+        }
+      }
     }
 
-    // Fetch credential created account
-    let credentialAccount = await this._ledgerProgram.program.account.credentialAccount.fetch(
-      credentialAccountKey
-    );
-
-    return new Credential(credentialAccountKey.toBase58(), {
-      uid: credentialAccount.uid.toNumber(),
-      title: credentialAccount.title,
-      url: credentialAccount.url,
-      iconUrl: credentialAccount.iconUrl,
-      label: decryptData(secretKey, credentialAccount.label),
-      secret: decryptData(secretKey, credentialAccount.secret),
-      description: credentialAccount.description
-    });
+    await sleep(1000);
+    return {
+      status,
+      errorMessage
+    };
   }
 
   async editCredential({
@@ -120,50 +121,71 @@ export class CredentialsController {
     const encryptedLabel = encryptData(secretKey, label);
     const encryptedSecret = encryptData(secretKey, secret);
 
+    let status = "success";
+    let errorMessage = "";
     try {
-      await program.methods
-        .editCredential(
-          new anchor.BN(uid),
-          title,
-          url,
-          iconUrl,
-          encryptedLabel,
-          encryptedSecret,
-          description
-        )
+      await program.methods.editCredential(
+        new anchor.BN(uid),
+        title,
+        url,
+        iconUrl,
+        encryptedLabel,
+        encryptedSecret,
+        description
+      )
         .accounts({
           credentialAccount: address,
           owner: publicKey
         })
         .rpc();
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      if (!(e instanceof ReferenceError)) {
+        status = "error";
+        if (e.error && e.error.errorMessage) {
+          errorMessage = e.error?.errorMessage;
+        } else {
+          errorMessage = e.message;
+        }
+      }
     }
 
-    // Fetch credential edited account
-    let credentialAccount = await program.account.credentialAccount.fetch(address);
-
-    return new Credential(address, {
-      uid: credentialAccount.uid.toNumber(),
-      title: credentialAccount.title,
-      url: credentialAccount.url,
-      iconUrl: credentialAccount.iconUrl,
-      label: decryptData(secretKey, credentialAccount.label),
-      secret: decryptData(secretKey, credentialAccount.secret),
-      description: credentialAccount.description
-    });
+    await sleep(1000);
+    return {
+      status,
+      errorMessage
+    };
   }
 
   async deleteCredential(address: string) {
     const publicKey = this._keypair.publicKey;
     const program = this._ledgerProgram.program;
-    await program.methods
-      .deleteCredential()
-      .accounts({
-        credentialAccount: address,
-        owner: publicKey
-      })
-      .rpc();
+
+    let status = "success";
+    let errorMessage = "";
+    try {
+      await program.methods
+        .deleteCredential()
+        .accounts({
+          credentialAccount: address,
+          owner: publicKey
+        })
+        .rpc();
+    } catch (e: any) {
+      if (!(e instanceof ReferenceError)) {
+        status = "error";
+        if (e.error && e.error.errorMessage) {
+          errorMessage = e.error?.errorMessage;
+        } else {
+          errorMessage = e.message;
+        }
+      }
+    }
+
+    await sleep(1000);
+    return {
+      status,
+      errorMessage
+    };
   }
 
   private async _getPdaParams(

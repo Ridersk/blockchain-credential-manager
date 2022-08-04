@@ -52,7 +52,6 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
         setLoading(true);
         const credentials = unwrapResult(await dispatch(getCredentialsAction()));
         const credentialsFormatted = formatCredentials(filterCredentials(credentials));
-        console.log("[CredentialsList] credentialsFormatted", credentialsFormatted);
         setList(credentialsFormatted);
         setLoading(false);
       } catch (err) {}

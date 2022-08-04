@@ -59,8 +59,6 @@ describe("credential-creation", () => {
     );
 
     // Assertions
-    console.log("Credential Account Data", credentialAccountData);
-
     assert.equal(
       provider.wallet.publicKey.toBase58(),
       credentialAccountData.owner.toBase58()
@@ -116,8 +114,6 @@ describe("credential-creation", () => {
     );
 
     // Assertions
-    console.log("Credential Account Data", credentialAccountData);
-
     assert.equal(
       owner.publicKey.toBase58(),
       credentialAccountData.owner.toBase58()
@@ -337,8 +333,6 @@ describe("credential-creation", () => {
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
     const description = "x".repeat(101);
-
-    console.log("SECRET LOG:", encryptData(owner.secretKey, secret).length);
 
     await assert.rejects(
       program.rpc.createCredential(

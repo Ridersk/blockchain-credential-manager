@@ -1,8 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
 
-const { URL } = require("url");
-
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {
   mode: "development",
@@ -21,7 +19,7 @@ module.exports = {
       os: require.resolve("os-browserify/browser"),
       https: require.resolve("https-browserify"),
       http: require.resolve("stream-http"),
-      // url: require.resolve("url/"),
+      url: require.resolve("url/"),
       buffer: require.resolve("buffer/"),
       crypto: require.resolve("crypto-browserify"),
       zlib: require.resolve("browserify-zlib"),
@@ -45,8 +43,6 @@ module.exports = {
       XMLHttpRequest: require.resolve("xhr2"),
       // "window.WebSocket": require.resolve("ws"),
       Buffer: ["buffer", "Buffer"]
-      // url: require.resolve("url/")
-      // URL: ["url", "URL"]
     })
   ]
 };

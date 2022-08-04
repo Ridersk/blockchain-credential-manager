@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AnchorError } from "@project-serum/anchor";
 import { useTranslation } from "react-i18next";
 import useNotification from "hooks/useNotification";
 import CredentialDeletionWarningModal from "components/credential/credential-warning-delete";
@@ -13,6 +12,7 @@ import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { FormInput } from "components/ui/form/inputs/form-input";
 import {
   createCredentialAction,
+  CredentialRequestError,
   deleteCredentialAction,
   editCredentialAction,
   getCredentialAction
@@ -106,32 +106,36 @@ const CredentialPage = () => {
     try {
       setLoading(true);
       if (isUpdate && credentialAddress && uid) {
-        await dispatch(
-          editCredentialAction({
-            address: credentialAddress,
-            uid,
-            title: values.title,
-            url: values.currentPageUrl,
-            iconUrl: faviconUrl,
-            label: values.credentialLabel,
-            secret: values.credentialSecret,
-            description: values.description
-          })
+        unwrapResult(
+          await dispatch(
+            editCredentialAction({
+              address: credentialAddress,
+              uid,
+              title: values.title,
+              url: values.currentPageUrl,
+              iconUrl: faviconUrl,
+              label: values.credentialLabel,
+              secret: values.credentialSecret,
+              description: values.description
+            })
+          )
         );
         sendNotification({
           message: t("operation_credential_edited_successfully"),
           variant: "info"
         });
       } else {
-        await dispatch(
-          createCredentialAction({
-            title: values.title,
-            url: values.currentPageUrl,
-            iconUrl: faviconUrl,
-            label: values.credentialLabel,
-            secret: values.credentialSecret,
-            description: values.description
-          })
+        unwrapResult(
+          await dispatch(
+            createCredentialAction({
+              title: values.title,
+              url: values.currentPageUrl,
+              iconUrl: faviconUrl,
+              label: values.credentialLabel,
+              secret: values.credentialSecret,
+              description: values.description
+            })
+          )
         );
         sendNotification({
           message: t("operation_credential_created_successfully"),
@@ -140,9 +144,8 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
-      console.log("[Credential]", err);
-      if (err instanceof AnchorError) {
-        sendNotification({ message: err?.error?.errorMessage, variant: "error" });
+      if (err instanceof CredentialRequestError) {
+        sendNotification({ message: err?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
@@ -153,8 +156,9 @@ const CredentialPage = () => {
 
   const handleDeleteCredential = async () => {
     try {
+      setLoading(true);
       if (isUpdate && credentialAddress && uid) {
-        await dispatch(deleteCredentialAction(credentialAddress));
+        unwrapResult(await dispatch(deleteCredentialAction(credentialAddress)));
         sendNotification({
           message: t("operation_credential_deleted_successfully"),
           variant: "info"
@@ -162,11 +166,13 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
-      if (err instanceof AnchorError) {
-        sendNotification({ message: err?.error?.errorMessage, variant: "error" });
+      if (err instanceof CredentialRequestError) {
+        sendNotification({ message: err?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
+    } finally {
+      setLoading(false);
     }
   };
 

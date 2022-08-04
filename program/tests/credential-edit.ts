@@ -29,7 +29,10 @@ describe("credential-edition", () => {
 
   it("Create support credential account", async () => {
     owner = Keypair.generate();
-    credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner.publicKey.toBuffer());
+    credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
     await requestAirdrop(owner.publicKey);
 
@@ -92,8 +95,6 @@ describe("credential-edition", () => {
     );
 
     // Assertions
-    console.log("Credential Account Data", credentialAccountData);
-
     assert.equal(
       owner.publicKey.toBase58(),
       credentialAccountData.owner.toBase58()

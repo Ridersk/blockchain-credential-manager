@@ -27,21 +27,14 @@ describe("keypair-tests", () => {
 
   it("testing generate keypair from mnemonic", async () => {
     const mnemonic = bip39.generateMnemonic();
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const userKeyPair = anchor.web3.Keypair.fromSeed(
+      new Uint8Array(seed.toJSON().data.slice(0, 32))
+    );
 
-    console.log("MNEMONIC:", mnemonic);
-    console.log("Validate Mnemonic:", bip39.validateMnemonic(mnemonic));
-
-    bip39
-      .mnemonicToSeed(mnemonic)
-      .then((buffer) => {
-        const userKeyPair = anchor.web3.Keypair.fromSeed(
-          new Uint8Array(buffer.toJSON().data.slice(0, 32))
-        );
-
-        console.log("Complete Credentials:", userKeyPair);
-        console.log("Public Key converted:", userKeyPair.publicKey.toBase58());
-      })
-      .catch((err) => console.log("Erro Inesperado:", err));
+    assert.ok(bip39.validateMnemonic(mnemonic));
+    assert.ok(userKeyPair.publicKey.toBase58());
+    assert.ok(bs58.encode(userKeyPair.secretKey));
   });
 
   it("testing generate keypair from mnemonic WITH DERIVED PATH", async () => {
@@ -55,10 +48,8 @@ describe("keypair-tests", () => {
     const derivedSeed = ed.derivePath(derivationPath, seed.toString("hex")).key;
     const userKeyPair = anchor.web3.Keypair.fromSeed(derivedSeed);
 
-    console.log("MNEMONIC:", mnemonic);
-    console.log("Validate Mnemonic:", bip39.validateMnemonic(mnemonic));
-
-    console.log("Complete Credentials:", userKeyPair);
-    console.log("Public Key converted:", userKeyPair.publicKey.toBase58());
+    assert.ok(bip39.validateMnemonic(mnemonic));
+    assert.ok(userKeyPair.publicKey.toBase58());
+    assert.ok(bs58.encode(userKeyPair.secretKey));
   });
 });

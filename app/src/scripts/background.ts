@@ -1,13 +1,5 @@
 import { VaultManager, initVaultManager } from "./wallet-manager/wallet-manager";
 
-// const { URL } = require("url");
-
-// const urlTeste = new URL("https://mysite.com");
-
-// if (urlTeste instanceof URL) {
-//   console.log("URL is valid");
-// }
-
 let vaultManager: VaultManager;
 
 async function setupVault() {
@@ -58,23 +50,23 @@ async function messageHandler(request: any) {
     return { data: state };
   } else if (request.action === "createCredential") {
     const credentialData = request.data;
-    const credential = await vaultManager.credentialsController?.createCredential(credentialData);
+    const response = await vaultManager.credentialsController?.createCredential(credentialData);
     return {
-      data: { credential }
+      data: response
     };
-  } else if (request.action === "editCredential") {
+  } else if (request.action === "credentials.edit") {
     const credentialData = request.data;
-    const credential = await vaultManager.credentialsController?.editCredential(credentialData);
+    const response = await vaultManager.credentialsController?.editCredential(credentialData);
     return {
-      data: { credential }
+      data: response
     };
-  } else if (request.action === "getCredential") {
+  } else if (request.action === "credentials.get") {
     const address = request?.data?.address;
     const credential = await vaultManager.credentialsController?.getCredential(address);
     return {
       data: { credential }
     };
-  } else if (request.action === "getCredentials") {
+  } else if (request.action === "credentials.getList") {
     const credentialsController = vaultManager.credentialsController;
     const credentials = await credentialsController?.getCredentials();
     return {
@@ -82,11 +74,11 @@ async function messageHandler(request: any) {
         credentials
       }
     };
-  } else if (request.action === "deleteCredential") {
+  } else if (request.action === "credentials.delete") {
     const address = request?.data?.address;
-    await vaultManager.credentialsController?.deleteCredential(address);
+    const response = await vaultManager.credentialsController?.deleteCredential(address);
     return {
-      data: { deleted: true }
+      data: response
     };
   } else return {};
 }
