@@ -4,7 +4,7 @@ import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 
 import idl from "../../../../idl/blockchain_credential_manager.json";
 import { BlockchainCredentialManager } from "../../../../idl/blockchain_credential_manager";
-import { BaseLedgerProgram } from "../@shared/ledger/base-ledger-program";
+import { BaseLedgerProgram } from "../ledger/base-ledger-program";
 import { FilterOption, ownerFilter } from "./filters";
 import { encryptData, decryptData } from "../../../../utils/aes-encryption";
 import { sleep } from "../../../../utils/time";
@@ -18,6 +18,10 @@ export class CredentialsController {
   constructor(keypair: Keypair) {
     this._ledgerProgram = new BaseLedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
     this._keypair = keypair;
+  }
+
+  get ledgerProgram(): BaseLedgerProgram<BlockchainCredentialManager> {
+    return this._ledgerProgram;
   }
 
   async getCredential(publicKey: string) {
@@ -124,15 +128,16 @@ export class CredentialsController {
     let status = "success";
     let errorMessage = "";
     try {
-      await program.methods.editCredential(
-        new anchor.BN(uid),
-        title,
-        url,
-        iconUrl,
-        encryptedLabel,
-        encryptedSecret,
-        description
-      )
+      await program.methods
+        .editCredential(
+          new anchor.BN(uid),
+          title,
+          url,
+          iconUrl,
+          encryptedLabel,
+          encryptedSecret,
+          description
+        )
         .accounts({
           credentialAccount: address,
           owner: publicKey

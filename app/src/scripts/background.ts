@@ -80,5 +80,20 @@ async function messageHandler(request: any) {
     return {
       data: response
     };
-  } else return {};
+  } else if (request.action === "account.details") {
+    const response = await vaultManager.accountController?.getWalletDetails();
+    return {
+      data: response
+    };
+  } else if (request.action === "account.activities") {
+    const response = await vaultManager.accountController?.getActivities();
+    return {
+      data: response
+    };
+  } else if (request.action === "account.requestAirdrop") {
+    const response = await vaultManager.accountController?.requestAirdrop();
+    return {
+      data: response
+    };
+  }
 }

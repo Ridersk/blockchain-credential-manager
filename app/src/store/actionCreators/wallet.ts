@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
-import { initWorkspace } from "services/solana/solanaWeb3";
 import { NewVaultData, WalletActionType, WalletData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: WalletData) => ({
@@ -32,7 +31,6 @@ export const forceUpdateWalletAction = createAsyncThunk<
   }
 
   thunkAPI.dispatch(updateWalletAction({ id: "Wallet 1", address: selectedAddress }));
-  await initWorkspace(selectedAddress);
 
   return selectedAddress;
 });

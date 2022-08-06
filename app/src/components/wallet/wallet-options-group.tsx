@@ -1,20 +1,20 @@
 import { Box, styled } from "@mui/material";
 import { SxProps } from "@mui/system";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { unwrapResult } from "@reduxjs/toolkit";
 import { useTranslation } from "react-i18next";
 import WalletOptionButton from "./wallet-option-button";
-import requestAirdrop from "services/solana/requestAirdrop";
-import { getWalletDetails } from "services/solana/getWalletDetails";
 import useNotification from "hooks/useNotification";
 import { updateWalletAction } from "store/actionCreators";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { getDetailsAction, requestAirdropAction } from "store/actionCreators/account";
 
 interface WalletOptionsGroupProps {
   sx?: SxProps;
 }
 
 const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
@@ -25,8 +25,8 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
 
   const handleRequestAirdrop = async () => {
     try {
-      await requestAirdrop();
-      const walletDetails = await getWalletDetails();
+      await dispatch(requestAirdropAction());
+      const walletDetails = unwrapResult(await dispatch(getDetailsAction()));
       dispatch(updateWalletAction({ balance: walletDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {

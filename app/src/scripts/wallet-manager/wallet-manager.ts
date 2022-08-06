@@ -11,6 +11,7 @@ import { WalletGenerator } from "./wallet-generator";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
 import { CredentialsController } from "./controllers/credentials";
+import { AccountController } from "./controllers/account";
 
 type VaultInitialState = {
   keyring: KeyringEncryptedSerialized;
@@ -27,6 +28,7 @@ export class VaultManager {
   private _preferencesController: PreferencesController;
   private _memoryStore: ComposableStore<MemoryStore<any>>;
   private _credentialsController?: CredentialsController;
+  private _accountController?: AccountController;
 
   constructor(opts: VaultManagerOpts = {}) {
     const { initState, encryptor } = opts;
@@ -50,6 +52,10 @@ export class VaultManager {
 
   get credentialsController() {
     return this._credentialsController;
+  }
+
+  get accountController() {
+    return this._accountController;
   }
 
   async registerNewWallet(mnemonic: string, password: string) {
@@ -109,6 +115,10 @@ export class VaultManager {
 
     if (keypair) {
       this._credentialsController = new CredentialsController(keypair);
+      this._accountController = new AccountController(
+        this._credentialsController.ledgerProgram,
+        keypair
+      );
     }
   }
 }
