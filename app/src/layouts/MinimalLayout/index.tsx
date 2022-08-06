@@ -1,4 +1,4 @@
-import React from "react";
+import { Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 // project imports
@@ -7,10 +7,10 @@ import Customization from "../Customization";
 // ==============================|| MINIMAL LAYOUT ||============================== //
 
 const MinimalLayout: React.FC = (): JSX.Element => (
-    <div style={{ minWidth: "400px", minHeight: "600px" }}>
-        <Outlet />
-        {/* <Customization /> */}
-    </div>
+  <Container sx={{ width: { xs: "400px", md: "100%" }, height: { xs: "600px", md: "100%" } }}>
+    <Outlet />
+    {/* <Customization /> */}
+  </Container>
 );
 
 export default MinimalLayout;

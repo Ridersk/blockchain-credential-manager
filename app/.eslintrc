@@ -45,17 +45,6 @@
         "ignoreRestSiblings": false
       }
     ],
-    "prettier/prettier": [
-      2,
-      {
-        "bracketSpacing": true,
-        "printWidth": 140,
-        "singleQuote": false,
-        "trailingComma": "none",
-        "tabWidth": 4,
-        "useTabs": false,
-        "endOfLine": "auto"
-      }
-    ]
+    "prettier/prettier": 2
   }
 }
