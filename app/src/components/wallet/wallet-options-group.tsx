@@ -1,21 +1,20 @@
 import { Box, styled } from "@mui/material";
 import { SxProps } from "@mui/system";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { unwrapResult } from "@reduxjs/toolkit";
 import { useTranslation } from "react-i18next";
 import WalletOptionButton from "./wallet-option-button";
-import workspace, { SolanaWeb3Workspace } from "services/solana/solanaWeb3";
-import requestAirdrop from "services/solana/requestAirdrop";
-import { getWalletDetails } from "services/solana/getWalletDetails";
 import useNotification from "hooks/useNotification";
-import { setWallet } from "store/actionCreators";
+import { updateWalletAction } from "store/actionCreators";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { getDetailsAction, requestAirdropAction } from "store/actionCreators/account";
 
 interface WalletOptionsGroupProps {
   sx?: SxProps;
 }
 
 const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
@@ -26,10 +25,9 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
 
   const handleRequestAirdrop = async () => {
     try {
-      const { program, userKeypair } = workspace() as SolanaWeb3Workspace;
-      await requestAirdrop(program, userKeypair);
-      const walletDetails = await getWalletDetails();
-      dispatch(setWallet({ balance: walletDetails.balance }));
+      await dispatch(requestAirdropAction());
+      const walletDetails = unwrapResult(await dispatch(getDetailsAction()));
+      dispatch(updateWalletAction({ balance: walletDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {
       sendNotification({ message: t("operation_deposit_error"), variant: "error" });

@@ -12,9 +12,8 @@ import {
 const { SystemProgram, Keypair } = anchor.web3;
 
 const provider = anchor.AnchorProvider.env();
-const programId = SystemProgram.programId;
 anchor.setProvider(provider);
-
+const programId = SystemProgram.programId;
 const program = anchor.workspace
   .BlockchainCredentialManager as Program<BlockchainCredentialManager>;
 
@@ -24,11 +23,66 @@ const CREDENTIAL_NAMESPACE = "credential";
  * CREDENTIAL CREATION
  */
 describe("credential-creation", () => {
-  it("Can add new credential", async () => {
-    const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+  it("Can add new credential with provider default owner without cryptograph", async () => {
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      provider.wallet.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+
+    const title = "Github Credentials";
+    const url = "https://github.com";
+    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
+    const label = "user-001";
+    const secret = "password123";
+    const description = "Github Login";
+
+    await program.rpc.createCredential(
+      credentialPda.uid,
+      title,
+      url,
+      iconUrl,
+      label,
+      secret,
+      description,
+      {
+        accounts: {
+          credentialAccount: credentialAccountKey,
+          owner: provider.wallet.publicKey,
+          systemProgram: programId,
+        },
+      }
+    );
+
+    let credentialAccountData = await program.account.credentialAccount.fetch(
+      credentialAccountKey
+    );
+
+    // Assertions
+    assert.equal(
+      provider.wallet.publicKey.toBase58(),
+      credentialAccountData.owner.toBase58()
+    );
+    assert.equal(
+      credentialPda.uid.toNumber(),
+      credentialAccountData.uid.toNumber()
+    );
+    assert.equal(title, credentialAccountData.title);
+    assert.equal(url, credentialAccountData.url);
+    assert.equal(iconUrl, credentialAccountData.iconUrl);
+    assert.equal(label, credentialAccountData.label);
+    assert.equal(secret, credentialAccountData.secret);
+    assert.equal(description, credentialAccountData.description);
+  });
+
+  it("Can add new credential with custom owner", async () => {
+    const owner = Keypair.generate();
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials";
     const url = "https://github.com";
@@ -60,8 +114,6 @@ describe("credential-creation", () => {
     );
 
     // Assertions
-    console.log("Credential Account Data", credentialAccountData);
-
     assert.equal(
       owner.publicKey.toBase58(),
       credentialAccountData.owner.toBase58()
@@ -88,9 +140,12 @@ describe("credential-creation", () => {
 
   it("Cannot add new credential with title more than 50 characters", async () => {
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "x".repeat(51);
     const url = "https://github.com";
@@ -130,9 +185,12 @@ describe("credential-creation", () => {
 
   it("Cannot add new credential with url more than 100 characters", async () => {
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "x".repeat(50);
     const url = "x".repeat(101);
@@ -172,9 +230,12 @@ describe("credential-creation", () => {
 
   it("Cannot add new credential with label more than 100 characters", async () => {
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
@@ -214,9 +275,12 @@ describe("credential-creation", () => {
 
   it("Cannot add new credential with secret more than 100 characters", async () => {
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
@@ -256,9 +320,12 @@ describe("credential-creation", () => {
 
   it("Cannot add new credential with description more than 100 characters", async () => {
     const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
@@ -266,8 +333,6 @@ describe("credential-creation", () => {
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
     const description = "x".repeat(101);
-
-    console.log("SECRET LOG:", encryptData(owner.secretKey, secret).length);
 
     await assert.rejects(
       program.rpc.createCredential(

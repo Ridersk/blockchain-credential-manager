@@ -4,18 +4,17 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { theme } from "themes";
 import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
-import { useTypedSelector } from "hooks/useTypedSelector";
-import workspace, { initWorkspace } from "services/solana/solanaWeb3";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { setWallet } from "store/actionCreators";
-import { walletLogged } from "utils/wallet-manager";
+import { forceUpdateWalletAction } from "store/actionCreators";
+import { VaultNoKeyringFoundError } from "exceptions";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const navigate = useNavigate();
-  const customization = useTypedSelector((state) => state.customization);
+  const [loading, setLoading] = useState(false);
 
   const goToWelcomePage = () => {
     navigate({ pathname: "/welcome" });
@@ -26,25 +25,22 @@ function App() {
   };
 
   useEffect(() => {
-    async function handleUpdateKeypair() {
-      await initWorkspace();
-      const walletKeyPair = workspace()?.userKeypair;
-
-      // Check if user is registered
-      if (walletKeyPair) {
-        dispatch(setWallet({ id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }));
-      } else {
-        goToWelcomePage();
-        return;
-      }
-
-      // Check if user is logged
-      if (!(await walletLogged())) {
-        goToLoginPage();
+    async function setupVault() {
+      try {
+        setLoading(true);
+        unwrapResult(await dispatch(forceUpdateWalletAction()));
+      } catch (err) {
+        if (err instanceof VaultNoKeyringFoundError) {
+          goToWelcomePage();
+        } else {
+          goToLoginPage();
+        }
+      } finally {
+        setLoading(false);
       }
     }
 
-    handleUpdateKeypair();
+    setupVault();
   }, []);
 
   return (
@@ -52,9 +48,7 @@ function App() {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <NavigationScroll>
-            <Routes />
-          </NavigationScroll>
+          <NavigationScroll>{!loading && <Routes />}</NavigationScroll>
         </ThemeProvider>
       </StyledEngineProvider>
     </div>

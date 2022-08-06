@@ -9,7 +9,8 @@
     "storage",
     "tabs",
     "activeTab",
-    "scripting"
+    "scripting",
+    "alarms"
   ],
   "action": {
     "default_popup": "index.html",
@@ -21,8 +22,7 @@
         "https://*/*"
       ],
       "js": [
-        "./content_scripts/loadInputButtons.js",
-        "./content_scripts/popupListener.js"
+        "./contentscript.js"
       ],
       "css": [
         "popup_credentials/styles.css"
@@ -30,7 +30,9 @@
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module",
+    "mode": "module"
   },
   "web_accessible_resources": [
     {

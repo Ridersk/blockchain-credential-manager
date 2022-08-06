@@ -29,9 +29,12 @@ describe("credential-edition", () => {
 
   it("Create support credential account", async () => {
     owner = Keypair.generate();
-    credentialPda = await getPdaParams(CREDENTIAL_NAMESPACE, owner);
+    credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials";
     const url = "https://github.com";
@@ -61,7 +64,7 @@ describe("credential-edition", () => {
 
   it("Can edit a existing credential account", async () => {
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";
@@ -92,8 +95,6 @@ describe("credential-edition", () => {
     );
 
     // Assertions
-    console.log("Credential Account Data", credentialAccountData);
-
     assert.equal(
       owner.publicKey.toBase58(),
       credentialAccountData.owner.toBase58()
@@ -121,7 +122,7 @@ describe("credential-edition", () => {
   it("Cannot edit a existing credential of another user", async () => {
     const user2 = Keypair.generate();
     const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner);
+    await requestAirdrop(owner.publicKey);
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";

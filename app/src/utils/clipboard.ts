@@ -3,18 +3,11 @@ export function copyTextToClipboard(text: string) {
     fallbackCopyTextToClipboard(text);
     return;
   }
-  navigator.clipboard.writeText(text).then(
-    function () {
-      console.log("Copied to clipboard:", text);
-    },
-    function (err) {
-      console.error("Could not copy text to clipboard", err);
-    }
-  );
+  navigator.clipboard.writeText(text).then();
 }
 
 function fallbackCopyTextToClipboard(text: string) {
-  var textArea = document.createElement("textarea");
+  const textArea = document.createElement("textarea");
   textArea.value = text;
 
   // Avoid scrolling to bottom
@@ -27,11 +20,9 @@ function fallbackCopyTextToClipboard(text: string) {
   textArea.select();
 
   try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
-    console.log("Fallback: Copying text command was " + msg);
+    document.execCommand("copy");
   } catch (err) {
-    console.error("Fallback: Oops, unable to copy", err);
+    return;
   }
 
   document.body.removeChild(textArea);

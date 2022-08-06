@@ -10,7 +10,7 @@ const Home = () => {
   const { t } = useTranslation();
   const [value, setValue] = useState("vault");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 

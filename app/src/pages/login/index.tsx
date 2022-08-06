@@ -1,11 +1,13 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Container, Grid, Typography } from "@mui/material";
+import { unwrapResult } from "@reduxjs/toolkit";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { performLogin } from "utils/wallet-manager";
+import { unlockVaultAction } from "store/actionCreators";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -16,11 +18,13 @@ const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
+  const dispatch = useTypedDispatch();
 
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     try {
-      if (await performLogin(values.password)) {
+      const isUnlocked: boolean = unwrapResult(await dispatch(unlockVaultAction(values.password)));
+      if (isUnlocked) {
         navigate({ pathname: "/" });
         sendNotification({
           message: t("wallet_login_successfully"),
@@ -78,6 +82,7 @@ const Login = () => {
                   inputProps={{ maxLength: 100 }}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  valueCopy={false}
                 />
                 <Box
                   sx={{

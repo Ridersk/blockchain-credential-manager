@@ -8,11 +8,11 @@ import WalletShowMnemonic from "components/wallet-creation/show-mnemonic";
 import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
-import { performLogin, registerNewWallet } from "utils/wallet-manager";
 import { useNavigate } from "react-router";
-import { setWallet } from "store/actionCreators";
-import { useDispatch } from "react-redux";
+import { createNewVaultAction, unlockVaultAction } from "store/actionCreators";
 import useNotification from "hooks/useNotification";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
 
 const WALLET_MODEL = {
   formId: "walletForm",
@@ -95,7 +95,7 @@ const WalletRegister = () => {
     t("wallet_recover_vault"),
     t("wallet_confirm_mnemonic")
   ];
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const isLastStep = activeStep === steps.length - 1;
 
   const handleStepChange = (index: number) => {
@@ -107,18 +107,27 @@ const WalletRegister = () => {
 
   async function submitForm(values: WalletFormParams, actions: FormikHelpers<WalletFormParams>) {
     try {
-      const walletKeyPair = await registerNewWallet(
-        values.mnemonic as string,
-        values.password as string
+      await dispatch(
+        createNewVaultAction({
+          mnemonic: values.mnemonic as string,
+          password: values.password as string
+        })
       );
       actions.setSubmitting(false);
-      dispatch(setWallet({ id: "Wallet", address: walletKeyPair.publicKey.toBase58() }));
-      if (await performLogin(values.password as string)) {
+      const isUnlocked: boolean = unwrapResult(
+        await dispatch(unlockVaultAction(values.password as string))
+      );
+      if (isUnlocked) {
         sendNotification({
           message: t("wallet_register_successfully"),
           variant: "success"
         });
         navigate({ pathname: "/" });
+      } else {
+        sendNotification({
+          message: t("wallet_login_incorrect_password"),
+          variant: "error"
+        });
       }
     } catch (err) {
       sendNotification({

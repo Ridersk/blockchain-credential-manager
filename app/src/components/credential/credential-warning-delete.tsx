@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 export type CredentialDeletionWarningProps = {
   open: boolean;
   onCancel: () => void;
-  onAccept: () => void;
+  onAccept: () => Promise<void>;
 };
 
 const CredentialDeletionWarningModal = ({

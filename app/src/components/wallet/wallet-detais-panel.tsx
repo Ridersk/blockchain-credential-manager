@@ -1,23 +1,25 @@
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getWalletDetails } from "services/solana/getWalletDetails";
 import WalletBalanceCard from "./wallet-balance-card";
 import WalletOptionsGroup from "./wallet-options-group";
-import { useDispatch } from "react-redux";
-import { setWallet } from "store/actionCreators";
+import { updateWalletAction } from "store/actionCreators";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { getDetailsAction } from "store/actionCreators/account";
 
 const WalletDetailsPanel = () => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function handleGetWalletDetails() {
       try {
         setLoading(true);
-        const walletDetails = await getWalletDetails();
-        dispatch(setWallet({ balance: walletDetails.balance }));
+        const walletDetails = unwrapResult(await dispatch(getDetailsAction()));
+        dispatch(updateWalletAction({ balance: walletDetails.balance }));
+      } finally {
         setLoading(false);
-      } catch (err) {}
+      }
     }
 
     handleGetWalletDetails();
