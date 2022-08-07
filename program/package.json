@@ -6,6 +6,7 @@
     "dependencies": {
         "@project-serum/anchor": "~0.24.2",
         "bip39": "^3.0.4",
+        "browser-passworder": "^2.0.3",
         "bs58": "^5.0.0",
         "crypto-js": "^4.1.1",
         "ed25519-hd-key": "^1.2.0"

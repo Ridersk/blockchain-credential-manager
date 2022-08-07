@@ -2,12 +2,10 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
-import {
-  decryptData,
-  encryptData,
-  getPdaParams,
-  requestAirdrop,
-} from "./utils/testing-utils";
+import { getPdaParams, requestAirdrop } from "./utils/testing-utils";
+import passEncryptor from "browser-passworder";
+
+global.crypto = require("crypto").webcrypto;
 
 const { SystemProgram, Keypair } = anchor.web3;
 
@@ -23,6 +21,8 @@ const CREDENTIAL_NAMESPACE = "credential";
  * CREDENTIAL CREATION
  */
 describe("credential-creation", () => {
+  const password = "password123";
+
   it("Can add new credential with provider default owner without cryptograph", async () => {
     const credentialPda = await getPdaParams(
       CREDENTIAL_NAMESPACE,
@@ -36,14 +36,14 @@ describe("credential-creation", () => {
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
+    const credentialData = JSON.stringify({ label, secret });
 
     await program.rpc.createCredential(
       credentialPda.uid,
       title,
       url,
       iconUrl,
-      label,
-      secret,
+      credentialData,
       description,
       {
         accounts: {
@@ -54,8 +54,11 @@ describe("credential-creation", () => {
       }
     );
 
-    let credentialAccountData = await program.account.credentialAccount.fetch(
+    const credentialAccountData = await program.account.credentialAccount.fetch(
       credentialAccountKey
+    );
+    const responseCredentialData = JSON.parse(
+      credentialAccountData.credentialData
     );
 
     // Assertions
@@ -70,8 +73,8 @@ describe("credential-creation", () => {
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
     assert.equal(iconUrl, credentialAccountData.iconUrl);
-    assert.equal(label, credentialAccountData.label);
-    assert.equal(secret, credentialAccountData.secret);
+    assert.equal(label, responseCredentialData.label);
+    assert.equal(secret, responseCredentialData.secret);
     assert.equal(description, credentialAccountData.description);
   });
 
@@ -89,6 +92,8 @@ describe("credential-creation", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
 
     await program.rpc.createCredential(
@@ -96,8 +101,7 @@ describe("credential-creation", () => {
       title,
       url,
       iconUrl,
-      encryptData(owner.secretKey, label),
-      encryptData(owner.secretKey, secret),
+      encryptedData,
       description,
       {
         accounts: {
@@ -109,8 +113,12 @@ describe("credential-creation", () => {
       }
     );
 
-    let credentialAccountData = await program.account.credentialAccount.fetch(
+    const credentialAccountData = await program.account.credentialAccount.fetch(
       credentialAccountKey
+    );
+    const responseCredentialData = await passEncryptor.decrypt(
+      password,
+      credentialAccountData.credentialData
     );
 
     // Assertions
@@ -125,16 +133,8 @@ describe("credential-creation", () => {
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
     assert.equal(iconUrl, credentialAccountData.iconUrl);
-    assert.notEqual(label, credentialAccountData.label);
-    assert.equal(
-      label,
-      decryptData(owner.secretKey, credentialAccountData.label)
-    );
-    assert.notEqual(secret, credentialAccountData.secret);
-    assert.equal(
-      secret,
-      decryptData(owner.secretKey, credentialAccountData.secret)
-    );
+    assert.equal(label, responseCredentialData.label);
+    assert.equal(secret, responseCredentialData.secret);
     assert.equal(description, credentialAccountData.description);
   });
 
@@ -152,6 +152,8 @@ describe("credential-creation", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
 
     await assert.rejects(
@@ -160,8 +162,7 @@ describe("credential-creation", () => {
         title,
         url,
         iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
+        encryptedData,
         description,
         {
           accounts: {
@@ -175,7 +176,7 @@ describe("credential-creation", () => {
       ({ error, name }) => {
         assert.strictEqual("Error", name);
         assert.strictEqual(
-          "O título deve ter no máximo 50 caracteres.",
+          "Title should be 50 characters long maximum.",
           error.errorMessage
         );
         return true;
@@ -197,6 +198,8 @@ describe("credential-creation", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
 
     await assert.rejects(
@@ -205,8 +208,7 @@ describe("credential-creation", () => {
         title,
         url,
         iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
+        encryptedData,
         description,
         {
           accounts: {
@@ -220,7 +222,7 @@ describe("credential-creation", () => {
       ({ error, name }) => {
         assert.strictEqual("Error", name);
         assert.strictEqual(
-          "A URL deve ter no máximo 100 caracteres.",
+          "URL should be 100 characters long maximum.",
           error.errorMessage
         );
         return true;
@@ -228,7 +230,7 @@ describe("credential-creation", () => {
     );
   });
 
-  it("Cannot add new credential with label more than 100 characters", async () => {
+  it("Cannot add new credential data more than 640 characters", async () => {
     const owner = Keypair.generate();
     const credentialPda = await getPdaParams(
       CREDENTIAL_NAMESPACE,
@@ -240,8 +242,7 @@ describe("credential-creation", () => {
     const title = "x".repeat(50);
     const url = "x".repeat(100);
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
-    const label = "x".repeat(101);
-    const secret = "password123";
+    const encryptedData = "x".repeat(641);
     const description = "Github Login";
 
     await assert.rejects(
@@ -250,8 +251,7 @@ describe("credential-creation", () => {
         title,
         url,
         iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
+        encryptedData,
         description,
         {
           accounts: {
@@ -265,52 +265,7 @@ describe("credential-creation", () => {
       ({ error, name }) => {
         assert.strictEqual("Error", name);
         assert.strictEqual(
-          "Tamanho da label ultrapassou o limite após encriptação.",
-          error.errorMessage
-        );
-        return true;
-      }
-    );
-  });
-
-  it("Cannot add new credential with secret more than 100 characters", async () => {
-    const owner = Keypair.generate();
-    const credentialPda = await getPdaParams(
-      CREDENTIAL_NAMESPACE,
-      owner.publicKey.toBuffer()
-    );
-    const credentialAccountKey = credentialPda.accountKey;
-    await requestAirdrop(owner.publicKey);
-
-    const title = "x".repeat(50);
-    const url = "x".repeat(100);
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
-    const label = "x".repeat(48);
-    const secret = "x".repeat(101);
-    const description = "Github Login";
-
-    await assert.rejects(
-      program.rpc.createCredential(
-        credentialPda.uid,
-        title,
-        url,
-        iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
-        description,
-        {
-          accounts: {
-            credentialAccount: credentialAccountKey,
-            owner: owner.publicKey,
-            systemProgram: programId,
-          },
-          signers: [owner],
-        }
-      ),
-      ({ error, name }) => {
-        assert.strictEqual("Error", name);
-        assert.strictEqual(
-          "Tamanho da senha ultrapassou o limite após encriptação.",
+          "Credential data should be 512 characters long.",
           error.errorMessage
         );
         return true;
@@ -332,6 +287,8 @@ describe("credential-creation", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "x".repeat(101);
 
     await assert.rejects(
@@ -340,8 +297,7 @@ describe("credential-creation", () => {
         title,
         url,
         iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
+        encryptedData,
         description,
         {
           accounts: {
@@ -355,7 +311,7 @@ describe("credential-creation", () => {
       ({ error, name }) => {
         assert.strictEqual("Error", name);
         assert.strictEqual(
-          "A descrição deve ter no máximo 100 caracteres.",
+          "Description should be 100 characters long maximum.",
           error.errorMessage
         );
         return true;

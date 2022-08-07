@@ -3,8 +3,8 @@ use anchor_lang::prelude::*;
 use crate::{
     errors::CustomErrorCode,
     states::credential::{
-        CredentialAccount, CREDENTIAL_DESCRIPTION_SIZE, CREDENTIAL_ICON_URL_SIZE,
-        CREDENTIAL_LABEL_SIZE, CREDENTIAL_SECRET_SIZE, CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
+        CredentialAccount, CREDENTIAL_DATA_SIZE, CREDENTIAL_DESCRIPTION_SIZE,
+        CREDENTIAL_ICON_URL_SIZE, CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
     },
 };
 
@@ -15,15 +15,15 @@ pub fn process_save_credential(
     title: String,
     url: String,
     icon_url: String,
-    label: String,
-    secret: String,
+    credential_data: String,
+    // iv: String,
+    // salt: String,
     description: String,
 ) -> Result<()> {
     validate(
         title.clone(),
         url.clone(),
-        label.clone(),
-        secret.clone(),
+        credential_data.clone(),
         description.clone(),
     )?;
 
@@ -37,8 +37,9 @@ pub fn process_save_credential(
     credential_account.owner = owner_key;
     credential_account.uid = credential_uid;
     credential_account.title = title;
-    credential_account.label = label;
-    credential_account.secret = secret;
+    credential_account.credential_data = credential_data;
+    // credential_account.iv = iv;
+    // credential_account.salt = salt;
     credential_account.url = url;
     credential_account.icon_url = icon_url_formatted;
     credential_account.description = description;
@@ -51,8 +52,7 @@ pub fn process_save_credential(
 fn validate(
     title: String,
     url: String,
-    label: String,
-    secret: String,
+    credential_data: String,
     description: String,
 ) -> Result<()> {
     if title.chars().count() > CREDENTIAL_TITLE_SIZE {
@@ -63,12 +63,8 @@ fn validate(
         return Err(CustomErrorCode::URLTooLong.into());
     }
 
-    if label.chars().count() > CREDENTIAL_LABEL_SIZE {
-        return Err(CustomErrorCode::LabelTooLong.into());
-    }
-
-    if secret.chars().count() > CREDENTIAL_SECRET_SIZE {
-        return Err(CustomErrorCode::SecretTooLong.into());
+    if credential_data.chars().count() > CREDENTIAL_DATA_SIZE {
+        return Err(CustomErrorCode::CredentialDataTooLong.into());
     }
 
     if description.chars().count() > CREDENTIAL_DESCRIPTION_SIZE {

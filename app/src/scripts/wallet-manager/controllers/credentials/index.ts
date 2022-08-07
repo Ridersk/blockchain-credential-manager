@@ -1,12 +1,12 @@
 import * as anchor from "@project-serum/anchor";
 import { Credential } from "../../../../models/Credential";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import passEncryptor from "browser-passworder";
 
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../../../../idl/blockchain_credential_manager.json";
 import { BlockchainCredentialManager } from "../../../../idl/blockchain_credential_manager";
 import { BaseLedgerProgram } from "../ledger/base-ledger-program";
 import { FilterOption, ownerFilter } from "./filters";
-import { encryptData, decryptData } from "../../../../utils/aes-encryption";
 import { sleep } from "../../../../utils/time";
 
 const CREDENTIAL_NAMESPACE = "credential";
@@ -14,10 +14,14 @@ const CREDENTIAL_NAMESPACE = "credential";
 export class CredentialsController {
   private _ledgerProgram: BaseLedgerProgram<BlockchainCredentialManager>;
   private _keypair: Keypair;
+  private _encryptor: typeof passEncryptor;
+  private _password: string;
 
-  constructor(keypair: Keypair) {
+  constructor(keypair: Keypair, password: string) {
     this._ledgerProgram = new BaseLedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
     this._keypair = keypair;
+    this._password = password;
+    this._encryptor = passEncryptor;
   }
 
   get ledgerProgram(): BaseLedgerProgram<BlockchainCredentialManager> {
@@ -26,34 +30,69 @@ export class CredentialsController {
 
   async getCredential(publicKey: string) {
     const credential = await this._ledgerProgram.program.account.credentialAccount.fetch(publicKey);
-    const secretKey = this._keypair.secretKey;
-    return new Credential(publicKey, {
-      uid: credential.uid.toNumber(),
-      title: credential.title,
-      url: credential.url,
-      iconUrl: credential.iconUrl,
-      label: decryptData(secretKey, credential.label),
-      secret: decryptData(secretKey, credential.secret),
-      description: credential.description
-    });
+
+    try {
+      const decryptedCredentialData = await passEncryptor.decrypt(
+        this._password,
+        credential.credentialData
+      );
+      return new Credential(publicKey, {
+        uid: credential.uid.toNumber(),
+        title: credential.title,
+        url: credential.url,
+        iconUrl: credential.iconUrl,
+        label: decryptedCredentialData.label,
+        secret: decryptedCredentialData.secret,
+        description: credential.description
+      });
+    } catch (e) {
+      return new Credential(publicKey, {
+        uid: credential.uid.toNumber(),
+        title: credential.title,
+        url: credential.url,
+        iconUrl: credential.iconUrl,
+        label: "not found",
+        secret: "not found",
+        description: credential.description
+      });
+    }
   }
 
   async getCredentials(filters: Array<FilterOption> = []): Promise<Array<Credential>> {
     filters.push(ownerFilter(this._keypair?.publicKey?.toBase58()));
     const credentials = await this._ledgerProgram.program.account.credentialAccount.all(filters);
-    const secretKey = this._keypair.secretKey;
 
-    return credentials.map(
-      (credential) =>
-        new Credential(credential?.publicKey?.toBase58(), {
-          uid: credential.account.uid.toNumber(),
-          title: credential.account.title,
-          url: credential.account.url,
-          iconUrl: credential.account.iconUrl,
-          label: decryptData(secretKey, credential.account.label),
-          secret: decryptData(secretKey, credential.account.secret),
-          description: credential.account.description
-        })
+    return Promise.all(
+      credentials.map(async (credential) => {
+        const credentialAccount = credential.account;
+        try {
+          const decryptedCredentialData = await passEncryptor.decrypt(
+            this._password,
+            credentialAccount.credentialData
+          );
+
+          return new Credential(credential?.publicKey?.toBase58(), {
+            uid: credentialAccount.uid.toNumber(),
+            title: credentialAccount.title,
+            url: credentialAccount.url,
+            iconUrl: credentialAccount.iconUrl,
+            label: decryptedCredentialData.label,
+            secret: decryptedCredentialData.secret,
+            description: credentialAccount.description
+          });
+        } catch (e) {
+          console.log(e);
+          return new Credential(credential?.publicKey?.toBase58(), {
+            uid: credentialAccount.uid.toNumber(),
+            title: credentialAccount.title,
+            url: credentialAccount.url,
+            iconUrl: credentialAccount.iconUrl,
+            label: "not found",
+            secret: "not found",
+            description: credentialAccount.description
+          });
+        }
+      })
     );
   }
 
@@ -66,11 +105,9 @@ export class CredentialsController {
     description
   }: NewCredentialParams) {
     const publicKey = this._keypair.publicKey;
-    const secretKey = this._keypair.secretKey;
     const credentialPda = await this._getPdaParams(CREDENTIAL_NAMESPACE, publicKey.toBuffer());
     const credentialAccountKey = credentialPda.accountKey;
-    const encryptedLabel = encryptData(secretKey, label);
-    const encryptedSecret = encryptData(secretKey, secret);
+    const encryptedCredentialData = await passEncryptor.encrypt(this._password, { label, secret });
 
     let status = "success";
     let errorMessage = "";
@@ -81,8 +118,7 @@ export class CredentialsController {
           title,
           url,
           iconUrl,
-          encryptedLabel,
-          encryptedSecret,
+          encryptedCredentialData,
           description
         )
         .accounts({
@@ -120,10 +156,13 @@ export class CredentialsController {
     description
   }: EditCredentialParams) {
     const publicKey = this._keypair.publicKey;
-    const secretKey = this._keypair.secretKey;
     const program = this._ledgerProgram.program;
-    const encryptedLabel = encryptData(secretKey, label);
-    const encryptedSecret = encryptData(secretKey, secret);
+    const encryptedCredentialData = await passEncryptor.encrypt(this._password, { label, secret });
+
+    console.log("[EditCredential] encrypted credential:", encryptedCredentialData);
+
+    const decrypted = await this._encryptor.decrypt(this._password, encryptedCredentialData);
+    console.log("[EditCredential] decrypted credential:", decrypted);
 
     let status = "success";
     let errorMessage = "";
@@ -134,8 +173,7 @@ export class CredentialsController {
           title,
           url,
           iconUrl,
-          encryptedLabel,
-          encryptedSecret,
+          encryptedCredentialData,
           description
         )
         .accounts({

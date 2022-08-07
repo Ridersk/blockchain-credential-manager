@@ -24,8 +24,6 @@ export const getDetailsAction = createAsyncThunk<
     return thunkAPI.rejectWithValue(new AccountRequestError("Error getting details"));
   }
 
-  console.log("[getDetailsAction] details: ", result.details);
-
   return result?.details;
 });
 
