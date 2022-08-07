@@ -1,13 +1,13 @@
 import { Button, styled, ButtonProps } from "@mui/material";
 import { SxProps } from "@mui/system";
 
-interface WalletOptionButtonProps extends ButtonProps {
+interface VaultAccountButtonProps extends ButtonProps {
   title: string;
   onClick: () => void;
   sx?: SxProps;
 }
 
-const WalletOptionButton = (props: WalletOptionButtonProps) => {
+const VaultAccountOptionButton = (props: VaultAccountButtonProps) => {
   const { title, onClick } = props;
 
   const handleOnClick = () => {
@@ -34,4 +34,4 @@ const WalletOptionButton = (props: WalletOptionButtonProps) => {
   );
 };
 
-export default styled(WalletOptionButton)({});
+export default styled(VaultAccountOptionButton)({});

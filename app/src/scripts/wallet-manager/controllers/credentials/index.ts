@@ -5,26 +5,26 @@ import passEncryptor from "browser-passworder";
 import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../../../../idl/blockchain_credential_manager.json";
 import { BlockchainCredentialManager } from "../../../../idl/blockchain_credential_manager";
-import { BaseLedgerProgram } from "../ledger/base-ledger-program";
+import { LedgerProgram } from "../ledger";
 import { FilterOption, ownerFilter } from "./filters";
 import { sleep } from "../../../../utils/time";
 
 const CREDENTIAL_NAMESPACE = "credential";
 
 export class CredentialsController {
-  private _ledgerProgram: BaseLedgerProgram<BlockchainCredentialManager>;
+  private _ledgerProgram: LedgerProgram<BlockchainCredentialManager>;
   private _keypair: Keypair;
   private _encryptor: typeof passEncryptor;
   private _password: string;
 
   constructor(keypair: Keypair, password: string) {
-    this._ledgerProgram = new BaseLedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
+    this._ledgerProgram = new LedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
     this._keypair = keypair;
     this._password = password;
     this._encryptor = passEncryptor;
   }
 
-  get ledgerProgram(): BaseLedgerProgram<BlockchainCredentialManager> {
+  get ledgerProgram(): LedgerProgram<BlockchainCredentialManager> {
     return this._ledgerProgram;
   }
 

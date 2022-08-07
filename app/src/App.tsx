@@ -7,7 +7,7 @@ import NavigationScroll from "./layouts/NavigationScroll";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { forceUpdateWalletAction } from "store/actionCreators";
-import { VaultNoKeyringFoundError } from "exceptions";
+import { WalletNoKeyringFoundError } from "exceptions";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
 
@@ -30,7 +30,7 @@ function App() {
         setLoading(true);
         unwrapResult(await dispatch(forceUpdateWalletAction()));
       } catch (err) {
-        if (err instanceof VaultNoKeyringFoundError) {
+        if (err instanceof WalletNoKeyringFoundError) {
           goToWelcomePage();
         } else {
           goToLoginPage();

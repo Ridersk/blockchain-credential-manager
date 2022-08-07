@@ -1,6 +1,6 @@
-import { VaultManager, initVaultManager } from "./wallet-manager/wallet-manager";
+import { WalletManager, initVaultManager } from "./wallet-manager/wallet-manager";
 
-let vaultManager: VaultManager;
+let vaultManager: WalletManager;
 
 async function setupVault() {
   vaultManager = await initVaultManager();
@@ -32,14 +32,14 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
 });
 
 async function messageHandler(request: any) {
-  if (request.action === "registerWallet") {
-    const keypair = await vaultManager.registerNewWallet(
+  if (request.action === "registerVault") {
+    const keypair = await vaultManager.registerNewVault(
       request.data.mnemonic,
       request.data.password
     );
     return { data: { publicKey: keypair?.publicKey?.toBase58() } };
-  } else if (request.action === "unlockVault") {
-    let isUnlocked = await vaultManager.unlockVault(request.data.password);
+  } else if (request.action === "unlockWallet") {
+    let isUnlocked = await vaultManager.unlockWallet(request.data.password);
     return {
       data: {
         isUnlocked: isUnlocked
@@ -80,17 +80,17 @@ async function messageHandler(request: any) {
     return {
       data: response
     };
-  } else if (request.action === "account.details") {
-    const response = await vaultManager.accountController?.getWalletDetails();
+  } else if (request.action === "vault.details") {
+    const response = await vaultManager.accountController?.getVaultDetails();
     return {
       data: response
     };
-  } else if (request.action === "account.activities") {
+  } else if (request.action === "vault.activities") {
     const response = await vaultManager.accountController?.getActivities();
     return {
       data: response
     };
-  } else if (request.action === "account.requestAirdrop") {
+  } else if (request.action === "vault.requestAirdrop") {
     const response = await vaultManager.accountController?.requestAirdrop();
     return {
       data: response

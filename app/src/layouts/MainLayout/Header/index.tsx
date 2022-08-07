@@ -23,7 +23,7 @@ function Header(props: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_wallet_address"));
+  const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_vault_address"));
   const wallet = useTypedSelector((state) => state.wallet);
 
   const handleGoToBack = () => {
@@ -36,10 +36,10 @@ function Header(props: HeaderProps) {
   };
 
   const resetAddressTooltip = () => {
-    setTimeout(() => setAddressTooltip(t("copy_wallet_address")), 500);
+    setTimeout(() => setAddressTooltip(t("copy_vault_address")), 500);
   };
 
-  function formatWalletAddress(address: string) {
+  function formatAddress(address: string) {
     if (address.length > 12) {
       return (
         address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length)
@@ -85,7 +85,7 @@ function Header(props: HeaderProps) {
                   align="center"
                   margin={{ xs: "2px", md: "4px" }}
                 >
-                  ({formatWalletAddress(wallet.address)})
+                  ({formatAddress(wallet.address)})
                 </Typography>
               </ButtonBase>
             </Tooltip>

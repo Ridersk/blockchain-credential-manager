@@ -17,7 +17,7 @@ type ImportWithMnemonicParams = {
   // passwordConfirmation: string;
 };
 
-const WalletImport = () => {
+const WalletImportPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useTypedDispatch();
@@ -96,7 +96,7 @@ const WalletImport = () => {
                   type="text"
                   id="wallet-mnemonic"
                   name="mnemonic"
-                  label={t("wallet_mnemonic")}
+                  label={t("mnemonic")}
                   value={values.mnemonic}
                   error={Boolean(touched.mnemonic && errors.mnemonic)}
                   errorMessage={errors.mnemonic}
@@ -111,7 +111,7 @@ const WalletImport = () => {
                 <SecretInput
                   id="wallet-password"
                   name="password"
-                  label={t("wallet_new_password")}
+                  label={t("new_password")}
                   value={values.password}
                   error={Boolean(touched.password && errors.password)}
                   errorMessage={errors.password}
@@ -124,7 +124,7 @@ const WalletImport = () => {
                 {/* <SecretInput
                   id="wallet-password-confirmation"
                   name="passwordConfirmation"
-                  label={t("wallet_confirm_password")}
+                  label={t("confirm_password")}
                   value={values.passwordConfirmation}
                   error={Boolean(touched.passwordConfirmation && errors.passwordConfirmation)}
                   errorMessage={errors.passwordConfirmation}
@@ -168,4 +168,4 @@ const WalletImport = () => {
   );
 };
 
-export default WalletImport;
+export default WalletImportPage;

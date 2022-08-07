@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import ActivityCard from "./activity-card";
 import { useTranslation } from "react-i18next";
-import { Activity } from "scripts/wallet-manager/controllers/account";
+import { VaultActivity } from "scripts/wallet-manager/controllers/vault";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
-import { getActivitiesAction } from "store/actionCreators/account";
+import { getActivitiesAction } from "store/actionCreators/vault";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 enum InstructionTypeTitle {
@@ -21,7 +21,7 @@ export const ActivityPanel = () => {
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
-  const [transactions, setTransactions] = useState<Activity[]>([]);
+  const [transactions, setTransactions] = useState<VaultActivity[]>([]);
 
   useEffect(() => {
     (async () => {

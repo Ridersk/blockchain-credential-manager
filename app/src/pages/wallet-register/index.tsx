@@ -3,54 +3,54 @@ import { Box, Container, Stepper, Step, StepLabel, Typography } from "@mui/mater
 import SwipeableViews from "react-swipeable-views";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import WalletCreatePassword from "components/wallet-creation/create-password";
-import WalletShowMnemonic from "components/wallet-creation/show-mnemonic";
-import WalletConfirmMnemonic from "components/wallet-creation/confirm-mnemonic";
+import WalletCreatePassword from "components/wallet-register/wallet-create-password";
+import WalletShowMnemonic from "components/wallet-register/wallet-show-mnemonic";
+import WalletConfirmMnemonic from "components/wallet-register/wallet-confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
-import { createNewVaultAction, unlockVaultAction } from "store/actionCreators";
+import { createNewVaultAction, unlockWalletAction } from "store/actionCreators";
 import useNotification from "hooks/useNotification";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 
-const WALLET_MODEL = {
-  formId: "walletForm",
+const FORM_MODEL = {
+  formId: "formCreateWallet",
   formField: {
     password: {
       name: "password",
-      label: "wallet_new_password",
-      requiredErrorMessage: "wallet_password_required",
-      minSizeErrorMessage: "wallet_password_min_size"
+      label: "new_password",
+      requiredErrorMessage: "password_required",
+      minSizeErrorMessage: "password_min_size"
     },
     passwordConfirmation: {
       name: "passwordConfirmation",
-      label: "wallet_confirm_password",
-      requiredErrorMessage: "wallet_confirm_password_required",
-      wrongPasswordConfirmErrorMessage: "wallet_confirm_password_wrong"
+      label: "confirm_password",
+      requiredErrorMessage: "confirm_password_required",
+      wrongPasswordConfirmErrorMessage: "confirm_password_wrong"
     },
     mnemonic: {
       name: "mnemonic",
-      label: "wallet_mnemonic",
-      requiredErrorMessage: "wallet_mnemonic_required"
+      label: "mnemonic",
+      requiredErrorMessage: "mnemonic_required"
     },
     mnemonicConfirmation: {
       name: "mnemonicConfirmation",
-      label: "wallet_mnemonic",
-      requiredErrorMessage: "wallet_confirm_mnemonic_required",
-      wrongPhraseConfirmErrorMessage: "wallet_confirm_mnemonic_wrong"
+      label: "mnemonic",
+      requiredErrorMessage: "confirm_mnemonic_required",
+      wrongPhraseConfirmErrorMessage: "confirm_mnemonic_wrong"
     }
   }
 };
 
-interface WalletFormParams {
+interface FormParams {
   password?: string;
   passwordConfirmation?: string;
   mnemonic?: string;
   mnemonicConfirmation?: string;
 }
 
-const INITIAL_VALUES: WalletFormParams = {
+const INITIAL_VALUES: FormParams = {
   password: "",
   passwordConfirmation: "",
   mnemonic: "",
@@ -59,42 +59,38 @@ const INITIAL_VALUES: WalletFormParams = {
 
 const VALIDATION_SCHEMA = [
   Yup.object().shape({
-    [WALLET_MODEL.formField.password.name]: Yup.string()
+    [FORM_MODEL.formField.password.name]: Yup.string()
       .min(8)
-      .required(WALLET_MODEL.formField.password.requiredErrorMessage),
-    [WALLET_MODEL.formField.passwordConfirmation.name]: Yup.string()
-      .required(WALLET_MODEL.formField.passwordConfirmation.requiredErrorMessage)
+      .required(FORM_MODEL.formField.password.requiredErrorMessage),
+    [FORM_MODEL.formField.passwordConfirmation.name]: Yup.string()
+      .required(FORM_MODEL.formField.passwordConfirmation.requiredErrorMessage)
       .oneOf(
-        [Yup.ref(WALLET_MODEL.formField.password.name), "", null, undefined],
-        WALLET_MODEL.formField.passwordConfirmation.wrongPasswordConfirmErrorMessage
+        [Yup.ref(FORM_MODEL.formField.password.name), "", null, undefined],
+        FORM_MODEL.formField.passwordConfirmation.wrongPasswordConfirmErrorMessage
       )
   }),
   Yup.object().shape({
-    [WALLET_MODEL.formField.mnemonic.name]: Yup.string().required(
-      WALLET_MODEL.formField.mnemonic.requiredErrorMessage
+    [FORM_MODEL.formField.mnemonic.name]: Yup.string().required(
+      FORM_MODEL.formField.mnemonic.requiredErrorMessage
     )
   }),
   Yup.object().shape({
-    [WALLET_MODEL.formField.mnemonicConfirmation.name]: Yup.string()
-      .required(WALLET_MODEL.formField.mnemonicConfirmation.requiredErrorMessage)
+    [FORM_MODEL.formField.mnemonicConfirmation.name]: Yup.string()
+      .required(FORM_MODEL.formField.mnemonicConfirmation.requiredErrorMessage)
       .oneOf(
-        [Yup.ref(WALLET_MODEL.formField.mnemonic.name), "", null, undefined],
-        WALLET_MODEL.formField.mnemonicConfirmation.wrongPhraseConfirmErrorMessage
+        [Yup.ref(FORM_MODEL.formField.mnemonic.name), "", null, undefined],
+        FORM_MODEL.formField.mnemonicConfirmation.wrongPhraseConfirmErrorMessage
       )
   })
 ];
 
-const WalletRegister = () => {
+const WalletRegisterPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
   const [activeStep, setActiveStep] = useState<number>(0);
   const currentValidationSchema = VALIDATION_SCHEMA[activeStep];
-  const steps = [
-    t("wallet_protect_vault"),
-    t("wallet_recover_vault"),
-    t("wallet_confirm_mnemonic")
-  ];
+  const steps = [t("protect_vault"), t("recover_vault"), t("confirm_mnemonic")];
   const dispatch = useTypedDispatch();
   const isLastStep = activeStep === steps.length - 1;
 
@@ -105,7 +101,7 @@ const WalletRegister = () => {
     setActiveStep(activeStep > 0 ? activeStep - 1 : 0);
   };
 
-  async function submitForm(values: WalletFormParams, actions: FormikHelpers<WalletFormParams>) {
+  async function submitForm(values: FormParams, actions: FormikHelpers<FormParams>) {
     try {
       await dispatch(
         createNewVaultAction({
@@ -114,17 +110,17 @@ const WalletRegister = () => {
         })
       );
       const isUnlocked: boolean = unwrapResult(
-        await dispatch(unlockVaultAction(values.password as string))
+        await dispatch(unlockWalletAction(values.password as string))
       );
       if (isUnlocked) {
         sendNotification({
-          message: t("wallet_register_successfully"),
+          message: t("register_successfully"),
           variant: "success"
         });
         navigate({ pathname: "/" });
       } else {
         sendNotification({
-          message: t("wallet_login_incorrect_password"),
+          message: t("login_incorrect_password"),
           variant: "error"
         });
       }
@@ -138,10 +134,7 @@ const WalletRegister = () => {
     }
   }
 
-  const handleSubmit = async (
-    values: WalletFormParams,
-    actions: FormikHelpers<WalletFormParams>
-  ) => {
+  const handleSubmit = async (values: FormParams, actions: FormikHelpers<FormParams>) => {
     if (isLastStep) {
       submitForm(values, actions);
     } else {
@@ -170,14 +163,14 @@ const WalletRegister = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting, setFieldValue }) => (
-            <Form id={WALLET_MODEL.formId}>
+            <Form id={FORM_MODEL.formId}>
               <SwipeableViews index={activeStep} onChangeIndex={handleStepChange}>
-                <WalletCreatePassword formField={WALLET_MODEL.formField} />
+                <WalletCreatePassword formField={FORM_MODEL.formField} />
                 <WalletShowMnemonic
-                  formField={WALLET_MODEL.formField}
+                  formField={FORM_MODEL.formField}
                   onPhraseGenerated={setFieldValue}
                 />
-                <WalletConfirmMnemonic formField={WALLET_MODEL.formField} />
+                <WalletConfirmMnemonic formField={FORM_MODEL.formField} />
               </SwipeableViews>
 
               <Box
@@ -222,4 +215,4 @@ const WalletRegister = () => {
   );
 };
 
-export default WalletRegister;
+export default WalletRegisterPage;

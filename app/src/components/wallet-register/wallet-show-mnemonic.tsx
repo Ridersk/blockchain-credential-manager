@@ -3,7 +3,7 @@ import { FormInput } from "components/ui/form/inputs/form-input";
 import { useField } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { WalletGenerator } from "scripts/wallet-manager/wallet-generator";
+import { AccountGenerator } from "utils/account-generator";
 
 type Props = {
   formField: {
@@ -21,20 +21,23 @@ const WalletShowMnemonic = (props: Props) => {
 
   useEffect(() => {
     (() =>
-      props.onPhraseGenerated(props.formField.mnemonic.name, WalletGenerator.generateMnemonic()))();
+      props.onPhraseGenerated(
+        props.formField.mnemonic.name,
+        AccountGenerator.generateMnemonic()
+      ))();
   }, []);
 
   return (
     <Box>
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          {t("wallet_recover_vault")}
+          {t("recover_vault")}
         </Typography>
       </Box>
 
       <Box my={4}>
         <Typography variant="h6" component="h6" gutterBottom align="center" color="gray">
-          {t("wallet_mnemonic_description")}
+          {t("mnemonic_description")}
         </Typography>
       </Box>
       <Box my={4}>

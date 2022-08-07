@@ -7,44 +7,44 @@ import {
   ParsedMessageAccount
 } from "@solana/web3.js";
 import base58 from "bs58";
-import { sleep } from "../../../../utils/time";
-import { BaseLedgerProgram } from "../ledger/base-ledger-program";
+import { sleep } from "../../../utils/time";
+import { LedgerProgram } from "./ledger";
 
-export class AccountController {
-  private _ledgerProgram: BaseLedgerProgram<any>;
-  private _walletAddress: PublicKey;
+export class VaultAccountController {
+  private _ledgerProgram: LedgerProgram<any>;
+  private _accountAddress: PublicKey;
   private _connection: import("@solana/web3.js").Connection;
   private _program: any;
 
-  constructor(ledgerProgram: BaseLedgerProgram<any>, keypair: Keypair) {
+  constructor(ledgerProgram: LedgerProgram<any>, keypair: Keypair) {
     this._ledgerProgram = ledgerProgram;
-    this._walletAddress = keypair.publicKey;
+    this._accountAddress = keypair.publicKey;
     this._connection = this._ledgerProgram.connection;
     this._program = this._ledgerProgram.program;
   }
 
-  async getWalletDetails() {
+  async getVaultDetails() {
     let status = "success";
-    let walletAdress: string = "";
+    let accountAdress: string = "";
     let balance: number = 0;
 
     try {
-      const walletInfo = await this._connection.getAccountInfo(this._walletAddress);
-      walletAdress = this._walletAddress.toBase58();
-      balance = (walletInfo?.lamports || 0) / LAMPORTS_PER_SOL;
+      const accountInfo = await this._connection.getAccountInfo(this._accountAddress);
+      accountAdress = this._accountAddress.toBase58();
+      balance = (accountInfo?.lamports || 0) / LAMPORTS_PER_SOL;
     } catch (err) {
       status = "error";
     }
 
-    return { status, details: { address: walletAdress, balance } };
+    return { status, details: { address: accountAdress, balance } };
   }
 
   async getActivities() {
     let status = "success";
-    let activities: Activity[] = [];
+    let activities: VaultActivity[] = [];
 
     try {
-      const signatures = await this._connection.getSignaturesForAddress(this._walletAddress);
+      const signatures = await this._connection.getSignaturesForAddress(this._accountAddress);
       const transactions = await this._program.provider.connection.getParsedTransactions(
         signatures.map((signature) => signature.signature)
       );
@@ -120,7 +120,7 @@ export class AccountController {
     let status = "success";
     try {
       const airdropSignature = await this._connection.requestAirdrop(
-        this._walletAddress,
+        this._accountAddress,
         1000000000
       );
       await this._connection.confirmTransaction(airdropSignature);
@@ -140,7 +140,7 @@ export class AccountController {
   }
 }
 
-export type WalletDetails = {
+export type VaultAccountDetails = {
   address: string;
   balance: number;
 };
@@ -157,7 +157,7 @@ enum InstructionTypeCode {
   "error" = "ERROR"
 }
 
-export type Activity = {
+export type VaultActivity = {
   txSignature: string;
   status: TransactionStatus;
   type: InstructionTypeCode;

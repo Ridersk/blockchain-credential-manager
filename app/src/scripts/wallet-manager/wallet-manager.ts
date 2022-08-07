@@ -1,36 +1,32 @@
 import bs58 from "bs58";
 import selectedStorage from "../storage";
-import {
-  KeyringController,
-  KeyringEncryptedSerialized,
-  WalletAccount
-} from "./controllers/keyring";
+import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
 import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
-import { WalletGenerator } from "./wallet-generator";
+import { AccountGenerator } from "../../utils/account-generator";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
 import { CredentialsController } from "./controllers/credentials";
-import { AccountController } from "./controllers/account";
+import { VaultAccountController } from "./controllers/vault";
 
-type VaultInitialState = {
+type WalletInitialState = {
   keyring: KeyringEncryptedSerialized;
   preferences?: PreferencesData;
 };
 
-export type VaultManagerOpts = {
-  initState?: VaultInitialState;
+export type WalletManagerOpts = {
+  initState?: WalletInitialState;
   encryptor?: EncryptorInterface;
 };
 
-export class VaultManager {
+export class WalletManager {
   private _keyringController: KeyringController;
   private _preferencesController: PreferencesController;
   private _memoryStore: ComposableStore<MemoryStore<any>>;
   private _credentialsController?: CredentialsController;
-  private _accountController?: AccountController;
+  private _accountController?: VaultAccountController;
 
-  constructor(opts: VaultManagerOpts = {}) {
+  constructor(opts: WalletManagerOpts = {}) {
     const { initState, encryptor } = opts;
 
     this._keyringController = new KeyringController({
@@ -58,12 +54,12 @@ export class VaultManager {
     return this._accountController;
   }
 
-  async registerNewWallet(mnemonic: string, password: string) {
-    const walletKeyPair = await WalletGenerator.generateWalletKeypair(mnemonic);
-    const accounts: WalletAccount[] = [
+  async registerNewVault(mnemonic: string, password: string) {
+    const vaultKeyPair = await AccountGenerator.generateAccountKeypair(mnemonic);
+    const accounts: VaultAccount[] = [
       {
-        address: walletKeyPair.publicKey.toBase58(),
-        privateKey: bs58.encode(walletKeyPair.secretKey)
+        address: vaultKeyPair.publicKey.toBase58(),
+        privateKey: bs58.encode(vaultKeyPair.secretKey)
       }
     ];
 
@@ -72,10 +68,10 @@ export class VaultManager {
       accounts
     });
     await this._preferencesController.setSelectedAddress(accounts[0].address);
-    return walletKeyPair;
+    return vaultKeyPair;
   }
 
-  async unlockVault(password: string) {
+  async unlockWallet(password: string) {
     let unlocked = false;
     try {
       const vaultData = await this._keyringController.unlock(password);
@@ -117,7 +113,7 @@ export class VaultManager {
       const password = (await this._keyringController.sessionStore.getState()).password;
 
       this._credentialsController = new CredentialsController(keypair, password as string);
-      this._accountController = new AccountController(
+      this._accountController = new VaultAccountController(
         this._credentialsController.ledgerProgram,
         keypair
       );
@@ -126,14 +122,14 @@ export class VaultManager {
 }
 
 // TODO. Move Code to background.js
-let vaultManagerInstance: VaultManager;
-export async function initVaultManager(): Promise<VaultManager> {
-  const initState = (await selectedStorage.getData()) as VaultInitialState;
-  vaultManagerInstance = new VaultManager({ initState });
+let vaultManagerInstance: WalletManager;
+export async function initVaultManager(): Promise<WalletManager> {
+  const initState = (await selectedStorage.getData()) as WalletInitialState;
+  vaultManagerInstance = new WalletManager({ initState });
   vaultManagerInstance.fullUpdate();
   return vaultManagerInstance;
 }
 
-export function getVaultManager(): VaultManager {
+export function getVaultManager(): WalletManager {
   return vaultManagerInstance;
 }

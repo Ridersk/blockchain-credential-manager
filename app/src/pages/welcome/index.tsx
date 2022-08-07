@@ -3,7 +3,7 @@ import { Container, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
-const Welcome = () => {
+const WelcomePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -64,4 +64,4 @@ const Welcome = () => {
   );
 };
 
-export default Welcome;
+export default WelcomePage;

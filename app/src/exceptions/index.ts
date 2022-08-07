@@ -1,22 +1,22 @@
-export class WalletInternallError extends Error {
+export class AppInternallError extends Error {
   constructor(message?: string) {
     super(message);
   }
 }
 
-export class VaultNoKeyringFoundError extends Error {
+export class WalletNoKeyringFoundError extends Error {
   constructor(message?: string) {
     super(message);
   }
 }
 
-export class VaultIncorrectPasswordError extends Error {
+export class WalletIncorrectPasswordError extends Error {
   constructor(message?: string) {
     super(message);
   }
 }
 
-export class VaultLockedError extends Error {
+export class WalletLockedError extends Error {
   constructor(message?: string) {
     super(message);
   }

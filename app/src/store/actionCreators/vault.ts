@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { WalletDetails, Activity } from "scripts/wallet-manager/controllers/account";
+import { VaultAccountDetails, VaultActivity } from "scripts/wallet-manager/controllers/vault";
 import { AccountActionType } from "store/actionTypes/account";
 
 export class AccountRequestError extends Error {
@@ -9,7 +9,7 @@ export class AccountRequestError extends Error {
 }
 
 export const getDetailsAction = createAsyncThunk<
-  WalletDetails,
+  VaultAccountDetails,
   void,
   {
     rejectValue: AccountRequestError;
@@ -17,7 +17,7 @@ export const getDetailsAction = createAsyncThunk<
 >(AccountActionType.GET_DETAILS, async (_, thunkAPI) => {
   let result = null;
   const response = await chrome.runtime.sendMessage({
-    action: "account.details"
+    action: "vault.details"
   });
   result = response?.data;
   if (result.status === "error" || !result?.details) {
@@ -28,7 +28,7 @@ export const getDetailsAction = createAsyncThunk<
 });
 
 export const getActivitiesAction = createAsyncThunk<
-  Activity[],
+  VaultActivity[],
   void,
   {
     rejectValue: AccountRequestError;
@@ -36,7 +36,7 @@ export const getActivitiesAction = createAsyncThunk<
 >(AccountActionType.GET_ACTIVITIES, async (_, thunkAPI) => {
   let result = null;
   const response = await chrome.runtime.sendMessage({
-    action: "account.activities"
+    action: "vault.activities"
   });
   result = response?.data;
   if (result.status === "error" || !result?.activities) {
@@ -55,7 +55,7 @@ export const requestAirdropAction = createAsyncThunk<
 >(AccountActionType.REQUEST_AIRDROP, async (_, thunkAPI) => {
   let result = null;
   const response = await chrome.runtime.sendMessage({
-    action: "account.requestAirdrop"
+    action: "vault.requestAirdrop"
   });
   result = response?.data;
 

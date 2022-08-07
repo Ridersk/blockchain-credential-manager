@@ -1,9 +1,9 @@
 // project imports
 import MinimalLayout from "layouts/MinimalLayout";
-import WalletRegister from "pages/wallet-register";
-import Login from "pages/login";
-import Welcome from "pages/welcome";
-import WalletImport from "pages/wallet-import";
+import WalletRegisterPage from "pages/wallet-register";
+import LoginPage from "pages/login";
+import WelcomePage from "pages/welcome";
+import WalletImportPage from "pages/wallet-import";
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 const AuthenticationRoutes = {
@@ -12,19 +12,19 @@ const AuthenticationRoutes = {
   children: [
     {
       path: "/login",
-      element: <Login />
+      element: <LoginPage />
     },
     {
       path: "/welcome",
-      element: <Welcome />
+      element: <WelcomePage />
     },
     {
       path: "/register",
-      element: <WalletRegister />
+      element: <WalletRegisterPage />
     },
     {
       path: "/import",
-      element: <WalletImport />
+      element: <WalletImportPage />
     }
   ]
 };

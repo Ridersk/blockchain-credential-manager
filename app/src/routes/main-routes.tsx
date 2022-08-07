@@ -1,7 +1,7 @@
 // project imports
 import MainLayout from "layouts/MainLayout";
 import CredentialPage from "pages/credential";
-import Home from "pages/home";
+import HomePage from "pages/home";
 
 // ==============================|| ROUTING ||============================== //
 
@@ -11,7 +11,7 @@ const MainRoutes = {
   children: [
     {
       path: "/",
-      element: <Home />
+      element: <HomePage />
     },
     {
       path: "/credential",

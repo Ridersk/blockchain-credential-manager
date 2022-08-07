@@ -4,7 +4,7 @@ import { debounce } from "lodash";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const CredentialsPanel = () => {
+const CredentialsListPanel = () => {
   const { t } = useTranslation();
   const [searchText, setSearchText] = useState("");
 
@@ -29,4 +29,4 @@ const CredentialsPanel = () => {
   );
 };
 
-export default CredentialsPanel;
+export default CredentialsListPanel;

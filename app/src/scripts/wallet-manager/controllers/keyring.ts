@@ -2,9 +2,9 @@ import { EncryptorInterface } from "../encryptor";
 import { MemoryStore } from "../store/memory-store";
 import passEncryptor from "browser-passworder";
 import {
-  VaultIncorrectPasswordError,
-  VaultNoKeyringFoundError,
-  VaultLockedError
+  WalletIncorrectPasswordError,
+  WalletNoKeyringFoundError,
+  WalletLockedError
 } from "../../../exceptions";
 import { PersistentStore } from "../store/persistent-store";
 import { Keypair } from "@solana/web3.js";
@@ -20,14 +20,14 @@ export type SessionVault = {
   password: string | null;
 };
 
-export type WalletAccount = {
+export type VaultAccount = {
   address: string;
   privateKey: string;
 };
 
 export type VaultKeyring = {
   mnemonic: string;
-  accounts: WalletAccount[];
+  accounts: VaultAccount[];
 };
 
 type KeyringControllerOpts = {
@@ -56,7 +56,7 @@ export class KeyringController {
     try {
       const encryptedVault: string = (await this.persistentStore.getState()).vault;
       if (!encryptedVault) {
-        throw new VaultNoKeyringFoundError("Cannot unlock without a previous vault.");
+        throw new WalletNoKeyringFoundError("Cannot unlock without a previous vault.");
       }
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
@@ -64,7 +64,7 @@ export class KeyringController {
       return (await this.sessionStore.getState()).keyring;
     } catch (err) {
       if (err instanceof Error && err.message === "Incorrect password") {
-        throw new VaultIncorrectPasswordError("Incorrect password");
+        throw new WalletIncorrectPasswordError("Incorrect password");
       }
       throw err;
     }
@@ -82,7 +82,7 @@ export class KeyringController {
     const keyring = (await this.sessionStore.getState()).keyring;
 
     if (!keyring) {
-      throw new VaultLockedError("Keyring is locked");
+      throw new WalletLockedError("Keyring is locked");
     }
 
     return keyring;
@@ -120,7 +120,7 @@ export class KeyringController {
 export type KeyringOpts = VaultKeyring;
 
 export class Keyring {
-  accounts: WalletAccount[];
+  accounts: VaultAccount[];
   mnemonic: string;
 
   constructor(opts: KeyringOpts) {
