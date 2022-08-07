@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, unwrapResult } from "@reduxjs/toolkit";
 import { VaultLockedError, VaultNoKeyringFoundError } from "exceptions";
 import { NewVaultData, WalletActionType, WalletData } from "../actionTypes/wallet";
 
@@ -35,29 +35,56 @@ export const forceUpdateWalletAction = createAsyncThunk<
   return selectedAddress;
 });
 
-export const unlockVaultAction = createAsyncThunk<boolean, string>(
-  WalletActionType.UNLOCK_VAULT,
-  async (password: string, thunkAPI): Promise<boolean> => {
-    let isUnlocked = false;
-    const response = await chrome.runtime.sendMessage({
-      action: "unlockVault",
-      data: {
-        password
-      }
-    });
-    isUnlocked = response?.data?.isUnlocked;
-
-    if (isUnlocked) {
-      await thunkAPI.dispatch(forceUpdateWalletAction());
-    }
-
-    return isUnlocked;
+export const unlockVaultAction = createAsyncThunk<
+  boolean,
+  string,
+  {
+    rejectValue: VaultNoKeyringFoundError | VaultLockedError;
   }
-);
+>(WalletActionType.UNLOCK_VAULT, async (password: string, thunkAPI): Promise<boolean> => {
+  let isUnlocked = false;
+  const response = await chrome.runtime.sendMessage({
+    action: "unlockVault",
+    data: {
+      password
+    }
+  });
+  isUnlocked = response?.data?.isUnlocked;
 
-export const createNewVaultAction = createAsyncThunk<void, NewVaultData>(
-  WalletActionType.CREATE_NEW_VAULT,
-  async ({ mnemonic, password }: NewVaultData, thunkAPI) => {
+  if (isUnlocked) {
+    unwrapResult(await thunkAPI.dispatch(forceUpdateWalletAction()));
+  }
+
+  return isUnlocked;
+});
+
+export const createNewVaultAction = createAsyncThunk<
+  void,
+  NewVaultData,
+  {
+    rejectValue: VaultNoKeyringFoundError | VaultLockedError;
+  }
+>(WalletActionType.CREATE_NEW_VAULT, async ({ mnemonic, password }: NewVaultData, thunkAPI) => {
+  await chrome.runtime.sendMessage({
+    action: "registerWallet",
+    data: {
+      mnemonic,
+      password
+    }
+  });
+
+  unwrapResult(await thunkAPI.dispatch(forceUpdateWalletAction()));
+});
+
+export const recoverVaultAction = createAsyncThunk<
+  boolean,
+  NewVaultData,
+  {
+    rejectValue: VaultNoKeyringFoundError | VaultLockedError;
+  }
+>(
+  WalletActionType.RECOVER_VAULT,
+  async ({ mnemonic, password }: NewVaultData, thunkAPI): Promise<boolean> => {
     await chrome.runtime.sendMessage({
       action: "registerWallet",
       data: {
@@ -66,6 +93,6 @@ export const createNewVaultAction = createAsyncThunk<void, NewVaultData>(
       }
     });
 
-    await thunkAPI.dispatch(forceUpdateWalletAction());
+    return unwrapResult(await thunkAPI.dispatch(unlockVaultAction(password)));
   }
 );

@@ -113,7 +113,6 @@ const WalletRegister = () => {
           password: values.password as string
         })
       );
-      actions.setSubmitting(false);
       const isUnlocked: boolean = unwrapResult(
         await dispatch(unlockVaultAction(values.password as string))
       );
@@ -134,6 +133,8 @@ const WalletRegister = () => {
         message: t("unexpected_error"),
         variant: "error"
       });
+    } finally {
+      actions.setSubmitting(false);
     }
   }
 

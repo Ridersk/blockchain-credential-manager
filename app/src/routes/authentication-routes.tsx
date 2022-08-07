@@ -3,6 +3,7 @@ import MinimalLayout from "layouts/MinimalLayout";
 import WalletRegister from "pages/wallet-register";
 import Login from "pages/login";
 import Welcome from "pages/welcome";
+import WalletImport from "pages/wallet-import";
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 const AuthenticationRoutes = {
@@ -20,6 +21,10 @@ const AuthenticationRoutes = {
     {
       path: "/register",
       element: <WalletRegister />
+    },
+    {
+      path: "/import",
+      element: <WalletImport />
     }
   ]
 };

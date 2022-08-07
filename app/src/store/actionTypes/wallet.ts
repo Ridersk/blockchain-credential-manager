@@ -3,7 +3,8 @@ export enum WalletActionType {
   UPDATE_WALLET = "@wallet/UPDATE_WALLET",
   FORCE_UPDATE = "@wallet/FORCE_UPDATE",
   UNLOCK_VAULT = "@wallet/UNLOCK_VAULT",
-  CREATE_NEW_VAULT = "@wallet/CREATE_NEW_VAULT"
+  CREATE_NEW_VAULT = "@wallet/CREATE_NEW_VAULT",
+  RECOVER_VAULT = "@wallet/RECOVER_VAULT"
 }
 
 export interface WalletData {
@@ -33,4 +34,9 @@ interface CreateNewVault {
   data: NewVaultData;
 }
 
-export type WalletAction = UpdateWallet | UnlockVault | CreateNewVault;
+interface RecoverVault {
+  type: WalletActionType.RECOVER_VAULT;
+  data: NewVaultData;
+}
+
+export type WalletAction = UpdateWallet | UnlockVault | CreateNewVault | RecoverVault;
