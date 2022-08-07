@@ -2,12 +2,10 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
-import {
-  decryptData,
-  encryptData,
-  getPdaParams,
-  requestAirdrop,
-} from "./utils/testing-utils";
+import { getPdaParams, requestAirdrop } from "./utils/testing-utils";
+import passEncryptor from "browser-passworder";
+
+global.crypto = require("crypto").webcrypto;
 
 const { SystemProgram, Keypair } = anchor.web3;
 
@@ -26,6 +24,7 @@ const CREDENTIAL_NAMESPACE = "credential";
 describe("credential-edition", () => {
   let owner;
   let credentialPda;
+  const password = "password123";
 
   it("Create support credential account", async () => {
     owner = Keypair.generate();
@@ -41,6 +40,8 @@ describe("credential-edition", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
 
     await program.rpc.createCredential(
@@ -48,8 +49,7 @@ describe("credential-edition", () => {
       title,
       url,
       iconUrl,
-      encryptData(owner.secretKey, label),
-      encryptData(owner.secretKey, secret),
+      encryptedData,
       description,
       {
         accounts: {
@@ -71,6 +71,8 @@ describe("credential-edition", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login [UPDATED]";
 
     await program.rpc.editCredential(
@@ -78,8 +80,7 @@ describe("credential-edition", () => {
       title,
       url,
       iconUrl,
-      encryptData(owner.secretKey, label),
-      encryptData(owner.secretKey, secret),
+      encryptedData,
       description,
       {
         accounts: {
@@ -90,8 +91,12 @@ describe("credential-edition", () => {
       }
     );
 
-    let credentialAccountData = await program.account.credentialAccount.fetch(
+    const credentialAccountData = await program.account.credentialAccount.fetch(
       credentialAccountKey
+    );
+    const responseCredentialData = await passEncryptor.decrypt(
+      password,
+      credentialAccountData.credentialData
     );
 
     // Assertions
@@ -106,16 +111,8 @@ describe("credential-edition", () => {
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
     assert.equal(iconUrl, credentialAccountData.iconUrl);
-    assert.notEqual(label, credentialAccountData.label);
-    assert.equal(
-      label,
-      decryptData(owner.secretKey, credentialAccountData.label)
-    );
-    assert.notEqual(secret, credentialAccountData.secret);
-    assert.equal(
-      secret,
-      decryptData(owner.secretKey, credentialAccountData.secret)
-    );
+    assert.equal(label, responseCredentialData.label);
+    assert.equal(secret, responseCredentialData.secret);
     assert.equal(description, credentialAccountData.description);
   });
 
@@ -129,6 +126,8 @@ describe("credential-edition", () => {
     const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
+    const credentialData = { label, secret };
+    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login [UPDATED]";
 
     await assert.rejects(
@@ -137,8 +136,7 @@ describe("credential-edition", () => {
         title,
         url,
         iconUrl,
-        encryptData(owner.secretKey, label),
-        encryptData(owner.secretKey, secret),
+        encryptedData,
         description,
         {
           accounts: {

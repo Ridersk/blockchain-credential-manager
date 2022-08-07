@@ -5,14 +5,12 @@ use anchor_lang::prelude::*;
  */
 #[error_code]
 pub enum CustomErrorCode {
-    #[msg("O título deve ter no máximo 50 caracteres.")]
+    #[msg("Title should be 50 characters long maximum.")]
     TitleTooLong,
-    #[msg("A URL deve ter no máximo 100 caracteres.")]
+    #[msg("URL should be 100 characters long maximum.")]
     URLTooLong,
-    #[msg("Tamanho da label ultrapassou o limite após encriptação.")]
-    LabelTooLong,
-    #[msg("Tamanho da senha ultrapassou o limite após encriptação.")]
-    SecretTooLong,
-    #[msg("A descrição deve ter no máximo 100 caracteres.")]
+    #[msg("Credential data should be 512 characters long.")]
+    CredentialDataTooLong,
+    #[msg("Description should be 100 characters long maximum.")]
     DescriptionTooLong,
 }

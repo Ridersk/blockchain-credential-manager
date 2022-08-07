@@ -114,7 +114,9 @@ export class VaultManager {
     const keypair = await this.getSelectedAccountKeypair();
 
     if (keypair) {
-      this._credentialsController = new CredentialsController(keypair);
+      const password = (await this._keyringController.sessionStore.getState()).password;
+
+      this._credentialsController = new CredentialsController(keypair, password as string);
       this._accountController = new AccountController(
         this._credentialsController.ledgerProgram,
         keypair
