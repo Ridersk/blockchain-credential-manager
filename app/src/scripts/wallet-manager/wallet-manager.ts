@@ -1,9 +1,7 @@
-import bs58 from "bs58";
 import selectedStorage from "../storage";
-import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
+import { KeyringController, KeyringEncryptedSerialized } from "./controllers/keyring";
 import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
-import { AccountGenerator } from "../../utils/account-generator";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
 import { CredentialsController } from "./controllers/credentials";
@@ -24,7 +22,7 @@ export class WalletManager {
   private _preferencesController: PreferencesController;
   private _memoryStore: ComposableStore<MemoryStore<any>>;
   private _credentialsController?: CredentialsController;
-  private _accountController?: VaultAccountController;
+  private _vaultAccountController?: VaultAccountController;
 
   constructor(opts: WalletManagerOpts = {}) {
     const { initState, encryptor } = opts;
@@ -50,25 +48,25 @@ export class WalletManager {
     return this._credentialsController;
   }
 
-  get accountController() {
-    return this._accountController;
+  get vaultAccountController() {
+    return this._vaultAccountController;
   }
 
-  async registerNewVault(mnemonic: string, password: string) {
-    const vaultKeyPair = await AccountGenerator.generateAccountKeypair(mnemonic);
-    const accounts: VaultAccount[] = [
-      {
-        address: vaultKeyPair.publicKey.toBase58(),
-        privateKey: bs58.encode(vaultKeyPair.secretKey)
-      }
-    ];
-
+  async registerNewWallet(
+    mnemonic: string,
+    password: string,
+    firstVaultAccount: { publicKey: string; privateKey: string }
+  ) {
+    const firstAccount = {
+      address: firstVaultAccount.publicKey,
+      privateKey: firstVaultAccount.privateKey
+    };
     await this._keyringController.createKeyring(password, {
       mnemonic,
-      accounts
+      accounts: [firstAccount]
     });
-    await this._preferencesController.setSelectedAddress(accounts[0].address);
-    return vaultKeyPair;
+    await this._preferencesController.setSelectedAddress(firstAccount.address);
+    return firstAccount;
   }
 
   async unlockWallet(password: string) {
@@ -113,7 +111,7 @@ export class WalletManager {
       const password = (await this._keyringController.sessionStore.getState()).password;
 
       this._credentialsController = new CredentialsController(keypair, password as string);
-      this._accountController = new VaultAccountController(
+      this._vaultAccountController = new VaultAccountController(
         this._credentialsController.ledgerProgram,
         keypair
       );

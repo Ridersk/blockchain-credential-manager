@@ -1,9 +1,9 @@
 import { WalletManager, initVaultManager } from "./wallet-manager/wallet-manager";
 
-let vaultManager: WalletManager;
+let walletManager: WalletManager;
 
 async function setupVault() {
-  vaultManager = await initVaultManager();
+  walletManager = await initVaultManager();
 }
 
 setupVault();
@@ -32,42 +32,43 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
 });
 
 async function messageHandler(request: any) {
-  if (request.action === "registerVault") {
-    const keypair = await vaultManager.registerNewVault(
+  if (request.action === "wallet.registerWallet") {
+    const keypair = await walletManager.registerNewWallet(
       request.data.mnemonic,
-      request.data.password
+      request.data.password,
+      request.data.firstVaultAccount
     );
-    return { data: { publicKey: keypair?.publicKey?.toBase58() } };
-  } else if (request.action === "unlockWallet") {
-    let isUnlocked = await vaultManager.unlockWallet(request.data.password);
+    return { data: { publicKey: keypair?.address } };
+  } else if (request.action === "wallet.unlockWallet") {
+    let isUnlocked = await walletManager.unlockWallet(request.data.password);
     return {
       data: {
         isUnlocked: isUnlocked
       }
     };
-  } else if (request.action === "getState") {
-    const state = await vaultManager.getState();
+  } else if (request.action === "wallet.getState") {
+    const state = await walletManager.getState();
     return { data: state };
-  } else if (request.action === "createCredential") {
+  } else if (request.action === "credentials.create") {
     const credentialData = request.data;
-    const response = await vaultManager.credentialsController?.createCredential(credentialData);
+    const response = await walletManager.credentialsController?.createCredential(credentialData);
     return {
       data: response
     };
   } else if (request.action === "credentials.edit") {
     const credentialData = request.data;
-    const response = await vaultManager.credentialsController?.editCredential(credentialData);
+    const response = await walletManager.credentialsController?.editCredential(credentialData);
     return {
       data: response
     };
   } else if (request.action === "credentials.get") {
     const address = request?.data?.address;
-    const credential = await vaultManager.credentialsController?.getCredential(address);
+    const credential = await walletManager.credentialsController?.getCredential(address);
     return {
       data: { credential }
     };
   } else if (request.action === "credentials.getList") {
-    const credentialsController = vaultManager.credentialsController;
+    const credentialsController = walletManager.credentialsController;
     const credentials = await credentialsController?.getCredentials();
     return {
       data: {
@@ -76,22 +77,22 @@ async function messageHandler(request: any) {
     };
   } else if (request.action === "credentials.delete") {
     const address = request?.data?.address;
-    const response = await vaultManager.credentialsController?.deleteCredential(address);
+    const response = await walletManager.credentialsController?.deleteCredential(address);
     return {
       data: response
     };
   } else if (request.action === "vault.details") {
-    const response = await vaultManager.accountController?.getVaultDetails();
+    const response = await walletManager.vaultAccountController?.getVaultDetails();
     return {
       data: response
     };
   } else if (request.action === "vault.activities") {
-    const response = await vaultManager.accountController?.getActivities();
+    const response = await walletManager.vaultAccountController?.getActivities();
     return {
       data: response
     };
   } else if (request.action === "vault.requestAirdrop") {
-    const response = await vaultManager.accountController?.requestAirdrop();
+    const response = await walletManager.vaultAccountController?.requestAirdrop();
     return {
       data: response
     };

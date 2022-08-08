@@ -4,7 +4,8 @@ import {
   PublicKey,
   ParsedInstruction,
   PartiallyDecodedInstruction,
-  ParsedMessageAccount
+  ParsedMessageAccount,
+  Connection
 } from "@solana/web3.js";
 import base58 from "bs58";
 import { sleep } from "../../../utils/time";
@@ -13,7 +14,7 @@ import { LedgerProgram } from "./ledger";
 export class VaultAccountController {
   private _ledgerProgram: LedgerProgram<any>;
   private _accountAddress: PublicKey;
-  private _connection: import("@solana/web3.js").Connection;
+  private _connection: Connection;
   private _program: any;
 
   constructor(ledgerProgram: LedgerProgram<any>, keypair: Keypair) {

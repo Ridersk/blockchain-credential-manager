@@ -13,6 +13,7 @@ import { useTypedSelector } from "hooks/useTypedSelector";
 import { copyTextToClipboard } from "utils/clipboard";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { formatAddress } from "utils/address";
 
 interface HeaderProps {
   sx?: SxProps;
@@ -38,15 +39,6 @@ function Header(props: HeaderProps) {
   const resetAddressTooltip = () => {
     setTimeout(() => setAddressTooltip(t("copy_vault_address")), 500);
   };
-
-  function formatAddress(address: string) {
-    if (address.length > 12) {
-      return (
-        address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length)
-      );
-    }
-    return address;
-  }
 
   return (
     <Box {...props} sx={{ height: "48px" }}>

@@ -1,6 +1,6 @@
 import { createAsyncThunk, unwrapResult } from "@reduxjs/toolkit";
 import { WalletLockedError, WalletNoKeyringFoundError } from "exceptions";
-import { NewVaultData, WalletActionType, VaultData } from "../actionTypes/wallet";
+import { NewWalletData, WalletActionType, VaultData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: VaultData) => ({
   type: WalletActionType.UPDATE_WALLET,
@@ -15,7 +15,7 @@ export const forceUpdateWalletAction = createAsyncThunk<
   }
 >(WalletActionType.FORCE_UPDATE, async (_, thunkAPI) => {
   const response = await chrome.runtime.sendMessage({
-    action: "getState"
+    action: "wallet.getState"
   });
   const isInitialized = response?.data?.isInitialized;
   const keyring = response?.data?.keyring;
@@ -44,7 +44,7 @@ export const unlockWalletAction = createAsyncThunk<
 >(WalletActionType.UNLOCK_WALLET, async (password: string, thunkAPI): Promise<boolean> => {
   let isUnlocked = false;
   const response = await chrome.runtime.sendMessage({
-    action: "unlockWallet",
+    action: "wallet.unlockWallet",
     data: {
       password
     }
@@ -58,38 +58,21 @@ export const unlockWalletAction = createAsyncThunk<
   return isUnlocked;
 });
 
-export const createNewVaultAction = createAsyncThunk<
-  void,
-  NewVaultData,
-  {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
-  }
->(WalletActionType.CREATE_NEW_VAULT, async ({ mnemonic, password }: NewVaultData, thunkAPI) => {
-  await chrome.runtime.sendMessage({
-    action: "registerVault",
-    data: {
-      mnemonic,
-      password
-    }
-  });
-
-  unwrapResult(await thunkAPI.dispatch(forceUpdateWalletAction()));
-});
-
-export const recoverVaultAction = createAsyncThunk<
+export const createNewWalletAction = createAsyncThunk<
   boolean,
-  NewVaultData,
+  NewWalletData,
   {
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
 >(
-  WalletActionType.RECOVER_VAULT,
-  async ({ mnemonic, password }: NewVaultData, thunkAPI): Promise<boolean> => {
+  WalletActionType.CREATE_NEW_WALLET,
+  async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
     await chrome.runtime.sendMessage({
-      action: "registerVault",
+      action: "wallet.registerWallet",
       data: {
         mnemonic,
-        password
+        password,
+        firstVaultAccount
       }
     });
 

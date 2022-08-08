@@ -81,7 +81,6 @@ export class CredentialsController {
             description: credentialAccount.description
           });
         } catch (e) {
-          console.log(e);
           return new Credential(credential?.publicKey?.toBase58(), {
             uid: credentialAccount.uid.toNumber(),
             title: credentialAccount.title,
@@ -158,11 +157,6 @@ export class CredentialsController {
     const publicKey = this._keypair.publicKey;
     const program = this._ledgerProgram.program;
     const encryptedCredentialData = await passEncryptor.encrypt(this._password, { label, secret });
-
-    console.log("[EditCredential] encrypted credential:", encryptedCredentialData);
-
-    const decrypted = await this._encryptor.decrypt(this._password, encryptedCredentialData);
-    console.log("[EditCredential] decrypted credential:", decrypted);
 
     let status = "success";
     let errorMessage = "";

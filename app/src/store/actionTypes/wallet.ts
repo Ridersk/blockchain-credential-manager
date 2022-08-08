@@ -2,8 +2,7 @@ export enum WalletActionType {
   UPDATE_WALLET = "@wallet/UPDATE_WALLET",
   FORCE_UPDATE = "@wallet/FORCE_UPDATE",
   UNLOCK_WALLET = "@wallet/UNLOCK_WALLET",
-  CREATE_NEW_VAULT = "@wallet/CREATE_NEW_VAULT",
-  RECOVER_VAULT = "@wallet/RECOVER_VAULT"
+  CREATE_NEW_WALLET = "@wallet/CREATE_NEW_WALLET"
 }
 
 export interface VaultData {
@@ -13,9 +12,13 @@ export interface VaultData {
   mnemonic?: string;
 }
 
-export interface NewVaultData {
+export interface NewWalletData {
   password: string;
   mnemonic: string;
+  firstVaultAccount: {
+    publicKey: string;
+    privateKey: string;
+  };
 }
 
 interface UpdateWallet {
@@ -28,14 +31,9 @@ interface UnlockWallet {
   password: string;
 }
 
-interface CreateNewVault {
-  type: WalletActionType.CREATE_NEW_VAULT;
-  data: NewVaultData;
+interface CreateNewWallet {
+  type: WalletActionType.CREATE_NEW_WALLET;
+  data: NewWalletData;
 }
 
-interface RecoverVault {
-  type: WalletActionType.RECOVER_VAULT;
-  data: NewVaultData;
-}
-
-export type WalletAction = UpdateWallet | UnlockWallet | CreateNewVault | RecoverVault;
+export type WalletAction = UpdateWallet | UnlockWallet | CreateNewWallet;

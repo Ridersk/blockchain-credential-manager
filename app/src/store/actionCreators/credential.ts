@@ -26,7 +26,7 @@ export const createCredentialAction = createAsyncThunk<
 >(CredentialActionType.CREATE, async (data: NewCredentialParams, thunkAPI) => {
   let result = null;
   const response = await chrome.runtime.sendMessage({
-    action: "createCredential",
+    action: "credentials.create",
     data
   });
   result = response?.data;
