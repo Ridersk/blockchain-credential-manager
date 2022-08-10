@@ -1,5 +1,6 @@
 import { createAsyncThunk, unwrapResult } from "@reduxjs/toolkit";
 import { WalletLockedError, WalletNoKeyringFoundError } from "exceptions";
+import { background } from "services/background-connection/background-msg";
 import { NewWalletData, WalletActionType, VaultData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: VaultData) => ({
@@ -14,12 +15,11 @@ export const forceUpdateWalletAction = createAsyncThunk<
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
 >(WalletActionType.FORCE_UPDATE, async (_, thunkAPI) => {
-  const response = await chrome.runtime.sendMessage({
-    action: "wallet.getState"
-  });
-  const isInitialized = response?.data?.isInitialized;
-  const keyring = response?.data?.keyring;
-  const preferences = response?.data?.preferences;
+  const response = await background.getState();
+
+  const isInitialized = response?.result?.isInitialized;
+  const keyring = (response?.result as any).keyring;
+  const preferences = (response?.result as any).preferences;
   const selectedAddress = preferences?.selectedAddress;
 
   if (!isInitialized || !selectedAddress) {
@@ -43,13 +43,9 @@ export const unlockWalletAction = createAsyncThunk<
   }
 >(WalletActionType.UNLOCK_WALLET, async (password: string, thunkAPI): Promise<boolean> => {
   let isUnlocked = false;
-  const response = await chrome.runtime.sendMessage({
-    action: "wallet.unlockWallet",
-    data: {
-      password
-    }
-  });
-  isUnlocked = response?.data?.isUnlocked;
+
+  const response = await background.unlockWallet(password);
+  isUnlocked = response.result;
 
   if (isUnlocked) {
     unwrapResult(await thunkAPI.dispatch(forceUpdateWalletAction()));
@@ -67,15 +63,7 @@ export const createNewWalletAction = createAsyncThunk<
 >(
   WalletActionType.CREATE_NEW_WALLET,
   async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
-    await chrome.runtime.sendMessage({
-      action: "wallet.registerWallet",
-      data: {
-        mnemonic,
-        password,
-        firstVaultAccount
-      }
-    });
-
+    await background.registerNewWallet(mnemonic, password, firstVaultAccount);
     return unwrapResult(await thunkAPI.dispatch(unlockWalletAction(password)));
   }
 );

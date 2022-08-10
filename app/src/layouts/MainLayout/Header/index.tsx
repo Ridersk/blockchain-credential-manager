@@ -27,7 +27,7 @@ function Header(props: HeaderProps) {
   const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_vault_address"));
   const wallet = useTypedSelector((state) => state.wallet);
 
-  const handleGoToBack = () => {
+  const goToPreviousPage = () => {
     navigate(-1);
   };
 
@@ -83,7 +83,7 @@ function Header(props: HeaderProps) {
             </Tooltip>
           </Box>
           {location.pathname !== "/" && (
-            <IconButton color="inherit" onClick={handleGoToBack}>
+            <IconButton color="inherit" onClick={goToPreviousPage}>
               <CloseIcon fontSize="small" />
             </IconButton>
           )}

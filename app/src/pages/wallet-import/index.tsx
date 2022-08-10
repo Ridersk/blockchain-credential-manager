@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
 import { createNewWalletAction } from "store/actionCreators";
+import { sleep } from "utils/time";
 import WalletImportMnemonicForm from "./wallet-import-mnemonic-form";
 
 type ImportWithMnemonicParams = {
@@ -40,6 +41,7 @@ const WalletImportPage = () => {
           message: t("register_successfully"),
           variant: "success"
         });
+        await sleep(100);
         navigate({ pathname: "/" });
       } else {
         sendNotification({
@@ -48,7 +50,6 @@ const WalletImportPage = () => {
         });
       }
     } catch (err) {
-      console.log(err);
       sendNotification({
         message: t("unexpected_error"),
         variant: "error"

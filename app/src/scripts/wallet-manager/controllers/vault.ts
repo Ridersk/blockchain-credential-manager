@@ -25,115 +25,91 @@ export class VaultAccountController {
   }
 
   async getVaultDetails() {
-    let status = "success";
     let accountAdress: string = "";
     let balance: number = 0;
 
-    try {
-      const accountInfo = await this._connection.getAccountInfo(this._accountAddress);
-      accountAdress = this._accountAddress.toBase58();
-      balance = (accountInfo?.lamports || 0) / LAMPORTS_PER_SOL;
-    } catch (err) {
-      status = "error";
-    }
+    const accountInfo = await this._connection.getAccountInfo(this._accountAddress);
+    accountAdress = this._accountAddress.toBase58();
+    balance = (accountInfo?.lamports || 0) / LAMPORTS_PER_SOL;
 
-    return { status, details: { address: accountAdress, balance } };
+    return { address: accountAdress, balance };
   }
 
   async getActivities() {
-    let status = "success";
     let activities: VaultActivity[] = [];
 
-    try {
-      const signatures = await this._connection.getSignaturesForAddress(this._accountAddress);
-      const transactions = await this._program.provider.connection.getParsedTransactions(
-        signatures.map((signature) => signature.signature)
-      );
+    const signatures = await this._connection.getSignaturesForAddress(this._accountAddress);
+    const transactions = await this._program.provider.connection.getParsedTransactions(
+      signatures.map((signature) => signature.signature)
+    );
 
-      for (const index in transactions) {
-        const transactionMessage = transactions[index]?.transaction.message;
-        const transactionSignature = transactions[index]?.transaction.signatures[0] as string;
-        const accounts = transactionMessage?.accountKeys as ParsedMessageAccount[];
-        const transactionError = transactions[index]?.meta?.err;
-        let transactionType;
-        let txStatus: TransactionStatus;
-        let direction: TransactionDirection;
-        let fromAddress: string | null = null;
-        let toAddress: string | null = null;
-        let extraParams;
+    for (const index in transactions) {
+      const transactionMessage = transactions[index]?.transaction.message;
+      const transactionSignature = transactions[index]?.transaction.signatures[0] as string;
+      const accounts = transactionMessage?.accountKeys as ParsedMessageAccount[];
+      const transactionError = transactions[index]?.meta?.err;
+      let transactionType;
+      let txStatus: TransactionStatus;
+      let direction: TransactionDirection;
+      let fromAddress: string | null = null;
+      let toAddress: string | null = null;
+      let extraParams;
 
+      try {
+        const programInstruction = transactionMessage
+          ?.instructions[0] as PartiallyDecodedInstruction;
+        const instructionData = programInstruction.data;
+
+        this._convertB58ToPrettyHex(programInstruction.data);
+        transactionType =
+          InstructionTypeCode[
+            this._convertB58ToPrettyHex(instructionData).substring(
+              0,
+              16
+            ) as keyof typeof InstructionTypeCode
+          ];
+        fromAddress = accounts[0].pubkey.toBase58();
+        toAddress = accounts[1].pubkey.toBase58();
+        txStatus = transactionError ? "error" : "success";
+        direction = "output";
+      } catch (err) {
         try {
-          const programInstruction = transactionMessage
-            ?.instructions[0] as PartiallyDecodedInstruction;
-          const instructionData = programInstruction.data;
+          const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
+          const instructionParsedData = programInstruction.parsed;
 
-          this._convertB58ToPrettyHex(programInstruction.data);
           transactionType =
-            InstructionTypeCode[
-              this._convertB58ToPrettyHex(instructionData).substring(
-                0,
-                16
-              ) as keyof typeof InstructionTypeCode
-            ];
-          fromAddress = accounts[0].pubkey.toBase58();
-          toAddress = accounts[1].pubkey.toBase58();
-          txStatus = transactionError ? "error" : "success";
-          direction = "output";
-        } catch (err) {
-          try {
-            const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
-            const instructionParsedData = programInstruction.parsed;
-
-            transactionType =
-              InstructionTypeCode[instructionParsedData.type as keyof typeof InstructionTypeCode];
-            fromAddress = instructionParsedData.info.source;
-            toAddress = instructionParsedData.info.destination;
-            extraParams = { solAmount: instructionParsedData.info.lamports / LAMPORTS_PER_SOL };
-          } catch (error) {
-            transactionType = !transactionError
-              ? InstructionTypeCode.success
-              : InstructionTypeCode.error;
-          } finally {
-            direction = "input";
-            txStatus = transactionError ? "error" : "received";
-          }
+            InstructionTypeCode[instructionParsedData.type as keyof typeof InstructionTypeCode];
+          fromAddress = instructionParsedData.info.source;
+          toAddress = instructionParsedData.info.destination;
+          extraParams = { solAmount: instructionParsedData.info.lamports / LAMPORTS_PER_SOL };
+        } catch (error) {
+          transactionType = !transactionError
+            ? InstructionTypeCode.success
+            : InstructionTypeCode.error;
+        } finally {
+          direction = "input";
+          txStatus = transactionError ? "error" : "received";
         }
-
-        activities.push({
-          txSignature: transactionSignature,
-          status: txStatus,
-          type: transactionType,
-          direction,
-          toAddress,
-          fromAddress,
-          extraParams
-        });
       }
-    } catch (err) {
-      status = "error";
+
+      activities.push({
+        txSignature: transactionSignature,
+        status: txStatus,
+        type: transactionType,
+        direction,
+        toAddress,
+        fromAddress,
+        extraParams
+      });
     }
 
-    return { status, activities };
+    return activities;
   }
 
   async requestAirdrop() {
     // Request airdrop of 1 SOL
-    let status = "success";
-    try {
-      const airdropSignature = await this._connection.requestAirdrop(
-        this._accountAddress,
-        1000000000
-      );
-      await this._connection.confirmTransaction(airdropSignature);
-    } catch (err) {
-      status = "error";
-    }
-
+    await this._connection.requestAirdrop(this._accountAddress, 1000000000);
     await sleep(1000);
-
-    return {
-      status
-    };
   }
 
   _convertB58ToPrettyHex(b58Text: string): string {

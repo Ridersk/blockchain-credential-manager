@@ -8,6 +8,7 @@ import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { unlockWalletAction } from "store/actionCreators";
+import { sleep } from "utils/time";
 import * as Yup from "yup";
 
 type LoginParams = {
@@ -25,11 +26,12 @@ const LoginPage = () => {
     try {
       const isUnlocked: boolean = unwrapResult(await dispatch(unlockWalletAction(values.password)));
       if (isUnlocked) {
-        navigate({ pathname: "/" });
         sendNotification({
           message: t("login_successfully"),
           variant: "success"
         });
+        await sleep(100);
+        navigate({ pathname: "/" });
       } else {
         sendNotification({
           message: t("login_incorrect_password"),

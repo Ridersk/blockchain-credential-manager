@@ -42,6 +42,32 @@ export class WalletManager {
         preferences: this._preferencesController.sessionStore
       }
     });
+
+    this.registerNewWallet = this.registerNewWallet.bind(this);
+    this.unlockWallet = this.unlockWallet.bind(this);
+    this.isUnlocked = this.isUnlocked.bind(this);
+    this.getState = this.getState.bind(this);
+    this.getSelectedAccountKeypair = this.getSelectedAccountKeypair.bind(this);
+    this.fullUpdate = this.fullUpdate.bind(this);
+  }
+
+  get api() {
+    const { _credentialsController, _vaultAccountController } = this;
+
+    return {
+      registerNewWallet: this.registerNewWallet.bind(this),
+      unlockWallet: this.unlockWallet.bind(this),
+      isUnlocked: this.isUnlocked.bind(this),
+      getState: this.getState.bind(this),
+      createCredential: _credentialsController?.createCredential.bind(_credentialsController)!,
+      editCredential: _credentialsController?.editCredential.bind(_credentialsController)!,
+      deleteCredential: _credentialsController?.deleteCredential.bind(_credentialsController)!,
+      getCredential: _credentialsController?.getCredential.bind(_credentialsController)!,
+      getCredentials: _credentialsController?.getCredentials.bind(_credentialsController)!,
+      getVaultDetails: _vaultAccountController?.getVaultDetails.bind(_vaultAccountController)!,
+      getActivities: _vaultAccountController?.getActivities.bind(_vaultAccountController)!,
+      requestAirdrop: _vaultAccountController?.requestAirdrop.bind(_vaultAccountController)!
+    };
   }
 
   get credentialsController() {

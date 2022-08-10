@@ -5,11 +5,7 @@ import {
 } from "scripts/wallet-manager/controllers/credentials";
 import { CredentialActionType } from "store/actionTypes/credential";
 import { Credential } from "models/Credential";
-
-type CredentialRequestResult = {
-  status: "success" | "error";
-  errorMessage?: string;
-};
+import { background } from "services/background-connection/background-msg";
 
 export class CredentialRequestError extends Error {
   constructor(message: string) {
@@ -18,93 +14,82 @@ export class CredentialRequestError extends Error {
 }
 
 export const createCredentialAction = createAsyncThunk<
-  CredentialRequestResult,
+  void,
   NewCredentialParams,
   {
     rejectValue: CredentialRequestError;
   }
 >(CredentialActionType.CREATE, async (data: NewCredentialParams, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "credentials.create",
-    data
-  });
-  result = response?.data;
+  const response = await background.createCredential(data);
+  const status = response?.status;
+  const errorMessage = response?.error;
 
-  if (result.status === "error") {
-    return thunkAPI.rejectWithValue(new CredentialRequestError(result.errorMessage));
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new CredentialRequestError(errorMessage));
   }
-
-  return result;
 });
 
 export const editCredentialAction = createAsyncThunk<
-  CredentialRequestResult,
+  void,
   EditCredentialParams,
   {
     rejectValue: CredentialRequestError;
   }
 >(CredentialActionType.EDIT, async (data: EditCredentialParams, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "credentials.edit",
-    data
-  });
-  result = response?.data;
-  if (result.status === "error") {
-    return thunkAPI.rejectWithValue(new CredentialRequestError(result.errorMessage));
-  }
+  const response = await background.editCredential(data);
+  const status = response?.status;
+  const errorMessage = response?.error;
 
-  return result;
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new CredentialRequestError(errorMessage));
+  }
 });
 
-export const getCredentialAction = createAsyncThunk<Credential, string>(
-  CredentialActionType.GET,
-  async (address: string) => {
-    let credential = null;
-    const response = await chrome.runtime.sendMessage({
-      action: "credentials.get",
-      data: {
-        address
-      }
-    });
-    credential = response?.data?.credential;
-
-    return credential;
+export const getCredentialAction = createAsyncThunk<
+  Credential,
+  string,
+  {
+    rejectValue: CredentialRequestError;
   }
-);
+>(CredentialActionType.GET, async (address: string, thunkAPI) => {
+  const response = await background.getCredential(address);
+  const status = response?.status;
+  const credential: Credential = response?.result;
+  const errorMessage = response?.error;
+
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new CredentialRequestError(errorMessage));
+  }
+
+  return credential;
+});
 
 export const getCredentialsAction = createAsyncThunk<Credential[], void>(
   CredentialActionType.GET_LIST,
   async () => {
-    let credentials = [];
-    const response = await chrome.runtime.sendMessage({
-      action: "credentials.getList"
-    });
-    credentials = response?.data?.credentials;
+    let credentials: Credential[] = [];
+
+    try {
+      const response = await background.getCredentials();
+      credentials = response?.result;
+    } catch (error) {}
 
     return credentials;
   }
 );
 
 export const deleteCredentialAction = createAsyncThunk<
-  CredentialRequestResult,
+  void,
   string,
   {
     rejectValue: CredentialRequestError;
   }
 >(CredentialActionType.DELETE, async (address: string, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "credentials.delete",
-    data: {
-      address
-    }
-  });
-  result = response?.data;
-  if (result.status === "error") {
-    return thunkAPI.rejectWithValue(new CredentialRequestError(result.errorMessage));
-  }
+  const response = await background.deleteCredential(address);
+  const status = response?.status;
+  const errorMessage = response?.error;
 
-  return result;
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new CredentialRequestError(errorMessage));
+  }
 });

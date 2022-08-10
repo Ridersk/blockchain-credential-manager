@@ -8,6 +8,7 @@ import WalletShowMnemonic from "components/wallet-register/wallet-show-mnemonic"
 import WalletConfirmMnemonic from "components/wallet-register/wallet-confirm-mnemonic";
 import { Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router";
 
 const FORM_MODEL = {
   formId: "formCreateWallet",
@@ -85,10 +86,15 @@ type Props = {
 
 const WalletRegisterForm = ({ onSubmit }: Props) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<number>(0);
   const currentValidationSchema = VALIDATION_SCHEMA[activeStep];
   const steps = [t("protect_vault"), t("recover_vault"), t("confirm_mnemonic")];
   const isLastStep = activeStep === steps.length - 1;
+
+  const goToPreviousPage = () => {
+    navigate(-1);
+  };
 
   const handleStepChange = (index: number) => {
     setActiveStep(index);
@@ -155,7 +161,7 @@ const WalletRegisterForm = ({ onSubmit }: Props) => {
                   justifyContent: "center"
                 }}
               >
-                {activeStep > 0 && (
+                {activeStep > 0 ? (
                   <LoadingButton
                     sx={{ width: { xs: "100%", md: "200px" } }}
                     loading={isSubmitting}
@@ -167,6 +173,17 @@ const WalletRegisterForm = ({ onSubmit }: Props) => {
                     onClick={handleBackStep}
                   >
                     {t("btn_multistep_back")}
+                  </LoadingButton>
+                ) : (
+                  <LoadingButton
+                    sx={{ width: { xs: "100%", md: "200px" } }}
+                    loadingPosition="center"
+                    size="medium"
+                    variant="contained"
+                    color="info"
+                    onClick={goToPreviousPage}
+                  >
+                    {t("form_cancel")}
                   </LoadingButton>
                 )}
                 <LoadingButton

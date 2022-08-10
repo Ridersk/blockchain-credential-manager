@@ -32,7 +32,7 @@ export class CredentialsController {
     const credential = await this._ledgerProgram.program.account.credentialAccount.fetch(publicKey);
 
     try {
-      const decryptedCredentialData = await passEncryptor.decrypt(
+      const decryptedCredentialData = await this._encryptor.decrypt(
         this._password,
         credential.credentialData
       );
@@ -66,7 +66,7 @@ export class CredentialsController {
       credentials.map(async (credential) => {
         const credentialAccount = credential.account;
         try {
-          const decryptedCredentialData = await passEncryptor.decrypt(
+          const decryptedCredentialData = await this._encryptor.decrypt(
             this._password,
             credentialAccount.credentialData
           );
@@ -106,10 +106,11 @@ export class CredentialsController {
     const publicKey = this._keypair.publicKey;
     const credentialPda = await this._getPdaParams(CREDENTIAL_NAMESPACE, publicKey.toBuffer());
     const credentialAccountKey = credentialPda.accountKey;
-    const encryptedCredentialData = await passEncryptor.encrypt(this._password, { label, secret });
+    const encryptedCredentialData = await this._encryptor.encrypt(this._password, {
+      label,
+      secret
+    });
 
-    let status = "success";
-    let errorMessage = "";
     try {
       await this._ledgerProgram.program.methods
         .createCredential(
@@ -127,21 +128,19 @@ export class CredentialsController {
         })
         .rpc();
     } catch (e: any) {
+      let errorMessage = "";
       if (!(e instanceof ReferenceError)) {
-        status = "error";
         if (e.error && e.error.errorMessage) {
           errorMessage = e.error?.errorMessage;
         } else {
           errorMessage = e.message;
         }
+
+        throw new CredentialControllerError(errorMessage);
       }
     }
 
     await sleep(1000);
-    return {
-      status,
-      errorMessage
-    };
   }
 
   async editCredential({
@@ -156,10 +155,11 @@ export class CredentialsController {
   }: EditCredentialParams) {
     const publicKey = this._keypair.publicKey;
     const program = this._ledgerProgram.program;
-    const encryptedCredentialData = await passEncryptor.encrypt(this._password, { label, secret });
+    const encryptedCredentialData = await this._encryptor.encrypt(this._password, {
+      label,
+      secret
+    });
 
-    let status = "success";
-    let errorMessage = "";
     try {
       await program.methods
         .editCredential(
@@ -177,28 +177,24 @@ export class CredentialsController {
         .rpc();
     } catch (e: any) {
       if (!(e instanceof ReferenceError)) {
-        status = "error";
+        let errorMessage = "";
         if (e.error && e.error.errorMessage) {
           errorMessage = e.error?.errorMessage;
         } else {
           errorMessage = e.message;
         }
+
+        throw new CredentialControllerError(errorMessage);
       }
     }
 
     await sleep(1000);
-    return {
-      status,
-      errorMessage
-    };
   }
 
   async deleteCredential(address: string) {
     const publicKey = this._keypair.publicKey;
     const program = this._ledgerProgram.program;
 
-    let status = "success";
-    let errorMessage = "";
     try {
       await program.methods
         .deleteCredential()
@@ -209,20 +205,18 @@ export class CredentialsController {
         .rpc();
     } catch (e: any) {
       if (!(e instanceof ReferenceError)) {
-        status = "error";
+        let errorMessage = "";
         if (e.error && e.error.errorMessage) {
           errorMessage = e.error?.errorMessage;
         } else {
           errorMessage = e.message;
         }
+
+        throw new CredentialControllerError(errorMessage);
       }
     }
 
     await sleep(1000);
-    return {
-      status,
-      errorMessage
-    };
   }
 
   private async _getPdaParams(
@@ -265,4 +259,10 @@ interface PDAParams {
   uid: anchor.BN;
   accountKey: anchor.web3.PublicKey;
   bump: number;
+}
+
+export class CredentialControllerError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }

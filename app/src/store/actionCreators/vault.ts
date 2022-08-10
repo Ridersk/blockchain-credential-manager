@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { VaultAccountDetails, VaultActivity } from "scripts/wallet-manager/controllers/vault";
+import { background } from "services/background-connection/background-msg";
 import { VaultAccountActionType } from "store/actionTypes/vault";
 
 export class VaultAccountRequestError extends Error {
@@ -15,16 +16,15 @@ export const getDetailsAction = createAsyncThunk<
     rejectValue: VaultAccountRequestError;
   }
 >(VaultAccountActionType.GET_DETAILS, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "vault.details"
-  });
-  result = response?.data;
-  if (result.status === "error" || !result?.details) {
+  const response = await background.getVaultDetails();
+  const result = response?.result;
+  const status = response?.status;
+
+  if (status === "error" || !result) {
     return thunkAPI.rejectWithValue(new VaultAccountRequestError("Error getting details"));
   }
 
-  return result?.details;
+  return result;
 });
 
 export const getActivitiesAction = createAsyncThunk<
@@ -34,16 +34,15 @@ export const getActivitiesAction = createAsyncThunk<
     rejectValue: VaultAccountRequestError;
   }
 >(VaultAccountActionType.GET_ACTIVITIES, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "vault.activities"
-  });
-  result = response?.data;
-  if (result.status === "error" || !result?.activities) {
+  const response = await background.getActivities();
+  const status = response?.status;
+  const result = response?.result;
+
+  if (status === "error" || !result) {
     return thunkAPI.rejectWithValue(new VaultAccountRequestError("Error getting activities"));
   }
 
-  return result?.activities;
+  return result;
 });
 
 export const requestAirdropAction = createAsyncThunk<
@@ -53,13 +52,10 @@ export const requestAirdropAction = createAsyncThunk<
     rejectValue: VaultAccountRequestError;
   }
 >(VaultAccountActionType.REQUEST_AIRDROP, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "vault.requestAirdrop"
-  });
-  result = response?.data;
+  const response = await background.requestAirdrop();
+  const status = response?.status;
 
-  if (result.status === "error") {
+  if (status === "error") {
     return thunkAPI.rejectWithValue(new VaultAccountRequestError("Error on request airdrop"));
   }
 });

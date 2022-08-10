@@ -1,4 +1,4 @@
-import { Box, Container, Grid, IconButton, Typography } from "@mui/material";
+import { Container, Grid, IconButton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ArrowBack from "@mui/icons-material/ArrowBackIos";
 import AccountList from "./account-list";

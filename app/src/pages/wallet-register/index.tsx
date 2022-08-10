@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
 import { createNewWalletAction } from "store/actionCreators";
+import { sleep } from "utils/time";
 import WalletRegisterForm, { WalletFormData } from "./wallet-register-form";
 
 const WalletRegisterPage = () => {
@@ -37,6 +38,7 @@ const WalletRegisterPage = () => {
           message: t("register_successfully"),
           variant: "success"
         });
+        await sleep(100);
         navigate({ pathname: "/" });
       } else {
         sendNotification({

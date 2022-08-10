@@ -4,6 +4,7 @@ import { FormInput } from "components/ui/form/inputs/form-input";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { Form, Formik, FormikHelpers } from "formik";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import * as Yup from "yup";
 
 type Props = {
@@ -12,6 +13,11 @@ type Props = {
 
 export const WalletImportMnemonicForm = ({ onSubmit }: Props) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const goToPreviousPage = () => {
+    navigate(-1);
+  };
 
   const handleSubmitForm = async (
     values: ImportWithMnemonicParams,
@@ -81,7 +87,7 @@ export const WalletImportMnemonicForm = ({ onSubmit }: Props) => {
               <SecretInput
                 id="wallet-password"
                 name="password"
-                label={t("new_password")}
+                label={t("password")}
                 value={values.password}
                 error={Boolean(touched.password && errors.password)}
                 errorMessage={errors.password}
@@ -105,15 +111,14 @@ export const WalletImportMnemonicForm = ({ onSubmit }: Props) => {
                   {t("btn_import_submit")}
                 </LoadingButton>
                 <LoadingButton
-                  type="submit"
                   sx={{ width: { xs: "100%", md: "200px" } }}
                   loadingPosition="center"
                   size="medium"
                   variant="contained"
-                  color="secondary"
-                  onClick={() => ({})}
+                  color="info"
+                  onClick={goToPreviousPage}
                 >
-                  {t("btn_import_private_key_redirect")}
+                  {t("form_cancel")}
                 </LoadingButton>
               </Grid>
             </Form>
