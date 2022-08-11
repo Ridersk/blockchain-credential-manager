@@ -26,6 +26,7 @@ const useNotification = (): ((data: NotificationAlert) => void) => {
     </Fragment>
   );
   useEffect(() => {
+    console.log("Show Notification");
     if (notification?.message) {
       enqueueSnackbar(notification.message, {
         variant: notification.variant,

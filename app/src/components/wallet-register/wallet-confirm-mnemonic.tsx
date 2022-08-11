@@ -22,13 +22,13 @@ const WalletConfirmMnemonic = (props: Props) => {
     <Box>
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          {t("wallet_confirm_mnemonic")}
+          {t("confirm_mnemonic")}
         </Typography>
       </Box>
 
       <Box my={4}>
         <Typography variant="h6" component="h6" gutterBottom align="center" color="gray">
-          {t("wallet_confirm_mnemonic_description")}
+          {t("confirm_mnemonic_description")}
         </Typography>
       </Box>
 

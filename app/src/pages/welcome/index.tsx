@@ -1,14 +1,18 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
-const Welcome = () => {
+const WelcomePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const goToRegisterPage = () => {
     navigate({ pathname: "/register" });
+  };
+
+  const goToImportPage = () => {
+    navigate({ pathname: "/import" });
   };
 
   return (
@@ -49,7 +53,7 @@ const Welcome = () => {
               size="medium"
               variant="contained"
               color="secondary"
-              onClick={() => ({})}
+              onClick={goToImportPage}
             >
               {t("btn_import_vault")}
             </LoadingButton>
@@ -60,4 +64,4 @@ const Welcome = () => {
   );
 };
 
-export default Welcome;
+export default WelcomePage;

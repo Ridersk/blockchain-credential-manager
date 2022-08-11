@@ -1,9 +1,8 @@
-import { VaultManager, initVaultManager } from "./wallet-manager/wallet-manager";
+import { WalletManager, initVaultManager } from "./wallet-manager/wallet-manager";
 
-let vaultManager: VaultManager;
-
+let walletManager: WalletManager;
 async function setupVault() {
-  vaultManager = await initVaultManager();
+  walletManager = await initVaultManager();
 }
 
 setupVault();
@@ -31,69 +30,39 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   return true;
 });
 
-async function messageHandler(request: any) {
-  if (request.action === "registerWallet") {
-    const keypair = await vaultManager.registerNewWallet(
-      request.data.mnemonic,
-      request.data.password
-    );
-    return { data: { publicKey: keypair?.publicKey?.toBase58() } };
-  } else if (request.action === "unlockVault") {
-    let isUnlocked = await vaultManager.unlockVault(request.data.password);
-    return {
-      data: {
-        isUnlocked: isUnlocked
-      }
-    };
-  } else if (request.action === "getState") {
-    const state = await vaultManager.getState();
-    return { data: state };
-  } else if (request.action === "createCredential") {
-    const credentialData = request.data;
-    const response = await vaultManager.credentialsController?.createCredential(credentialData);
-    return {
-      data: response
-    };
-  } else if (request.action === "credentials.edit") {
-    const credentialData = request.data;
-    const response = await vaultManager.credentialsController?.editCredential(credentialData);
-    return {
-      data: response
-    };
-  } else if (request.action === "credentials.get") {
-    const address = request?.data?.address;
-    const credential = await vaultManager.credentialsController?.getCredential(address);
-    return {
-      data: { credential }
-    };
-  } else if (request.action === "credentials.getList") {
-    const credentialsController = vaultManager.credentialsController;
-    const credentials = await credentialsController?.getCredentials();
-    return {
-      data: {
-        credentials
-      }
-    };
-  } else if (request.action === "credentials.delete") {
-    const address = request?.data?.address;
-    const response = await vaultManager.credentialsController?.deleteCredential(address);
-    return {
-      data: response
-    };
-  } else if (request.action === "account.details") {
-    const response = await vaultManager.accountController?.getWalletDetails();
-    return {
-      data: response
-    };
-  } else if (request.action === "account.activities") {
-    const response = await vaultManager.accountController?.getActivities();
-    return {
-      data: response
-    };
-  } else if (request.action === "account.requestAirdrop") {
-    const response = await vaultManager.accountController?.requestAirdrop();
-    return {
-      data: response
-    };
+async function messageHandler(request: { action: string; data: any[] }) {
+  let status: "success" | "error" = "success";
+  let result;
+  let error;
+
+  try {
+    // @ts-ignore: Unreachable code error
+    const walletManagerApiMethod = walletManager.api[request.action];
+    if (typeof walletManagerApiMethod === "function") {
+      // @ts-ignore: Unreachable code error
+      result = await walletManagerApiMethod(...request.data);
+    }
+  } catch (err) {
+    console.error(err);
+    status = "error";
+    error = err;
   }
+
+  return { status, result, error };
 }
+
+export type BackgroundResponse<T> = {
+  status: "success" | "error";
+  result: T;
+  error: any;
+};
+
+export type InferBackgroundAPI<T extends (...args: any) => any> = T extends (
+  ...args: infer P
+) => infer R
+  ? (...args: P) => Promise<BackgroundResponse<Awaited<R>>>
+  : never;
+
+export type BackgroundAPI = {
+  [K in keyof typeof walletManager.api]: InferBackgroundAPI<typeof walletManager.api[K]>;
+};

@@ -1,6 +1,35 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { WalletDetails, Activity } from "scripts/wallet-manager/controllers/account";
-import { AccountActionType } from "store/actionTypes/account";
+import bs58 from "bs58";
+import { AccountActionType } from "store/actionTypes";
+import { AccountGenerator } from "utils/account-generator";
+import { AccountUtils } from "utils/account-utils";
+
+export const generateAccountsListAction = createAsyncThunk<
+  GeneratedAccountDetails[],
+  string,
+  {
+    rejectValue: AccountRequestError;
+  }
+>(AccountActionType.GENERATE_ACCOUNTS_LIST, async (mnemonic, thunkAPI) => {
+  const accountListFormatted = [];
+  const mnemonicIsValid = AccountGenerator.validateMnemonic(mnemonic);
+
+  if (!mnemonicIsValid) {
+    thunkAPI.rejectWithValue(new AccountRequestError("Invalid mnemonic"));
+  }
+
+  const accountUtils = new AccountUtils();
+  const accountList = await AccountGenerator.generateAccountList(mnemonic);
+  for (let account of accountList) {
+    accountListFormatted.push({
+      publicKey: account.publicKey.toBase58(),
+      privateKey: bs58.encode(account.secretKey),
+      balance: await accountUtils.getAccountBalance(account.publicKey.toBase58())
+    });
+  }
+
+  return accountListFormatted;
+});
 
 export class AccountRequestError extends Error {
   constructor(message: string) {
@@ -8,58 +37,8 @@ export class AccountRequestError extends Error {
   }
 }
 
-export const getDetailsAction = createAsyncThunk<
-  WalletDetails,
-  void,
-  {
-    rejectValue: AccountRequestError;
-  }
->(AccountActionType.GET_DETAILS, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "account.details"
-  });
-  result = response?.data;
-  if (result.status === "error" || !result?.details) {
-    return thunkAPI.rejectWithValue(new AccountRequestError("Error getting details"));
-  }
-
-  return result?.details;
-});
-
-export const getActivitiesAction = createAsyncThunk<
-  Activity[],
-  void,
-  {
-    rejectValue: AccountRequestError;
-  }
->(AccountActionType.GET_ACTIVITIES, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "account.activities"
-  });
-  result = response?.data;
-  if (result.status === "error" || !result?.activities) {
-    return thunkAPI.rejectWithValue(new AccountRequestError("Error getting activities"));
-  }
-
-  return result?.activities;
-});
-
-export const requestAirdropAction = createAsyncThunk<
-  void,
-  void,
-  {
-    rejectValue: AccountRequestError;
-  }
->(AccountActionType.REQUEST_AIRDROP, async (_, thunkAPI) => {
-  let result = null;
-  const response = await chrome.runtime.sendMessage({
-    action: "account.requestAirdrop"
-  });
-  result = response?.data;
-
-  if (result.status === "error") {
-    return thunkAPI.rejectWithValue(new AccountRequestError("Error on request airdrop"));
-  }
-});
+export type GeneratedAccountDetails = {
+  publicKey: string;
+  privateKey: string;
+  balance: number;
+};

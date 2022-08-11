@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useNotification from "hooks/useNotification";
-import CredentialDeletionWarningModal from "components/credential/credential-warning-delete";
+import CredentialDeletionWarningModal from "components/credential/credential-deletion-warning-modal";
 import { formatHomeUrl } from "utils/url";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { FormInput } from "components/ui/form/inputs/form-input";

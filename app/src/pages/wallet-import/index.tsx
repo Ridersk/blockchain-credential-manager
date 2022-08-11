@@ -9,27 +9,30 @@ import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
 import { createNewWalletAction } from "store/actionCreators";
 import { sleep } from "utils/time";
-import WalletRegisterForm, { WalletFormData } from "./wallet-register-form";
+import WalletImportMnemonicForm from "./wallet-import-mnemonic-form";
 
-const WalletRegisterPage = () => {
+type ImportWithMnemonicParams = {
+  mnemonic: string;
+  password: string;
+};
+
+const WalletImportPage = () => {
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
   const navigate = useNavigate();
   const sendNotification = useNotification();
   const [activeStep, setActiveStep] = useState<number>(0);
-  const [walletFormData, setWalletFormData] = useState<WalletFormData>();
+  const [mnemonic, setMnemonic] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
-  async function submitWallet(account: { publicKey: string; privateKey: string }) {
+  const submitAccount = async (account: { publicKey: string; privateKey: string }) => {
     try {
       const isUnlocked: boolean = unwrapResult(
         await dispatch(
           createNewWalletAction({
-            mnemonic: walletFormData?.mnemonic as string,
-            password: walletFormData?.password as string,
-            firstVaultAccount: {
-              publicKey: account.publicKey,
-              privateKey: account.privateKey
-            }
+            mnemonic,
+            password,
+            firstVaultAccount: { ...account }
           })
         )
       );
@@ -52,7 +55,7 @@ const WalletRegisterPage = () => {
         variant: "error"
       });
     }
-  }
+  };
 
   const handleStepChange = (index: number) => {
     setActiveStep(index);
@@ -62,18 +65,19 @@ const WalletRegisterPage = () => {
     setActiveStep(activeStep > 0 ? activeStep - 1 : 0);
   };
 
-  const setFormData = async (values: WalletFormData) => {
-    setWalletFormData(values);
+  const setFormData = async (values: ImportWithMnemonicParams) => {
+    setMnemonic(values.mnemonic);
+    setPassword(values.password);
     setActiveStep(activeStep + 1);
   };
 
   return (
     <Container maxWidth="sm" sx={{ mt: "16px" }}>
       <SwipeableViews index={activeStep} onChangeIndex={handleStepChange}>
-        <WalletRegisterForm onSubmit={setFormData} />
+        <WalletImportMnemonicForm onSubmit={setFormData} />
         <AccountListSelectionPanel
-          mnemonic={walletFormData?.mnemonic as string}
-          onSelected={submitWallet}
+          mnemonic={mnemonic}
+          onSelected={submitAccount}
           onCancel={handleBackStep}
         />
       </SwipeableViews>
@@ -81,4 +85,4 @@ const WalletRegisterPage = () => {
   );
 };
 
-export default WalletRegisterPage;
+export default WalletImportPage;

@@ -14,10 +14,10 @@ import "./i18n";
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <Provider store={store}>
-    <HashRouter basename={config.basename}>
-      <SnackbarProvider maxSnack={4} preventDuplicate>
+    <SnackbarProvider maxSnack={4} preventDuplicate>
+      <HashRouter basename={config.basename}>
         <App />
-      </SnackbarProvider>
-    </HashRouter>
+      </HashRouter>
+    </SnackbarProvider>
   </Provider>
 );

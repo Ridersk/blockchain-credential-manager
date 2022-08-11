@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import getPrice from "services/asset-price-api/binance-api";
 import { useTypedSelector } from "hooks/useTypedSelector";
 
-interface WalletBalanceCardProps {
+interface VaultAccountBalanceCardProps {
   dataLoaded?: boolean;
   sx?: SxProps;
 }
 
-const WalletBalanceCard = (props: WalletBalanceCardProps) => {
+const VaultAccountBalanceCard = (props: VaultAccountBalanceCardProps) => {
   const { dataLoaded = true, ...otherProps } = props;
   const balance = useTypedSelector((state) => state.wallet.balance);
   const [loading, setLoading] = useState(false);
@@ -101,4 +101,4 @@ const WalletBalanceCard = (props: WalletBalanceCardProps) => {
   );
 };
 
-export default styled(WalletBalanceCard)<WalletBalanceCardProps>({});
+export default styled(VaultAccountBalanceCard)<VaultAccountBalanceCardProps>({});

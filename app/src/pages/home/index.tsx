@@ -1,12 +1,12 @@
 import { Box, Container, Tab, Tabs } from "@mui/material";
 import { TabPanel, TabContext } from "@mui/lab";
-import CredentialsPanel from "components/credential/credentials-list-panel";
-import WalletDetailsPanel from "components/wallet/wallet-detais-panel";
+import CredentialsListPanel from "components/credential/credentials-list-panel";
+import VaultAccountDetailsPanel from "components/vault-account/vault-account-detais-panel";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityPanel } from "components/activity/activity-panel";
 
-const Home = () => {
+const HomePage = () => {
   const { t } = useTranslation();
   const [value, setValue] = useState("vault");
 
@@ -19,7 +19,7 @@ const Home = () => {
       maxWidth="sm"
       sx={{ textAlign: "center", minHeight: "100%", display: "flex", flexDirection: "column" }}
     >
-      <WalletDetailsPanel />
+      <VaultAccountDetailsPanel />
       <Box
         sx={{
           width: "100%",
@@ -42,7 +42,7 @@ const Home = () => {
             <Tab value="activity" label={t("tab_activity")} />
           </Tabs>
           <TabPanel value="vault" sx={{ padding: 0, flex: 1 }}>
-            <CredentialsPanel />
+            <CredentialsListPanel />
           </TabPanel>
           <TabPanel
             value="activity"
@@ -56,4 +56,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

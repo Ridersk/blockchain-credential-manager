@@ -21,8 +21,8 @@ export class PreferencesController {
   }
 
   async setSelectedAddress(address: string) {
-    this.sessionStore.updateState({ selectedAddress: address });
-    this.persistentStore.updateState({ selectedAddress: address });
+    await this.sessionStore.updateState({ selectedAddress: address });
+    await this.persistentStore.updateState({ selectedAddress: address });
   }
 
   async getSelectedAddress() {

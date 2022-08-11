@@ -41,10 +41,9 @@ describe("keypair-tests", () => {
     // From derivation path it is possible generate 100 public keys
     // Just increment from ../501'/0'/0' to /501'/9'/9' (Only some wallets use the derivation path)
     const derivationPath = "m/44'/501'/0'/0'";
-
     const mnemonic = bip39.generateMnemonic();
-
     const seed = await bip39.mnemonicToSeed(mnemonic);
+
     const derivedSeed = ed.derivePath(derivationPath, seed.toString("hex")).key;
     const userKeyPair = anchor.web3.Keypair.fromSeed(derivedSeed);
 

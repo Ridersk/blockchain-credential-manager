@@ -6,8 +6,8 @@ const CLUSTER_URL = "http://127.0.0.1:8899" || "devnet";
 const PREFLIGHT_COMMITMENT = "processed";
 const COMMITMENT = "confirmed";
 
-export class BaseLedgerProgram<IDL extends Idl = Idl> {
-  wallet: WalletSigner;
+export class LedgerProgram<IDL extends Idl = Idl> {
+  vaultSigner: VaultAccountSigner;
   connection: Connection;
   provider: AnchorProvider;
   program: Program<IDL>;
@@ -15,9 +15,9 @@ export class BaseLedgerProgram<IDL extends Idl = Idl> {
 
   constructor(keypair: Keypair, idl: IDL) {
     this.programID = new PublicKey(idl.metadata.address);
-    this.wallet = new WalletSigner(keypair);
+    this.vaultSigner = new VaultAccountSigner(keypair);
     this.connection = new Connection(CLUSTER_URL, COMMITMENT);
-    this.provider = new AnchorProvider(this.connection, this.wallet, {
+    this.provider = new AnchorProvider(this.connection, this.vaultSigner, {
       preflightCommitment: PREFLIGHT_COMMITMENT,
       commitment: COMMITMENT
     });
@@ -25,7 +25,7 @@ export class BaseLedgerProgram<IDL extends Idl = Idl> {
   }
 }
 
-class WalletSigner implements Wallet {
+class VaultAccountSigner implements Wallet {
   constructor(readonly payer: Keypair) {
     this.payer = payer;
   }

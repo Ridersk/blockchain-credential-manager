@@ -11,11 +11,6 @@ export enum CredentialActionType {
   DELETE = "@credential/DELETED"
 }
 
-export interface NewVaultData {
-  password: string;
-  mnemonic: string;
-}
-
 interface CreateCredential {
   type: CredentialActionType.CREATE;
   data: NewCredentialParams;

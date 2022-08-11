@@ -3,17 +3,17 @@ import { SxProps } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useTranslation } from "react-i18next";
-import WalletOptionButton from "./wallet-option-button";
+import VaultAccountOptionButton from "./vault-account-option-button";
 import useNotification from "hooks/useNotification";
 import { updateWalletAction } from "store/actionCreators";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
-import { getDetailsAction, requestAirdropAction } from "store/actionCreators/account";
+import { getDetailsAction, requestAirdropAction } from "store/actionCreators/vault";
 
-interface WalletOptionsGroupProps {
+interface VaultAccountOptionsGroupProps {
   sx?: SxProps;
 }
 
-const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
+const VaultAccountOptionsGroup = (props: VaultAccountOptionsGroupProps) => {
   const dispatch = useTypedDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -26,8 +26,8 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
   const handleRequestAirdrop = async () => {
     try {
       await dispatch(requestAirdropAction());
-      const walletDetails = unwrapResult(await dispatch(getDetailsAction()));
-      dispatch(updateWalletAction({ balance: walletDetails.balance }));
+      const vaultAccountDetails = unwrapResult(await dispatch(getDetailsAction()));
+      dispatch(updateWalletAction({ balance: vaultAccountDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (err) {
       sendNotification({ message: t("operation_deposit_error"), variant: "error" });
@@ -43,11 +43,14 @@ const WalletOptionsGroup = (props: WalletOptionsGroupProps) => {
         justifyContent: { xs: "space-between", sm: "center" }
       }}
     >
-      <WalletOptionButton title={t("btn_add_credential")} onClick={goToCreateCredentialPage} />
-      <WalletOptionButton title={t("btn_generate_credential")} onClick={() => {}} />
-      <WalletOptionButton title={t("btn_deposit")} onClick={handleRequestAirdrop} />
+      <VaultAccountOptionButton
+        title={t("btn_add_credential")}
+        onClick={goToCreateCredentialPage}
+      />
+      <VaultAccountOptionButton title={t("btn_generate_credential")} onClick={() => {}} />
+      <VaultAccountOptionButton title={t("btn_deposit")} onClick={handleRequestAirdrop} />
     </Box>
   );
 };
 
-export default styled(WalletOptionsGroup)({});
+export default styled(VaultAccountOptionsGroup)({});

@@ -7,14 +7,15 @@ import useNotification from "hooks/useNotification";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { unlockVaultAction } from "store/actionCreators";
+import { unlockWalletAction } from "store/actionCreators";
+import { sleep } from "utils/time";
 import * as Yup from "yup";
 
 type LoginParams = {
   password: string;
 };
 
-const Login = () => {
+const LoginPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const sendNotification = useNotification();
@@ -23,16 +24,17 @@ const Login = () => {
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     try {
-      const isUnlocked: boolean = unwrapResult(await dispatch(unlockVaultAction(values.password)));
+      const isUnlocked: boolean = unwrapResult(await dispatch(unlockWalletAction(values.password)));
       if (isUnlocked) {
-        navigate({ pathname: "/" });
         sendNotification({
-          message: t("wallet_login_successfully"),
+          message: t("login_successfully"),
           variant: "success"
         });
+        await sleep(100);
+        navigate({ pathname: "/" });
       } else {
         sendNotification({
-          message: t("wallet_login_incorrect_password"),
+          message: t("login_incorrect_password"),
           variant: "error"
         });
       }
@@ -75,7 +77,7 @@ const Login = () => {
                 <SecretInput
                   id="wallet-password"
                   name="password"
-                  label={t("wallet_password")}
+                  label={t("password")}
                   value={values.password}
                   error={Boolean(touched.password && errors.password)}
                   errorMessage={errors.password}
@@ -113,4 +115,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
