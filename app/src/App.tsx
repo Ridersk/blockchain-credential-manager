@@ -4,26 +4,43 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { theme } from "themes";
 import Routes from "routes";
 import NavigationScroll from "./layouts/NavigationScroll";
-import { useTypedSelector } from "hooks/useTypedSelector";
-import getSolanaWorkspace from "services/solana/solanaWeb3";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { WalletActionType } from "store/actionTypes";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { forceUpdateWalletAction } from "store/actionCreators";
+import { WalletNoKeyringFoundError } from "exceptions";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 function App() {
-  const dispatch = useDispatch();
-  const customization = useTypedSelector((state) => state.customization);
+  const dispatch = useTypedDispatch();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const goToWelcomePage = () => {
+    navigate({ pathname: "/welcome" });
+  };
+
+  const goToLoginPage = () => {
+    navigate({ pathname: "/login" });
+  };
 
   useEffect(() => {
-    async function handleUpdateKeypair() {
-      const walletKeyPair = await getSolanaWorkspace().userKeypair;
-      dispatch({
-        type: WalletActionType.SET_WALLET,
-        data: { id: "Wallet 1", address: walletKeyPair.publicKey.toBase58() }
-      });
+    async function setupVault() {
+      try {
+        setLoading(true);
+        unwrapResult(await dispatch(forceUpdateWalletAction()));
+      } catch (err) {
+        if (err instanceof WalletNoKeyringFoundError) {
+          goToWelcomePage();
+        } else {
+          goToLoginPage();
+        }
+      } finally {
+        setLoading(false);
+      }
     }
 
-    handleUpdateKeypair();
+    setupVault();
   }, []);
 
   return (
@@ -31,9 +48,7 @@ function App() {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <NavigationScroll>
-            <Routes />
-          </NavigationScroll>
+          <NavigationScroll>{!loading && <Routes />}</NavigationScroll>
         </ThemeProvider>
       </StyledEngineProvider>
     </div>

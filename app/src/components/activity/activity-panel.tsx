@@ -1,9 +1,12 @@
 import { Box, List, ListItem } from "@mui/material";
 import { useEffect, useState } from "react";
-import getActivities, { Activity } from "services/solana/getActivities";
 import CircularProgress from "@mui/material/CircularProgress";
 import ActivityCard from "./activity-card";
 import { useTranslation } from "react-i18next";
+import { VaultActivity } from "scripts/wallet-manager/controllers/vault";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { getActivitiesAction } from "store/actionCreators/vault";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 enum InstructionTypeTitle {
   "CREATE_CREDENTIAL" = "transaction_credential_created",
@@ -16,14 +19,14 @@ enum InstructionTypeTitle {
 
 export const ActivityPanel = () => {
   const { t } = useTranslation();
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
-  const [transactions, setTransactions] = useState<Activity[]>([]);
+  const [transactions, setTransactions] = useState<VaultActivity[]>([]);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const transactions = await getActivities();
-      setTransactions(transactions);
+      setTransactions(unwrapResult(await dispatch(getActivitiesAction())));
       setLoading(false);
     })();
   }, []);

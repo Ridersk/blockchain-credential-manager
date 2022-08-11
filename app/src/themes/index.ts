@@ -54,6 +54,13 @@ export const theme = createTheme({
           margin: "5px"
         }
       }
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          wordWrap: "break-word"
+        }
+      }
     }
   },
   palette: {

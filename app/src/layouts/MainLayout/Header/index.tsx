@@ -13,6 +13,7 @@ import { useTypedSelector } from "hooks/useTypedSelector";
 import { copyTextToClipboard } from "utils/clipboard";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { formatAddress } from "utils/address";
 
 interface HeaderProps {
   sx?: SxProps;
@@ -23,10 +24,10 @@ function Header(props: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_wallet_address"));
+  const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_vault_address"));
   const wallet = useTypedSelector((state) => state.wallet);
 
-  const handleGoToBack = () => {
+  const goToPreviousPage = () => {
     navigate(-1);
   };
 
@@ -36,17 +37,8 @@ function Header(props: HeaderProps) {
   };
 
   const resetAddressTooltip = () => {
-    setTimeout(() => setAddressTooltip(t("copy_wallet_address")), 500);
+    setTimeout(() => setAddressTooltip(t("copy_vault_address")), 500);
   };
-
-  function formatWalletAddress(address: string) {
-    if (address.length > 12) {
-      return (
-        address.substring(0, 4) + "..." + address.substring(address.length - 4, address.length)
-      );
-    }
-    return address;
-  }
 
   return (
     <Box {...props} sx={{ height: "48px" }}>
@@ -74,7 +66,7 @@ function Header(props: HeaderProps) {
                   variant="h6"
                   component="span"
                   align="center"
-                  margin={{ sm: "2px", md: "4px" }}
+                  margin={{ xs: "2px", md: "4px" }}
                 >
                   {wallet.id}
                 </Typography>
@@ -83,15 +75,15 @@ function Header(props: HeaderProps) {
                   component="span"
                   color="gray"
                   align="center"
-                  margin={{ sm: "2px", md: "4px" }}
+                  margin={{ xs: "2px", md: "4px" }}
                 >
-                  ({formatWalletAddress(wallet.address)})
+                  ({formatAddress(wallet.address)})
                 </Typography>
               </ButtonBase>
             </Tooltip>
           </Box>
           {location.pathname !== "/" && (
-            <IconButton color="inherit" onClick={handleGoToBack}>
+            <IconButton color="inherit" onClick={goToPreviousPage}>
               <CloseIcon fontSize="small" />
             </IconButton>
           )}

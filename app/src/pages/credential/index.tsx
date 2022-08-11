@@ -4,20 +4,21 @@ import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AnchorError } from "@project-serum/anchor";
-import bs58 from "bs58";
-import { PublicKey } from "@solana/web3.js";
-import * as anchor from "@project-serum/anchor";
 import { useTranslation } from "react-i18next";
 import useNotification from "hooks/useNotification";
-import createCredential from "services/credentials-program/createCredential";
-import editCredential from "services/credentials-program/editCredential";
-import deleteCredential from "services/credentials-program/deleteCredential";
-import getCredential from "services/credentials-program/getCredential";
-import CredentialDeletionWarningModal from "components/credential/credential-warning-delete";
+import CredentialDeletionWarningModal from "components/credential/credential-deletion-warning-modal";
 import { formatHomeUrl } from "utils/url";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { FormInput } from "components/ui/form/inputs/form-input";
+import {
+  createCredentialAction,
+  CredentialRequestError,
+  deleteCredentialAction,
+  editCredentialAction,
+  getCredentialAction
+} from "store/actionCreators/credential";
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 interface FormValues {
   title: string;
@@ -30,8 +31,9 @@ interface FormValues {
 const CredentialPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useTypedDispatch();
   const [searchParams, _] = useSearchParams();
-  const [credentialPubKey, setCredentialPubKey] = useState<anchor.web3.PublicKey>();
+  const [credentialAddress, setCredentialAddress] = useState<string>();
   const [uid, setUid] = useState<number>();
   const [initialTitle, setInitialTitle] = useState("");
   const [initialUrl, setInitialUrl] = useState("");
@@ -47,20 +49,21 @@ const CredentialPage = () => {
   // Get Data from blockchain to edit existing credential
   useEffect(() => {
     async function getCredentialToEdit() {
-      const credPublicKey = searchParams.get("cred");
+      const selectedCredAddress = searchParams.get("cred");
 
-      if (credPublicKey) {
-        const publicKey = new PublicKey(bs58.decode(credPublicKey));
-        const credential = await getCredential(publicKey);
+      if (selectedCredAddress) {
+        const credential = unwrapResult(await dispatch(getCredentialAction(selectedCredAddress)));
 
-        setCredentialPubKey(publicKey);
-        setUid(credential.uid);
-        setInitialTitle(credential.title);
-        setInitialUrl(credential.url);
-        setInitialLabel(credential.label);
-        setInitialPassword(credential.secret);
-        setInitialDescription(credential.description);
-        setIsUpdate(true);
+        if (credential) {
+          setCredentialAddress(selectedCredAddress);
+          setUid(credential.uid);
+          setInitialTitle(credential.title);
+          setInitialUrl(credential.url);
+          setInitialLabel(credential.label);
+          setInitialPassword(credential.secret);
+          setInitialDescription(credential.description);
+          setIsUpdate(true);
+        }
       }
     }
 
@@ -74,13 +77,17 @@ const CredentialPage = () => {
         let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
         // Send a request to the content script to get current tab input value.
-        chrome.tabs.sendMessage(tab.id || 0, { action: "getCredentials" }, function (response) {
-          setInitialTitle(formatHomeUrl(tab.url || ""));
-          setInitialUrl(formatHomeUrl(tab.url || ""));
-          setFaviconUrl(tab.favIconUrl || "");
-          setInitialLabel(response.data.label);
-          setInitialPassword(response.data.password);
-        });
+        chrome.tabs.sendMessage(
+          tab.id || 0,
+          { action: "getInputFormCredentials" },
+          function (response) {
+            setInitialTitle(formatHomeUrl(tab.url || ""));
+            setInitialUrl(formatHomeUrl(tab.url || ""));
+            setFaviconUrl(tab.favIconUrl || "");
+            setInitialLabel(response.data.label);
+            setInitialPassword(response.data.password);
+          }
+        );
       }
     }
 
@@ -98,30 +105,38 @@ const CredentialPage = () => {
 
     try {
       setLoading(true);
-      if (isUpdate && credentialPubKey && uid) {
-        await editCredential({
-          credentialPubKey: credentialPubKey,
-          uid: uid,
-          title: values.title,
-          url: values.currentPageUrl,
-          iconUrl: faviconUrl,
-          label: values.credentialLabel,
-          secret: values.credentialSecret,
-          description: values.description
-        });
+      if (isUpdate && credentialAddress && uid) {
+        unwrapResult(
+          await dispatch(
+            editCredentialAction({
+              address: credentialAddress,
+              uid,
+              title: values.title,
+              url: values.currentPageUrl,
+              iconUrl: faviconUrl,
+              label: values.credentialLabel,
+              secret: values.credentialSecret,
+              description: values.description
+            })
+          )
+        );
         sendNotification({
           message: t("operation_credential_edited_successfully"),
           variant: "info"
         });
       } else {
-        await createCredential({
-          title: values.title,
-          url: values.currentPageUrl,
-          iconUrl: faviconUrl,
-          label: values.credentialLabel,
-          secret: values.credentialSecret,
-          description: values.description
-        });
+        unwrapResult(
+          await dispatch(
+            createCredentialAction({
+              title: values.title,
+              url: values.currentPageUrl,
+              iconUrl: faviconUrl,
+              label: values.credentialLabel,
+              secret: values.credentialSecret,
+              description: values.description
+            })
+          )
+        );
         sendNotification({
           message: t("operation_credential_created_successfully"),
           variant: "info"
@@ -129,8 +144,8 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
-      if (err instanceof AnchorError) {
-        sendNotification({ message: err?.error?.errorMessage, variant: "error" });
+      if (err instanceof CredentialRequestError) {
+        sendNotification({ message: err?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
@@ -141,8 +156,9 @@ const CredentialPage = () => {
 
   const handleDeleteCredential = async () => {
     try {
-      if (isUpdate && credentialPubKey && uid) {
-        await deleteCredential({ credentialPubKey: credentialPubKey });
+      setLoading(true);
+      if (isUpdate && credentialAddress && uid) {
+        unwrapResult(await dispatch(deleteCredentialAction(credentialAddress)));
         sendNotification({
           message: t("operation_credential_deleted_successfully"),
           variant: "info"
@@ -150,11 +166,13 @@ const CredentialPage = () => {
       }
       goToPreviousPage();
     } catch (err) {
-      if (err instanceof AnchorError) {
-        sendNotification({ message: err?.error?.errorMessage, variant: "error" });
+      if (err instanceof CredentialRequestError) {
+        sendNotification({ message: err?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,7 +221,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-title"
-                fieldName="title"
+                name="title"
                 label={t("credential_form_title")}
                 value={values.title}
                 error={Boolean(touched.title && errors.title)}
@@ -216,7 +234,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-url"
-                fieldName="currentPageUrl"
+                name="currentPageUrl"
                 label={t("credential_form_url")}
                 value={values.currentPageUrl}
                 error={Boolean(touched.currentPageUrl && errors.currentPageUrl)}
@@ -229,7 +247,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-label"
-                fieldName="credentialLabel"
+                name="credentialLabel"
                 label={t("credential_form_label")}
                 value={values.credentialLabel}
                 error={Boolean(touched.credentialLabel && errors.credentialLabel)}
@@ -242,7 +260,7 @@ const CredentialPage = () => {
 
               <SecretInput
                 id="credential-secret"
-                fieldName="credentialSecret"
+                name="credentialSecret"
                 label={t("credential_form_secret")}
                 value={values.credentialSecret}
                 error={Boolean(touched.credentialSecret && errors.credentialSecret)}
@@ -255,7 +273,7 @@ const CredentialPage = () => {
               <FormInput
                 type="text"
                 id="credential-notes"
-                fieldName="description"
+                name="description"
                 label={t("credential_form_description")}
                 value={values.description}
                 error={Boolean(touched.description && errors.description)}
@@ -268,9 +286,9 @@ const CredentialPage = () => {
                 onBlur={handleBlur}
               />
 
-              {isUpdate && credentialPubKey && (
+              {isUpdate && credentialAddress && (
                 <Typography variant="body2" component="div" color="gray">
-                  Address: {credentialPubKey.toBase58()}
+                  Address: {credentialAddress}
                 </Typography>
               )}
 

@@ -2,20 +2,26 @@ import { List, ListItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import CredentialCard from "./credential-card";
 import { Credential } from "models/Credential";
-import getCredentials from "services/credentials-program/getCredentials";
-
-const CREDENTIALS = [
-  { url: "github.com", label: "metavault@gmail.com", secret: "teste" },
-  { url: "github.com", label: "metavaultv2@gmail.com", secret: "teste2" }
-];
+import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { getCredentialsAction } from "store/actionCreators/credential";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 interface Props {
   textFilter?: string;
 }
 
+type CredentialAttributes = {
+  publicKey: string;
+  url: string;
+  iconUrl: string;
+  label: string;
+  secret: string;
+};
+
 const CredentialsList = ({ textFilter = "" }: Props) => {
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
-  const [list, setList] = useState<Array<Credential>>([]);
+  const [list, setList] = useState<Array<CredentialAttributes>>([]);
 
   const filterCredentials = (credentials: Array<Credential>) => {
     if (textFilter) {
@@ -30,12 +36,23 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
     return credentials;
   };
 
+  const formatCredentials = (credentials: Array<Credential>): CredentialAttributes[] => {
+    return credentials.map((item) => ({
+      publicKey: item?.publicKey,
+      url: item?.url,
+      iconUrl: item?.iconUrl,
+      label: item?.label,
+      secret: item?.secret
+    }));
+  };
+
   useEffect(() => {
     async function getCredentialsList() {
       try {
         setLoading(true);
-        const credentials = filterCredentials(await getCredentials());
-        setList(credentials);
+        const credentials = unwrapResult(await dispatch(getCredentialsAction()));
+        const credentialsFormatted = formatCredentials(filterCredentials(credentials));
+        setList(credentialsFormatted);
         setLoading(false);
       } catch (err) {}
     }

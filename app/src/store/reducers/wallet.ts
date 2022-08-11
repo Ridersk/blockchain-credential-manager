@@ -4,11 +4,13 @@ export interface WalletState {
   id: string;
   address: string;
   balance: number;
+  mnemonic: string;
 }
 
 export const initialState = {
-  id: "Wallet 1",
-  address: "1111111111111",
+  id: "Vault 0",
+  address: "",
+  mnemonic: "",
   balance: 0
 };
 
@@ -17,7 +19,7 @@ const customizationReducer = (
   action: WalletAction
 ): WalletState => {
   switch (action.type) {
-    case WalletActionType.SET_WALLET:
+    case WalletActionType.UPDATE_WALLET:
       return {
         ...state,
         ...action.data

@@ -5,6 +5,8 @@ import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
+import { LoadingButton } from "@mui/lab";
+import { useState } from "react";
 
 export type WarningModalProps = {
   open: boolean;
@@ -13,7 +15,7 @@ export type WarningModalProps = {
   cancelText?: string;
   acceptText?: string;
   onCancel: () => void;
-  onAccept: () => void;
+  onAccept: () => Promise<void>;
 };
 
 const WarningModal = ({
@@ -26,8 +28,17 @@ const WarningModal = ({
   onAccept
 }: WarningModalProps) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const handleCancel = () => onCancel();
-  const handleAccept = () => onAccept();
+
+  const handleAccept = async () => {
+    try {
+      setLoading(true);
+      await onAccept();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Modal
@@ -84,9 +95,16 @@ const WarningModal = ({
               <Button onClick={handleCancel} color="secondary" variant="contained" size="medium">
                 {cancelText || t("warning_default_cancel")}
               </Button>
-              <Button onClick={handleAccept} color="primary" variant="contained" size="medium">
+              <LoadingButton
+                onClick={handleAccept}
+                loading={loading}
+                loadingPosition="center"
+                color="primary"
+                variant="contained"
+                size="medium"
+              >
                 {acceptText || t("warning_default_accept")}
-              </Button>
+              </LoadingButton>
             </Box>
           </Box>
         </Box>
