@@ -7,8 +7,9 @@ use super::base::*;
 pub struct CredentialAccount {
     pub owner: Pubkey, // wallet address
     pub uid: u64,
-    pub title: String,
     pub url: String,
+    pub title: String,
+    // pub title: [u8; 50],
     pub icon_url: String,
     pub credential_data: String,
     // pub iv: String,
@@ -30,10 +31,10 @@ pub const CREDENTIAL_DESCRIPTION_SIZE: usize = 100;
 
 pub const CREDENTIAL_OWNER_ADDRESS_LENGTH: usize = PUBLIC_KEY_LENGTH;
 pub const CREDENTIAL_UID_LENGTH: usize = 8;
-pub const CREDENTIAL_TITLE_LENGTH: usize =
-    STRING_LENGTH_PREFIX + CREDENTIAL_TITLE_SIZE * UTF8_CHAR_LENGTH;
 pub const CREDENTIAL_URL_LENGTH: usize =
     STRING_LENGTH_PREFIX + CREDENTIAL_URL_SIZE * UTF8_CHAR_LENGTH;
+pub const CREDENTIAL_TITLE_LENGTH: usize =
+    STRING_LENGTH_PREFIX + CREDENTIAL_TITLE_SIZE * UTF8_CHAR_LENGTH;
 pub const CREDENTIAL_ICON_URL_LENGTH: usize =
     STRING_LENGTH_PREFIX + CREDENTIAL_ICON_URL_SIZE * UTF8_CHAR_LENGTH;
 pub const CREDENTIAL_DATA_LENGTH: usize =
@@ -48,8 +49,8 @@ pub const CREDENTIAL_DESCRIPTION_LENGTH: usize =
 impl CredentialAccount {
     pub const LEN: usize = DISCRIMINATOR_LENGTH
         + CREDENTIAL_OWNER_ADDRESS_LENGTH
-        + CREDENTIAL_TITLE_LENGTH
         + CREDENTIAL_URL_LENGTH
+        + CREDENTIAL_TITLE_LENGTH
         + CREDENTIAL_ICON_URL_LENGTH
         + CREDENTIAL_UID_LENGTH
         + CREDENTIAL_DATA_LENGTH

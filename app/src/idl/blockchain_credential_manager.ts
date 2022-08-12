@@ -121,11 +121,11 @@ export type BlockchainCredentialManager = {
             type: "u64";
           },
           {
-            name: "title";
+            name: "url";
             type: "string";
           },
           {
-            name: "url";
+            name: "title";
             type: "string";
           },
           {
@@ -299,11 +299,11 @@ export const IDL: BlockchainCredentialManager = {
             type: "u64"
           },
           {
-            name: "title",
+            name: "url",
             type: "string"
           },
           {
-            name: "url",
+            name: "title",
             type: "string"
           },
           {

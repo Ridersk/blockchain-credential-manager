@@ -6,8 +6,9 @@ import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../../../../idl/blockchain_credential_manager.json";
 import { BlockchainCredentialManager } from "../../../../idl/blockchain_credential_manager";
 import { LedgerProgram } from "../ledger";
-import { FilterOption, ownerFilter } from "./filters";
+import { FilterOption, ownerFilter, urlFilter } from "./filters";
 import { sleep } from "../../../../utils/time";
+import { extractURLOrigin } from "../../../../utils/url";
 
 const CREDENTIAL_NAMESPACE = "credential";
 
@@ -93,6 +94,13 @@ export class CredentialsController {
         }
       })
     );
+  }
+
+  async getCredentialsFromCurrentTabURL() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const urlOrigin = extractURLOrigin(tab.url!);
+    console.log("[getCredentialsFromCurrentTabURL] URL Origin", urlOrigin);
+    return this.getCredentials([urlFilter(urlOrigin)]);
   }
 
   async createCredential({

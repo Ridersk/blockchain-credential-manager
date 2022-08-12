@@ -59,11 +59,14 @@ export class WalletManager {
       unlockWallet: this.unlockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
+      openPopup: this.openPopup.bind(this),
       createCredential: _credentialsController?.createCredential.bind(_credentialsController)!,
       editCredential: _credentialsController?.editCredential.bind(_credentialsController)!,
       deleteCredential: _credentialsController?.deleteCredential.bind(_credentialsController)!,
       getCredential: _credentialsController?.getCredential.bind(_credentialsController)!,
       getCredentials: _credentialsController?.getCredentials.bind(_credentialsController)!,
+      getCredentialsFromCurrentTabURL:
+        _credentialsController?.getCredentialsFromCurrentTabURL.bind(_credentialsController)!,
       getVaultDetails: _vaultAccountController?.getVaultDetails.bind(_vaultAccountController)!,
       getActivities: _vaultAccountController?.getActivities.bind(_vaultAccountController)!,
       requestAirdrop: _vaultAccountController?.requestAirdrop.bind(_vaultAccountController)!
@@ -76,6 +79,20 @@ export class WalletManager {
 
   get vaultAccountController() {
     return this._vaultAccountController;
+  }
+
+  async openPopup() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const popupUrl = await chrome.action.getPopup({ tabId: tab.id });
+    chrome.windows.create({
+      url: popupUrl,
+      type: "popup",
+      height: 600,
+      width: 400,
+      top: 0,
+      left: 0
+    });
+    return popupUrl;
   }
 
   async registerNewWallet(

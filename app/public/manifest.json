@@ -37,7 +37,9 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "popup_credentials/index.html"
+        "popup_credentials/index.html",
+        "popup_credentials/styles.css",
+        "assets/action-btn.png"
       ],
       "matches": [
         "https://*/*"

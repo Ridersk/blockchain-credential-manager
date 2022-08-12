@@ -1,11 +1,118 @@
-#bcm-credentials-container {
+/* Popup in Page */
+#bcm-popup-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.popup-anchor {
+  background-image: url(../assets/bg-anchor-up.svg);
+  height: 23px;
+  width: 300px;
+}
+
+.content-wrapper {
+  box-shadow: 0px 5px 10px rgb(0 0 0 / 50%);
+  width: 300px;
+  background-color: #ffffff;
+}
+
+.bcm-popup-content {
+  width: 300px;
+  height: 250px;
+  max-height: 275px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #ffffff;
+  position: relative;
+  top: 0;
+  border-right: 1px solid #fff;
+}
+
+.bcm-popup-title {
+  position: relative;
+  margin-top: 15px;
+  margin-left: 20px;
+  width: 260px;
+  height: 32px;
+  font-size: 14px;
+  text-align: center;
+  color: #333333;
+}
+
+/* Wallet Sign-in */
+
+#bcm-signin-content {
+  display: none;
+}
+
+.signin-button {
+  width: 280px;
+  height: 44px;
+  position: relative;
+  margin-left: 10px;
+  margin-top: 18px;
+  background-color: #4e44ce;
+  text-align: center;
   cursor: pointer;
-  z-index: 1000;
+  border: none;
+  color: #ffffff;
+}
+
+/* Wallet Credentials Panel */
+#bcm-credentials-content {
+  display: none;
+}
+
+.wallet-unlocked {
+  display: block !important;
+}
+
+.wallet-locked {
+  display: block !important;
+}
+
+/* Action Button */
+
+#bcm-toggle-popup-btn {
+  cursor: pointer;
+  z-index: 99999999;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
 }
 
-#bcm-credentials-container img {
+#bcm-toggle-popup-btn img {
   max-height: 100%;
+}
+
+/* List Group */
+.list-group-item-action:focus,
+.list-group-item-action:hover {
+  color: white;
+  background-color: #4e44ce;
+  cursor: pointer;
+}
+
+/* General Styles */
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #aaa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e1e2f;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #434358;
 }

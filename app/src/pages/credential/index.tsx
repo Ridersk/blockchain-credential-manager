@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useNotification from "hooks/useNotification";
 import CredentialDeletionWarningModal from "components/credential/credential-deletion-warning-modal";
-import { formatHomeUrl } from "utils/url";
+import { extractURLOrigin } from "utils/url";
 import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { FormInput } from "components/ui/form/inputs/form-input";
 import {
@@ -74,15 +74,15 @@ const CredentialPage = () => {
   useEffect(() => {
     async function getUserValue() {
       if (chrome?.tabs) {
-        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
         // Send a request to the content script to get current tab input value.
         chrome.tabs.sendMessage(
           tab.id || 0,
           { action: "getInputFormCredentials" },
           function (response) {
-            setInitialTitle(formatHomeUrl(tab.url || ""));
-            setInitialUrl(formatHomeUrl(tab.url || ""));
+            setInitialTitle(extractURLOrigin(tab.url || ""));
+            setInitialUrl(extractURLOrigin(tab.url || ""));
             setFaviconUrl(tab.favIconUrl || "");
             setInitialLabel(response.data.label);
             setInitialPassword(response.data.password);
