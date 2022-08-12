@@ -1,7 +1,9 @@
 #bcm-credentials-container {
-  position: absolute;
   cursor: pointer;
   z-index: 1000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 #bcm-credentials-container img {

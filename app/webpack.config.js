@@ -5,7 +5,7 @@ const webpack = require("webpack");
 module.exports = {
   mode: "development",
   entry: {
-    contentscript: path.resolve(__dirname, "src/scripts/content_scripts/index.js"),
+    contentscript: path.resolve(__dirname, "src/scripts/content-scripts/index.js"),
     background: path.resolve(__dirname, "src/scripts/background.ts")
   },
   output: {
