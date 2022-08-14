@@ -25,7 +25,7 @@
         "./contentscript.js"
       ],
       "css": [
-        "popup_credentials/styles.css"
+        "./styles.css"
       ]
     }
   ],

@@ -61,6 +61,26 @@ export const theme = createTheme({
           wordWrap: "break-word"
         }
       }
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          "&::-webkit-scrollbar": {
+            width: "0.5em"
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#aaa",
+            borderRadius: "4px"
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#1e1e2f",
+            borderRadius: "4px"
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#434358"
+          }
+        }
+      }
     }
   },
   palette: {

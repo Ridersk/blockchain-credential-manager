@@ -3,7 +3,6 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 
 import { theme } from "themes";
 import Routes from "routes";
-import NavigationScroll from "./layouts/NavigationScroll";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { forceUpdateWalletAction } from "store/actionCreators";
@@ -48,7 +47,7 @@ function App() {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <NavigationScroll>{!loading && <Routes />}</NavigationScroll>
+          {!loading && <Routes />}
         </ThemeProvider>
       </StyledEngineProvider>
     </div>

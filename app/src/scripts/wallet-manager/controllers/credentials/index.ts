@@ -99,7 +99,6 @@ export class CredentialsController {
   async getCredentialsFromCurrentTabURL() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const urlOrigin = extractURLOrigin(tab.url!);
-    console.log("[getCredentialsFromCurrentTabURL] URL Origin", urlOrigin);
     return this.getCredentials([urlFilter(urlOrigin)]);
   }
 

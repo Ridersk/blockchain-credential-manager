@@ -2,6 +2,9 @@ import { getCredentialsInputs } from "./selectCredentialsInput";
 
 const BUTTON_ID = "bcm-toggle-popup-btn";
 const INPAGE_POPUP_ID = "bcm-popup";
+const POPUP_WIDTH = 320;
+const POPUP_HEIGHT = 290;
+const DIFF_CONTENT_WRAPPER = 20;
 
 function installButton() {
   if (!document.getElementById(BUTTON_ID)) {
@@ -20,8 +23,14 @@ function installButton() {
         buttonImg.src = chrome.runtime.getURL("assets/action-btn.png");
         buttonContainer.appendChild(buttonImg);
 
-        passwordInput?.parentNode?.insertBefore(buttonContainer.cloneNode(true), passwordInput);
-        labelInput?.parentNode?.insertBefore(buttonContainer.cloneNode(true), labelInput);
+        passwordInput?.parentNode?.insertBefore(
+          buttonContainer.cloneNode(true),
+          passwordInput.nextSibling
+        );
+        labelInput?.parentNode?.insertBefore(
+          buttonContainer.cloneNode(true),
+          labelInput.nextSibling
+        );
 
         const btnsAction: NodeListOf<HTMLElement> = document?.querySelectorAll(`#${BUTTON_ID}`);
         for (let btn of btnsAction) {
@@ -34,7 +43,7 @@ function installButton() {
           };
         }
       }
-    } catch (e) {}
+    } catch (err) {}
   }
 }
 
@@ -56,9 +65,6 @@ async function toggleInPagePopup(targetPosX: number, targetPosY: number) {
     iframe.style.borderLeftWidth = "0px";
     iframe.style.direction = "ltr";
     iframe.style.unicodeBidi = "isolate";
-    const POPUP_WIDTH = 320;
-    const POPUP_HEIGHT = 290;
-    const DIFF_CONTENT_WRAPPER = 20;
     iframe.style.width = `${POPUP_WIDTH}px`;
     iframe.style.height = `${POPUP_HEIGHT}px`;
     iframe.style.left = `${targetPosX - (POPUP_WIDTH - DIFF_CONTENT_WRAPPER) / 2}px`;
@@ -97,9 +103,20 @@ export const interval = setInterval(async () => {
   observer.observe(targetNode, observerConfig);
 }, 100);
 
+// Background Listener
+chrome.runtime.onMessage.addListener(function (request) {
+  if (request.action == "stateUpdated") {
+    const iframe: HTMLIFrameElement = document.querySelector(
+      `iframe#${INPAGE_POPUP_ID}`
+    ) as HTMLIFrameElement;
+    if (iframe) {
+      iframe.src = iframe.src;
+    }
+  }
+});
+
 // Iframe Selected Credentials Listener
 window.onmessage = function (msg) {
-  console.log("Iframe Event", msg);
   const messageEvent = msg.data;
   if (messageEvent.action == "selectedCredential") {
     insertCredentialsToFormInputs(

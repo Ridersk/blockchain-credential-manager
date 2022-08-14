@@ -84,13 +84,18 @@ export class WalletManager {
   async openPopup() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const popupUrl = await chrome.action.getPopup({ tabId: tab.id });
+    const windowInfo = await chrome.windows.getCurrent();
+    const width = 400;
+    const height = 600;
+    const top = 0;
+    const left = (windowInfo.width ? windowInfo.width - 400 : 0) + (windowInfo.left || 0);
     chrome.windows.create({
-      url: popupUrl,
+      url: `${popupUrl}?close-after-login=true`,
       type: "popup",
-      height: 600,
-      width: 400,
-      top: 0,
-      left: 0
+      height,
+      width,
+      top,
+      left
     });
     return popupUrl;
   }
@@ -158,6 +163,19 @@ export class WalletManager {
         this._credentialsController.ledgerProgram,
         keypair
       );
+
+      chrome.windows.getAll({ populate: true }, (windows) => {
+        windows.forEach((window) => {
+          if (window.tabs) {
+            window.tabs.forEach((tab) => {
+              chrome.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
+            });
+          }
+        });
+      });
+
+      // const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      // chrome.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
     }
   }
 }

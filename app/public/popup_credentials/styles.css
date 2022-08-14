@@ -28,6 +28,8 @@
   position: relative;
   top: 0;
   border-right: 1px solid #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .bcm-popup-title {
@@ -42,11 +44,6 @@
 }
 
 /* Wallet Sign-in */
-
-#bcm-signin-content {
-  display: none;
-}
-
 .signin-button {
   width: 280px;
   height: 44px;
@@ -58,33 +55,6 @@
   cursor: pointer;
   border: none;
   color: #ffffff;
-}
-
-/* Wallet Credentials Panel */
-#bcm-credentials-content {
-  display: none;
-}
-
-.wallet-unlocked {
-  display: block !important;
-}
-
-.wallet-locked {
-  display: block !important;
-}
-
-/* Action Button */
-
-#bcm-toggle-popup-btn {
-  cursor: pointer;
-  z-index: 99999999;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#bcm-toggle-popup-btn img {
-  max-height: 100%;
 }
 
 /* List Group */
@@ -108,17 +78,26 @@
   text-overflow: ellipsis;
 }
 
+#bcm-credentials-content {
+  flex: 1;
+}
+
 /* General Styles */
+.not-display {
+  display: none !important;
+}
+
+.loading-div {
+  height: 100%;
+}
+
 ::-webkit-scrollbar {
   width: 0.5em;
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-track {
   background: #aaa;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
