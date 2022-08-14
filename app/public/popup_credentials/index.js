@@ -21,7 +21,7 @@ async function loadPopup() {
 }
 
 async function createCredentialsList() {
-  const credentialsList = await getCredentialsCurrentSite();
+  const credentialsList = await getCredentialsCurrentDomainFromBackground();
   const listGroup = document.querySelector("#bcm-credentials-content .list-group");
 
   for (const credential of credentialsList) {
@@ -29,14 +29,17 @@ async function createCredentialsList() {
     listItem.classList.add("list-group-item");
     listItem.classList.add("list-group-item-action");
     listItem.innerHTML = `
-      <span>${credential.title}</span>
-      <span>${credential.label}</span>
+      <span class="mr-2 credential-item-text credential-item-title">${credential.title}</span>
+      <small class="credential-item-text">${credential.label}</small>
     `;
     listGroup.appendChild(listItem);
+    listItem.onclick = async () => {
+      await sendCredentialsToCurrentPage(credential);
+    };
   }
 }
 
-async function getCredentialsCurrentSite() {
+async function getCredentialsCurrentDomainFromBackground() {
   try {
     const response = await chrome.runtime.sendMessage({
       action: "getCredentialsFromCurrentTabURL",
@@ -59,6 +62,10 @@ async function getCredentialsCurrentSite() {
 async function openPopupFromBackground() {
   const response = await chrome.runtime.sendMessage({ action: "openPopup", data: [] });
   console.log(response);
+}
+
+async function sendCredentialsToCurrentPage(credential) {
+  window.top.postMessage({ action: "selectedCredential", credential }, "*");
 }
 
 loadPopup();

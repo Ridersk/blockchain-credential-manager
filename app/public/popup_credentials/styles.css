@@ -95,6 +95,19 @@
   cursor: pointer;
 }
 
+.credential-item-title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.credential-item-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 /* General Styles */
 ::-webkit-scrollbar {
   width: 0.5em;

@@ -1,18 +1,15 @@
-// Responsible to handle extension popup requests
+// Responsible to get credential values from current page
+
+import { getCredentialsInputs } from "./selectCredentialsInput";
 
 chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   if (request.action == "getInputFormCredentials") {
-    // Password in a form
-    const passwordElement: HTMLInputElement = document.querySelector(
-      'input[type="password"]'
-    ) as HTMLInputElement;
-    // First input in a form that contains a password
-    const labelElement = passwordElement?.closest("form")?.querySelector("input");
+    const { labelInput, passwordInput } = getCredentialsInputs();
 
     sendResponse({
       data: {
-        label: labelElement?.value,
-        password: passwordElement?.value
+        label: labelInput?.value,
+        password: passwordInput?.value
       }
     });
   } else sendResponse({});

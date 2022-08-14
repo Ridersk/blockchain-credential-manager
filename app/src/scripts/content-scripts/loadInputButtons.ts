@@ -1,15 +1,12 @@
+import { getCredentialsInputs } from "./selectCredentialsInput";
+
 const BUTTON_ID = "bcm-toggle-popup-btn";
 const INPAGE_POPUP_ID = "bcm-popup";
 
 function installButton() {
   if (!document.getElementById(BUTTON_ID)) {
     try {
-      const passwordInput: HTMLInputElement = document.querySelector(
-        'input[type="password"]'
-      ) as HTMLInputElement;
-      const labelInput: HTMLInputElement = passwordInput
-        ?.closest("form")
-        ?.querySelector("input") as HTMLInputElement;
+      const { labelInput, passwordInput } = getCredentialsInputs();
 
       if (passwordInput) {
         const size = passwordInput?.offsetHeight * 0.8;
@@ -80,6 +77,16 @@ function removeInPagePopup() {
   document.onclick = null;
 }
 
+function insertCredentialsToFormInputs(label: string, password: string) {
+  const { labelInput, passwordInput } = getCredentialsInputs();
+  if (labelInput) {
+    labelInput.value = label;
+  }
+  if (passwordInput) {
+    passwordInput.value = password;
+  }
+}
+
 export const interval = setInterval(async () => {
   clearInterval(interval);
 
@@ -89,3 +96,16 @@ export const interval = setInterval(async () => {
   const observer = new MutationObserver(installButton);
   observer.observe(targetNode, observerConfig);
 }, 100);
+
+// Iframe Selected Credentials Listener
+window.onmessage = function (msg) {
+  console.log("Iframe Event", msg);
+  const messageEvent = msg.data;
+  if (messageEvent.action == "selectedCredential") {
+    insertCredentialsToFormInputs(
+      messageEvent?.credential?.label,
+      messageEvent?.credential?.secret
+    );
+    removeInPagePopup();
+  }
+};
