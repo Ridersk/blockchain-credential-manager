@@ -4,25 +4,25 @@ import LandscapeIcon from "@mui/icons-material/Landscape";
 import { Avatar, Box, Card, CardContent, IconButton, Skeleton, Typography } from "@mui/material";
 import { copyTextToClipboard } from "utils/clipboard";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 interface Props {
   dataLoaded?: boolean;
   credentialKey: string;
   url: string;
-  iconUrl?: string;
   label: string;
   secret: string;
 }
 
-const CredentialCard = ({
-  dataLoaded = true,
-  credentialKey,
-  url,
-  iconUrl = "",
-  label,
-  secret
-}: Props) => {
+const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }: Props) => {
   const navigate = useNavigate();
+  const [iconUrl, setIconUrl] = useState<string>();
+
+  useEffect(() => {
+    if (url) {
+      setIconUrl(new URL(url).origin + "/favicon.ico");
+    }
+  }, [url]);
 
   const handleClickCopySecret = () => {
     copyTextToClipboard(secret);

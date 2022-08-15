@@ -35,10 +35,8 @@
 .bcm-popup-title {
   position: relative;
   margin-top: 15px;
-  margin-left: 20px;
-  width: 260px;
   height: 32px;
-  font-size: 14px;
+  font-size: 18px;
   text-align: center;
   color: #333333;
 }

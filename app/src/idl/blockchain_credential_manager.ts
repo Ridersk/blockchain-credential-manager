@@ -35,10 +35,6 @@ export type BlockchainCredentialManager = {
           type: "string";
         },
         {
-          name: "iconUrl";
-          type: "string";
-        },
-        {
           name: "credentialData";
           type: "string";
         },
@@ -73,10 +69,6 @@ export type BlockchainCredentialManager = {
         },
         {
           name: "url";
-          type: "string";
-        },
-        {
-          name: "iconUrl";
           type: "string";
         },
         {
@@ -126,10 +118,6 @@ export type BlockchainCredentialManager = {
           },
           {
             name: "title";
-            type: "string";
-          },
-          {
-            name: "iconUrl";
             type: "string";
           },
           {
@@ -213,10 +201,6 @@ export const IDL: BlockchainCredentialManager = {
           type: "string"
         },
         {
-          name: "iconUrl",
-          type: "string"
-        },
-        {
           name: "credentialData",
           type: "string"
         },
@@ -251,10 +235,6 @@ export const IDL: BlockchainCredentialManager = {
         },
         {
           name: "url",
-          type: "string"
-        },
-        {
-          name: "iconUrl",
           type: "string"
         },
         {
@@ -304,10 +284,6 @@ export const IDL: BlockchainCredentialManager = {
           },
           {
             name: "title",
-            type: "string"
-          },
-          {
-            name: "iconUrl",
             type: "string"
           },
           {

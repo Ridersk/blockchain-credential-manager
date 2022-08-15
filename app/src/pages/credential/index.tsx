@@ -40,7 +40,6 @@ const CredentialPage = () => {
   const [initialLabel, setInitialLabel] = useState("");
   const [initialPassword, setInitialPassword] = useState("");
   const [initialDescription, setInitialDescription] = useState("");
-  const [faviconUrl, setFaviconUrl] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
@@ -83,7 +82,6 @@ const CredentialPage = () => {
           function (response) {
             setInitialTitle(extractURLOrigin(tab.url || ""));
             setInitialUrl(extractURLOrigin(tab.url || ""));
-            setFaviconUrl(tab.favIconUrl || "");
             setInitialLabel(response.data.label);
             setInitialPassword(response.data.password);
           }
@@ -113,7 +111,6 @@ const CredentialPage = () => {
               uid,
               title: values.title,
               url: values.currentPageUrl,
-              iconUrl: faviconUrl,
               label: values.credentialLabel,
               secret: values.credentialSecret,
               description: values.description
@@ -130,7 +127,6 @@ const CredentialPage = () => {
             createCredentialAction({
               title: values.title,
               url: values.currentPageUrl,
-              iconUrl: faviconUrl,
               label: values.credentialLabel,
               secret: values.credentialSecret,
               description: values.description

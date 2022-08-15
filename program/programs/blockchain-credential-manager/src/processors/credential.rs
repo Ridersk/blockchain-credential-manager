@@ -4,7 +4,7 @@ use crate::{
     errors::CustomErrorCode,
     states::credential::{
         CredentialAccount, CREDENTIAL_DATA_SIZE, CREDENTIAL_DESCRIPTION_SIZE,
-        CREDENTIAL_ICON_URL_SIZE, CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
+        CREDENTIAL_TITLE_SIZE, CREDENTIAL_URL_SIZE,
     },
 };
 
@@ -14,10 +14,7 @@ pub fn process_save_credential(
     credential_uid: u64,
     title: String,
     url: String,
-    icon_url: String,
     credential_data: String,
-    // iv: String,
-    // salt: String,
     description: String,
 ) -> Result<()> {
     validate(
@@ -28,20 +25,12 @@ pub fn process_save_credential(
     )?;
 
     let curr_timestamp: i64 = Clock::get().unwrap().unix_timestamp;
-    let mut icon_url_formatted = icon_url.clone();
-
-    if icon_url.chars().count() > CREDENTIAL_ICON_URL_SIZE {
-        icon_url_formatted = String::from("");
-    }
 
     credential_account.owner = owner_key;
     credential_account.uid = credential_uid;
     credential_account.title = title;
     credential_account.credential_data = credential_data;
-    // credential_account.iv = iv;
-    // credential_account.salt = salt;
     credential_account.url = url;
-    credential_account.icon_url = icon_url_formatted;
     credential_account.description = description;
     credential_account.created_at = curr_timestamp;
     credential_account.updated_at = curr_timestamp;

@@ -41,7 +41,6 @@ export class CredentialsController {
         uid: credential.uid.toNumber(),
         title: credential.title,
         url: credential.url,
-        iconUrl: credential.iconUrl,
         label: decryptedCredentialData.label,
         secret: decryptedCredentialData.secret,
         description: credential.description
@@ -51,7 +50,6 @@ export class CredentialsController {
         uid: credential.uid.toNumber(),
         title: credential.title,
         url: credential.url,
-        iconUrl: credential.iconUrl,
         label: "not found",
         secret: "not found",
         description: credential.description
@@ -76,7 +74,6 @@ export class CredentialsController {
             uid: credentialAccount.uid.toNumber(),
             title: credentialAccount.title,
             url: credentialAccount.url,
-            iconUrl: credentialAccount.iconUrl,
             label: decryptedCredentialData.label,
             secret: decryptedCredentialData.secret,
             description: credentialAccount.description
@@ -86,7 +83,6 @@ export class CredentialsController {
             uid: credentialAccount.uid.toNumber(),
             title: credentialAccount.title,
             url: credentialAccount.url,
-            iconUrl: credentialAccount.iconUrl,
             label: "not found",
             secret: "not found",
             description: credentialAccount.description
@@ -102,14 +98,7 @@ export class CredentialsController {
     return this.getCredentials([urlFilter(urlOrigin)]);
   }
 
-  async createCredential({
-    title,
-    url,
-    iconUrl = "",
-    label,
-    secret,
-    description
-  }: NewCredentialParams) {
+  async createCredential({ title, url, label, secret, description }: NewCredentialParams) {
     const publicKey = this._keypair.publicKey;
     const credentialPda = await this._getPdaParams(CREDENTIAL_NAMESPACE, publicKey.toBuffer());
     const credentialAccountKey = credentialPda.accountKey;
@@ -120,14 +109,7 @@ export class CredentialsController {
 
     try {
       await this._ledgerProgram.program.methods
-        .createCredential(
-          credentialPda.uid,
-          title,
-          url,
-          iconUrl,
-          encryptedCredentialData,
-          description
-        )
+        .createCredential(credentialPda.uid, title, url, encryptedCredentialData, description)
         .accounts({
           credentialAccount: credentialAccountKey,
           owner: publicKey,
@@ -153,7 +135,6 @@ export class CredentialsController {
   async editCredential({
     address,
     uid,
-    iconUrl = "",
     title,
     url,
     label,
@@ -169,14 +150,7 @@ export class CredentialsController {
 
     try {
       await program.methods
-        .editCredential(
-          new anchor.BN(uid),
-          title,
-          url,
-          iconUrl,
-          encryptedCredentialData,
-          description
-        )
+        .editCredential(new anchor.BN(uid), title, url, encryptedCredentialData, description)
         .accounts({
           credentialAccount: address,
           owner: publicKey
@@ -245,7 +219,6 @@ export class CredentialsController {
 export interface NewCredentialParams {
   title: string;
   url: string;
-  iconUrl?: string;
   label: string;
   secret: string;
   description: string;
@@ -256,7 +229,6 @@ export interface EditCredentialParams {
   uid: number;
   title: string;
   url: string;
-  iconUrl: string;
   label: string;
   secret: string;
   description: string;
