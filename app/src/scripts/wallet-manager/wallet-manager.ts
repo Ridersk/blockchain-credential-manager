@@ -59,6 +59,7 @@ export class WalletManager {
       unlockWallet: this.unlockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
+      fullUpdate: this.fullUpdate.bind(this),
       openPopup: this.openPopup.bind(this),
       createCredential: _credentialsController?.createCredential.bind(_credentialsController)!,
       editCredential: _credentialsController?.editCredential.bind(_credentialsController)!,
@@ -81,16 +82,28 @@ export class WalletManager {
     return this._vaultAccountController;
   }
 
-  async openPopup() {
+  async openPopup(path?: string, customQsParams?: string[]) {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const popupUrl = await chrome.action.getPopup({ tabId: tab.id });
+    let popupUrl = await chrome.action.getPopup({ tabId: tab.id });
     const windowInfo = await chrome.windows.getCurrent();
     const width = 400;
     const height = 600;
     const top = 0;
     const left = (windowInfo.width ? windowInfo.width - 400 : 0) + (windowInfo.left || 0);
+
+    if (path) {
+      popupUrl += `#/${path}`;
+    }
+
+    if (!customQsParams) {
+      customQsParams = [];
+    }
+    customQsParams.push(`tab-id=${tab.id}`);
+    customQsParams.push(`window-id=${tab.windowId}`);
+    customQsParams.push("close-after-done=true");
+
     chrome.windows.create({
-      url: `${popupUrl}?close-after-login=true`,
+      url: `${popupUrl}?${customQsParams.join("&")}`,
       type: "popup",
       height,
       width,
@@ -173,9 +186,6 @@ export class WalletManager {
           }
         });
       });
-
-      // const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      // chrome.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
     }
   }
 }

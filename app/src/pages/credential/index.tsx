@@ -19,6 +19,8 @@ import {
 } from "store/actionCreators/credential";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { forceUpdateWalletAction } from "store/actionCreators";
+import { sleep } from "utils/time";
 
 interface FormValues {
   title: string;
@@ -44,6 +46,22 @@ const CredentialPage = () => {
   const [loading, setLoading] = useState(false);
   const sendNotification = useNotification();
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentWindowId, setCurrentWindowId] = useState<number>();
+  const [closeAfterDone, setCloseAfterDone] = useState<boolean>(false);
+
+  useEffect(() => {
+    const locationUrlQsParams = window.location.hash.split("?")[1];
+    const windowId = new URLSearchParams(locationUrlQsParams).get("window-id");
+    const closeQs = new URLSearchParams(locationUrlQsParams).get("close-after-done");
+
+    if (windowId) {
+      setCurrentWindowId(Number(windowId));
+    }
+
+    if (closeQs === "true") {
+      setCloseAfterDone(true);
+    }
+  }, []);
 
   // Get Data from blockchain to edit existing credential
   useEffect(() => {
@@ -73,11 +91,19 @@ const CredentialPage = () => {
   useEffect(() => {
     async function getUserValue() {
       if (chrome?.tabs) {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const tabQuery: chrome.tabs.QueryInfo = {};
+
+        tabQuery.active = true;
+        if (currentWindowId) {
+          tabQuery.windowId = currentWindowId;
+        } else {
+          tabQuery.currentWindow = true;
+        }
 
         // Send a request to the content script to get current tab input value.
+        const [tab] = await chrome.tabs.query(tabQuery);
         chrome.tabs.sendMessage(
-          tab.id || 0,
+          tab.id!,
           { action: "getInputFormCredentials" },
           function (response) {
             setInitialTitle(extractURLOrigin(tab.url || ""));
@@ -90,7 +116,7 @@ const CredentialPage = () => {
     }
 
     getUserValue();
-  }, []);
+  }, [currentWindowId]);
 
   const goToPreviousPage = () => {
     navigate(-1);
@@ -138,6 +164,15 @@ const CredentialPage = () => {
           variant: "info"
         });
       }
+
+      await dispatch(forceUpdateWalletAction());
+      await sleep(100);
+
+      if (closeAfterDone) {
+        const windowsId = (await chrome.windows.getCurrent()).id;
+        await chrome.windows.remove(windowsId!);
+      }
+
       goToPreviousPage();
     } catch (err) {
       if (err instanceof CredentialRequestError) {

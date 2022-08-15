@@ -27,7 +27,6 @@
   background-color: #ffffff;
   position: relative;
   top: 0;
-  border-right: 1px solid #fff;
   display: flex;
   flex-direction: column;
 }
@@ -41,21 +40,36 @@
   color: #333333;
 }
 
-/* Wallet Sign-in */
-.signin-button {
+/* Buttons */
+.btn-group {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.action-btn,
+.main-action-btn {
   width: 280px;
-  height: 44px;
+  height: 48px;
   position: relative;
-  margin-left: 10px;
-  margin-top: 18px;
-  background-color: #4e44ce;
   text-align: center;
   cursor: pointer;
   border: none;
+  flex: 1;
+  background-color: #9a9a9a;
+  color: #1e1e2f;
+}
+
+.main-action-btn {
+  background-color: #4e44ce;
   color: #ffffff;
 }
 
 /* List Group */
+.list-group-item {
+  border: none;
+}
+
 .list-group-item-action:focus,
 .list-group-item-action:hover {
   color: white;

@@ -17,8 +17,8 @@
           <div class="bcm-popup-content">
             <h1 class="bcm-popup-title">MetaVault Credentials</h1>
 
-            <div id="bcm-signin-content" class="not-display">
-              <button type="button" class="signin-button">Sign In</button>
+            <div id="bcm-signin-content" class="btn-group not-display">
+              <button type="button" id="signin-button" class="main-action-btn">Sign In</button>
             </div>
 
             <div id="bcm-credentials-content" class="not-display">
@@ -26,6 +26,10 @@
                 <div class="spinner-border" role="status">
                   <span class="sr-only">Loading...</span>
                 </div>
+              </div>
+              <div id="bcm-options-content" class="btn-group">
+                <button id="create-credential" type="button" class="main-action-btn">Create</button>
+                <button id="generate-credential" type="button" class="action-btn">Generate</button>
               </div>
               <div class="list-group"></div>
             </div>

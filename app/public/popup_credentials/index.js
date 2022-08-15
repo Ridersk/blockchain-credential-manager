@@ -9,15 +9,28 @@ async function loadPopup() {
 
   if (isUnlocked) {
     document.querySelector("#bcm-credentials-content")?.classList?.remove("not-display");
-    await createCredentialsList();
+    await setupPopupContent();
   } else {
     document.querySelector("#bcm-signin-content")?.classList?.remove("not-display");
-    const signinBtn = document.querySelector(".signin-button");
+    const signinBtn = document.querySelector("#signin-button");
 
     signinBtn.onclick = async () => {
       await openPopupFromBackground();
     };
   }
+}
+
+async function setupPopupContent() {
+  setupCreateCredentialBtn();
+  await createCredentialsList();
+}
+
+function setupCreateCredentialBtn() {
+  const btnCreateCredential = document.querySelector("#create-credential");
+
+  btnCreateCredential.onclick = async () => {
+    await openPopupFromBackground("credential");
+  };
 }
 
 async function createCredentialsList() {
@@ -64,8 +77,14 @@ async function getCredentialsCurrentDomainFromBackground() {
   }
 }
 
-async function openPopupFromBackground() {
-  await chrome.runtime.sendMessage({ action: "openPopup", data: [] });
+async function openPopupFromBackground(path) {
+  const msgParams = [];
+
+  if (path) {
+    msgParams.push(path);
+  }
+
+  await chrome.runtime.sendMessage({ action: "openPopup", data: msgParams });
 }
 
 async function sendCredentialsToCurrentPage(credential) {

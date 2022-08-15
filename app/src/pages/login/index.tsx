@@ -25,7 +25,7 @@ const LoginPage = () => {
 
   // Get Data from blockchain to edit existing credential
   useEffect(() => {
-    const closeQs = new URLSearchParams(window.location.search).get("close-after-login");
+    const closeQs = new URLSearchParams(window.location.search).get("close-after-done");
     if (closeQs === "true") {
       setCloseAfterLogin(true);
     }
