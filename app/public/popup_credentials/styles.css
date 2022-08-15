@@ -1,9 +1,108 @@
-#bcm-credentials-container {
-  position: absolute;
-  cursor: pointer;
-  z-index: 1000;
+/* Popup in Page */
+#bcm-popup-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
 }
 
-#bcm-credentials-container img {
-  max-height: 100%;
+.popup-anchor {
+  background-image: url(../assets/bg-anchor-up.svg);
+  height: 23px;
+  width: 300px;
+}
+
+.content-wrapper {
+  box-shadow: 0px 5px 10px rgb(0 0 0 / 50%);
+  width: 300px;
+  background-color: #ffffff;
+}
+
+.bcm-popup-content {
+  width: 300px;
+  height: 250px;
+  max-height: 275px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #ffffff;
+  position: relative;
+  top: 0;
+  border-right: 1px solid #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.bcm-popup-title {
+  position: relative;
+  margin-top: 15px;
+  height: 32px;
+  font-size: 18px;
+  text-align: center;
+  color: #333333;
+}
+
+/* Wallet Sign-in */
+.signin-button {
+  width: 280px;
+  height: 44px;
+  position: relative;
+  margin-left: 10px;
+  margin-top: 18px;
+  background-color: #4e44ce;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  color: #ffffff;
+}
+
+/* List Group */
+.list-group-item-action:focus,
+.list-group-item-action:hover {
+  color: white;
+  background-color: #4e44ce;
+  cursor: pointer;
+}
+
+.credential-item-title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.credential-item-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#bcm-credentials-content {
+  flex: 1;
+}
+
+/* General Styles */
+.not-display {
+  display: none !important;
+}
+
+.loading-div {
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  background: #aaa;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e1e2f;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #434358;
 }

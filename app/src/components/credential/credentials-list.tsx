@@ -13,7 +13,6 @@ interface Props {
 type CredentialAttributes = {
   publicKey: string;
   url: string;
-  iconUrl: string;
   label: string;
   secret: string;
 };
@@ -40,7 +39,6 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
     return credentials.map((item) => ({
       publicKey: item?.publicKey,
       url: item?.url,
-      iconUrl: item?.iconUrl,
       label: item?.label,
       secret: item?.secret
     }));
@@ -68,7 +66,6 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
             dataLoaded={!!item}
             credentialKey={item?.publicKey}
             url={item?.url}
-            iconUrl={item?.iconUrl}
             label={item?.label}
             secret={item?.secret}
           />

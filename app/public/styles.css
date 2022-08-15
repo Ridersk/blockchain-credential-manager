@@ -1,0 +1,13 @@
+/* Action Button */
+
+#bcm-toggle-popup-btn {
+  cursor: pointer;
+  z-index: 99999999;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#bcm-toggle-popup-btn img {
+  max-height: 100%;
+}

@@ -22,10 +22,7 @@ pub mod blockchain_credential_manager {
         credential_uid: u64,
         title: String,
         url: String,
-        icon_url: String,
         credential_data: String,
-        // iv: String,
-        // salt: String,
         description: String,
     ) -> Result<()> {
         let credential_account: &mut Account<CredentialAccount> =
@@ -37,10 +34,7 @@ pub mod blockchain_credential_manager {
             credential_uid,
             title,
             url,
-            icon_url,
             credential_data,
-            // iv,
-            // salt,
             description,
         )?;
 
@@ -52,10 +46,7 @@ pub mod blockchain_credential_manager {
         credential_uid: u64,
         title: String,
         url: String,
-        icon_url: String,
         credential_data: String,
-        // iv: String,
-        // salt: String,
         description: String,
     ) -> Result<()> {
         let credential_account: &mut Account<CredentialAccount> =
@@ -67,10 +58,7 @@ pub mod blockchain_credential_manager {
             credential_uid,
             title,
             url,
-            icon_url,
             credential_data,
-            // iv,
-            // salt,
             description,
         )?;
         Ok(())

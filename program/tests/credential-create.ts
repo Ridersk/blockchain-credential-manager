@@ -32,7 +32,6 @@ describe("credential-creation", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const description = "Github Login";
@@ -42,7 +41,6 @@ describe("credential-creation", () => {
       credentialPda.uid,
       title,
       url,
-      iconUrl,
       credentialData,
       description,
       {
@@ -72,7 +70,6 @@ describe("credential-creation", () => {
     );
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
-    assert.equal(iconUrl, credentialAccountData.iconUrl);
     assert.equal(label, responseCredentialData.label);
     assert.equal(secret, responseCredentialData.secret);
     assert.equal(description, credentialAccountData.description);
@@ -89,7 +86,6 @@ describe("credential-creation", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const credentialData = { label, secret };
@@ -100,7 +96,6 @@ describe("credential-creation", () => {
       credentialPda.uid,
       title,
       url,
-      iconUrl,
       encryptedData,
       description,
       {
@@ -132,7 +127,6 @@ describe("credential-creation", () => {
     );
     assert.equal(title, credentialAccountData.title);
     assert.equal(url, credentialAccountData.url);
-    assert.equal(iconUrl, credentialAccountData.iconUrl);
     assert.equal(label, responseCredentialData.label);
     assert.equal(secret, responseCredentialData.secret);
     assert.equal(description, credentialAccountData.description);
@@ -149,7 +143,6 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(51);
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const credentialData = { label, secret };
@@ -161,7 +154,6 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
-        iconUrl,
         encryptedData,
         description,
         {
@@ -195,7 +187,6 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(101);
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const credentialData = { label, secret };
@@ -207,7 +198,6 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
-        iconUrl,
         encryptedData,
         description,
         {
@@ -241,7 +231,6 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const encryptedData = "x".repeat(641);
     const description = "Github Login";
 
@@ -250,7 +239,6 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
-        iconUrl,
         encryptedData,
         description,
         {
@@ -284,7 +272,6 @@ describe("credential-creation", () => {
 
     const title = "x".repeat(50);
     const url = "x".repeat(100);
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "x".repeat(48);
     const secret = "x".repeat(48);
     const credentialData = { label, secret };
@@ -296,7 +283,6 @@ describe("credential-creation", () => {
         credentialPda.uid,
         title,
         url,
-        iconUrl,
         encryptedData,
         description,
         {

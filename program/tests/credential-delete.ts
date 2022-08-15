@@ -36,7 +36,6 @@ describe("credential-deletion", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const credentialData = { label, secret };
@@ -47,7 +46,6 @@ describe("credential-deletion", () => {
       credentialPda.uid,
       title,
       url,
-      iconUrl,
       encryptedData,
       description,
       {
@@ -94,7 +92,6 @@ describe("credential-deletion", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
     const credentialData = { label, secret };
@@ -105,7 +102,6 @@ describe("credential-deletion", () => {
       credentialPda.uid,
       title,
       url,
-      iconUrl,
       encryptedData,
       description,
       {

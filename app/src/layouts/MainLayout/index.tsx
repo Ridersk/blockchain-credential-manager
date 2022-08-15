@@ -5,13 +5,13 @@ import Header from "./Header";
 
 const MainLayout = () => {
   return (
-    <Box
+    <Container
       sx={{
-        display: "block",
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        overflow: "auto"
+        minWidth: "400px",
+        width: { xs: "400px", md: "100%" },
+        minHeight: "600px",
+        height: "100vh",
+        display: "contents"
       }}
     >
       <Header
@@ -27,7 +27,7 @@ const MainLayout = () => {
       >
         <Outlet />
       </Container>
-    </Box>
+    </Container>
   );
 };
 
