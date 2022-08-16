@@ -8,7 +8,7 @@ export const updateWalletAction = (data: VaultData) => ({
   data
 });
 
-export const forceUpdateWalletAction = createAsyncThunk<
+export const updateWalletFromBackgroundAction = createAsyncThunk<
   string,
   void,
   {
@@ -35,6 +35,16 @@ export const forceUpdateWalletAction = createAsyncThunk<
   return selectedAddress;
 });
 
+export const forceUpdateWalletAction = createAsyncThunk<
+  void,
+  void,
+  {
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+  }
+>(WalletActionType.FORCE_UPDATE, async () => {
+  await background.fullUpdate();
+});
+
 export const unlockWalletAction = createAsyncThunk<
   boolean,
   string,
@@ -48,7 +58,7 @@ export const unlockWalletAction = createAsyncThunk<
   isUnlocked = response.result;
 
   if (isUnlocked) {
-    unwrapResult(await thunkAPI.dispatch(forceUpdateWalletAction()));
+    unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
   }
 
   return isUnlocked;
