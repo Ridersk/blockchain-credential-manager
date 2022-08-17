@@ -22,6 +22,7 @@ async function loadPopup() {
 
 async function setupPopupContent() {
   setupCreateCredentialBtn();
+  setupGenerateCredentialBtn();
   await createCredentialsList();
 }
 
@@ -33,25 +34,42 @@ function setupCreateCredentialBtn() {
   };
 }
 
+function setupGenerateCredentialBtn() {
+  const btnGenerateCredential = document.querySelector("#generate-credential");
+
+  btnGenerateCredential.onclick = async () => {
+    await openPopupFromBackground("generate");
+  };
+}
+
 async function createCredentialsList() {
   const loadingElem = document.querySelector("#bcm-credentials-content .loading-div");
   const listGroup = document.querySelector("#bcm-credentials-content .list-group");
 
   loadingElem.classList.remove("not-display");
-
   try {
     const credentialsList = await getCredentialsCurrentDomainFromBackground();
     for (const credential of credentialsList) {
-      const listItem = document.createElement("button");
+      const listItem = document.createElement("div");
       listItem.classList.add("list-group-item");
       listItem.classList.add("list-group-item-action");
       listItem.innerHTML = `
-        <span class="mr-2 credential-item-text credential-item-title">${credential.title}</span>
-        <small class="credential-item-text">${credential.label}</small>
+        <div class="credential-item-content-wrapper">
+          <div class="credential-item-data">
+            <span class="credential-item-text credential-item-title">${credential.title}</span>
+            <small class="credential-item-text">${credential.label}</small>
+          </div>
+          <button type="button" class="edit-btn action-btn">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+        </div>
       `;
       listGroup.appendChild(listItem);
       listItem.onclick = async () => {
         await sendCredentialsToCurrentPage(credential);
+      };
+      listItem.querySelector(".edit-btn").onclick = async () => {
+        await openPopupFromBackground("credential", { cred: credential?.address });
       };
     }
   } finally {
@@ -77,12 +95,19 @@ async function getCredentialsCurrentDomainFromBackground() {
   }
 }
 
-async function openPopupFromBackground(path) {
+async function openPopupFromBackground(path, searchParams) {
   const msgParams = [];
 
-  if (path) {
-    msgParams.push(path);
+  if (!path) {
+    path = "";
   }
+
+  if (!searchParams) {
+    searchParams = {};
+  }
+
+  msgParams.push(path);
+  msgParams.push(searchParams);
 
   await chrome.runtime.sendMessage({ action: "openPopup", data: msgParams });
 }

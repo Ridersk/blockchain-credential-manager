@@ -1,4 +1,11 @@
 {
+  "generate_credential_title": "Gerador de segredo",
+  "generated_secret": "Segredo gerado",
+  "secret_length": "Tamanho",
+  "lowercase_option": "Letras minúsculas",
+  "uppercase_option": "Letras maiúsculas",
+  "numbers_option": "Números",
+  "symbols_option": "Símbolos",
   "btn_add_credential": "Adicionar",
   "btn_deposit": "Depositar",
   "btn_generate_credential": "Gerar",

@@ -36,10 +36,7 @@ function installButton() {
         for (let btn of btnsAction) {
           btn.onclick = async (event) => {
             event.stopPropagation();
-            const btnPos = btn.getBoundingClientRect();
-            const btnPoX = btnPos.x + window.scrollX;
-            const btnPosY = btnPos.top + window.scrollY;
-            await toggleInPagePopup(btnPoX + btnPos.width / 2, btnPosY + btnPos.height);
+            await toggleInPagePopup(btn);
           };
         }
       }
@@ -47,7 +44,7 @@ function installButton() {
   }
 }
 
-async function toggleInPagePopup(targetPosX: number, targetPosY: number) {
+async function toggleInPagePopup(anchorElem: HTMLElement) {
   if (!document.querySelector(`iframe#${INPAGE_POPUP_ID}`)) {
     const iframe = document.createElement("iframe");
     iframe.id = INPAGE_POPUP_ID;
@@ -67,13 +64,27 @@ async function toggleInPagePopup(targetPosX: number, targetPosY: number) {
     iframe.style.unicodeBidi = "isolate";
     iframe.style.width = `${POPUP_WIDTH}px`;
     iframe.style.height = `${POPUP_HEIGHT}px`;
-    iframe.style.left = `${targetPosX - (POPUP_WIDTH - DIFF_CONTENT_WRAPPER) / 2}px`;
-    iframe.style.top = `${targetPosY}px`;
+
+    updateInPagePopupPosition(anchorElem, iframe);
+    window.onresize = () => {
+      updateInPagePopupPosition(anchorElem, iframe);
+    };
 
     document.documentElement.appendChild(iframe);
     document.onclick = removeInPagePopup;
   } else {
     removeInPagePopup();
+  }
+}
+
+function updateInPagePopupPosition(anchorElement: HTMLElement, iframeElement: HTMLIFrameElement) {
+  if (iframeElement) {
+    const anchorPos = anchorElement.getBoundingClientRect();
+    const anchorPosX = anchorPos.x + window.scrollX + anchorPos.width / 2;
+    const anchorPosY = anchorPos.top + window.scrollY + anchorPos.height;
+
+    iframeElement.style.left = `${anchorPosX - (POPUP_WIDTH - DIFF_CONTENT_WRAPPER) / 2}px`;
+    iframeElement.style.top = `${anchorPosY}px`;
   }
 }
 
@@ -96,11 +107,8 @@ function insertCredentialsToFormInputs(label: string, password: string) {
 export const interval = setInterval(async () => {
   clearInterval(interval);
 
-  const observerConfig = { attributes: true, childList: true };
-  const targetNode: HTMLBodyElement = document.querySelector("body")!;
-
   const observer = new MutationObserver(installButton);
-  observer.observe(targetNode, observerConfig);
+  observer.observe(document.body, { attributes: true, childList: true });
 }, 100);
 
 // Background Listener
@@ -112,6 +120,9 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (iframe) {
       iframe.src = iframe.src;
     }
+  } else if (request.action === "credentialSaved") {
+    insertCredentialsToFormInputs(request.data?.label, request.data?.password);
+    removeInPagePopup();
   }
 });
 

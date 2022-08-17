@@ -77,6 +77,25 @@
   cursor: pointer;
 }
 
+#bcm-credentials-content {
+  flex: 1;
+}
+
+/* Credential Item */
+.credential-item-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.credential-item-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+}
+
 .credential-item-title {
   font-weight: bold;
   font-size: larger;
@@ -88,10 +107,12 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: #495057;
 }
 
-#bcm-credentials-content {
-  flex: 1;
+.edit-btn {
+  background-color: transparent;
+  color: #495057;
 }
 
 /* General Styles */
