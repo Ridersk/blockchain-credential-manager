@@ -11,7 +11,7 @@ interface Props {
 }
 
 type CredentialAttributes = {
-  publicKey: string;
+  address: string;
   url: string;
   label: string;
   secret: string;
@@ -37,7 +37,7 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
 
   const formatCredentials = (credentials: Array<Credential>): CredentialAttributes[] => {
     return credentials.map((item) => ({
-      publicKey: item?.publicKey,
+      address: item?.address,
       url: item?.url,
       label: item?.label,
       secret: item?.secret
@@ -64,7 +64,7 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
         <ListItem sx={{ display: "block", padding: "8px 0px 8px 0px" }} key={index}>
           <CredentialCard
             dataLoaded={!!item}
-            credentialKey={item?.publicKey}
+            credentialKey={item?.address}
             url={item?.url}
             label={item?.label}
             secret={item?.secret}

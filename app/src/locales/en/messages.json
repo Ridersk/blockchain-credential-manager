@@ -1,4 +1,11 @@
 {
+  "generate_credential_title": "Secret Generator",
+  "generated_secret": "Generated secret",
+  "secret_length": "Length",
+  "lowercase_option": "Lowercase",
+  "uppercase_option": "Uppercase",
+  "numbers_option": "Numbers",
+  "symbols_option": "Symbols",
   "btn_add_credential": "Add",
   "btn_deposit": "Deposit",
   "btn_generate_credential": "Generate",

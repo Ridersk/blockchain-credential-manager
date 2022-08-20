@@ -21,13 +21,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const sendNotification = useNotification();
   const dispatch = useTypedDispatch();
-  const [closeAfterLogin, setCloseAfterLogin] = useState(false);
+  const [originIsPopupInPage, setOriginIsPopupInPage] = useState(false);
 
   // Get Data from blockchain to edit existing credential
   useEffect(() => {
-    const closeQs = new URLSearchParams(window.location.search).get("close-after-done");
-    if (closeQs === "true") {
-      setCloseAfterLogin(true);
+    const origin = new URLSearchParams(window.location.search).get("origin");
+    if (origin === "popupInPage") {
+      setOriginIsPopupInPage(true);
     }
   }, []);
 
@@ -42,7 +42,7 @@ const LoginPage = () => {
         });
         await sleep(100);
 
-        if (closeAfterLogin) {
+        if (originIsPopupInPage) {
           const windowsId = (await chrome.windows.getCurrent()).id;
           await chrome.windows.remove(windowsId!);
         }
@@ -88,7 +88,7 @@ const LoginPage = () => {
             onSubmit={handleSubmit}
           >
             {({ errors, handleBlur, handleChange, isSubmitting, touched, values }) => (
-              <Form id="wallet-login">
+              <Form id="wallet-login-form">
                 <SecretInput
                   id="wallet-password"
                   name="password"

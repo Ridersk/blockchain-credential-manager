@@ -5,3 +5,13 @@ export function extractURLOrigin(url: string) {
     return "";
   }
 }
+
+export function extractURLHashSearchParams(url: string) {
+  try {
+    const urlInstance = new URL(url);
+    const urlHash = urlInstance.hash;
+    return new URLSearchParams(urlHash.slice(urlHash.indexOf("?") + 1));
+  } catch (_) {
+    return new URLSearchParams();
+  }
+}

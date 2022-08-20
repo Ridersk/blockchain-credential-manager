@@ -82,7 +82,7 @@ export class WalletManager {
     return this._vaultAccountController;
   }
 
-  async openPopup(path?: string, customQsParams?: string[]) {
+  async openPopup(path?: string, customSearchParams?: { [key: string]: any }) {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     let popupUrl = await chrome.action.getPopup({ tabId: tab.id });
     const windowInfo = await chrome.windows.getCurrent();
@@ -95,15 +95,15 @@ export class WalletManager {
       popupUrl += `#/${path}`;
     }
 
-    if (!customQsParams) {
-      customQsParams = [];
+    if (!customSearchParams) {
+      customSearchParams = {};
     }
-    customQsParams.push(`tab-id=${tab.id}`);
-    customQsParams.push(`window-id=${tab.windowId}`);
-    customQsParams.push("close-after-done=true");
+    customSearchParams["tab-id"] = tab.id;
+    customSearchParams["window-id"] = tab.windowId;
+    customSearchParams["origin"] = "popupInPage";
 
     chrome.windows.create({
-      url: `${popupUrl}?${customQsParams.join("&")}`,
+      url: `${popupUrl}?${new URLSearchParams(customSearchParams).toString()}`,
       type: "popup",
       height,
       width,

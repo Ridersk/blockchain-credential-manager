@@ -16,7 +16,7 @@ export interface Props extends OutlinedInputProps {
   id: string;
   name?: string;
   label?: string;
-  value?: string;
+  value?: string | number;
   error?: boolean;
   errorMessage?: string;
   valueCopy?: boolean;

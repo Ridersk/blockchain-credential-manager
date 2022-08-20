@@ -31,6 +31,7 @@
     "formik": "^2.2.9",
     "framer-motion": "^6.3.3",
     "fs": "^0.0.1-security",
+    "generate-password": "^1.7.0",
     "https-browserify": "^1.0.0",
     "i18next": "^21.8.9",
     "i18next-browser-languagedetector": "^6.1.4",

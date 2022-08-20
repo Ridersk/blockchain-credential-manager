@@ -8,7 +8,7 @@ interface CredentialParameters {
 }
 
 export class Credential {
-  publicKey: string;
+  address: string;
   uid: number;
   title: string;
   url: string;
@@ -17,10 +17,10 @@ export class Credential {
   description: string;
 
   constructor(
-    publicKey: string,
+    address: string,
     { uid, title, url, label, secret, description }: CredentialParameters
   ) {
-    this.publicKey = publicKey;
+    this.address = address;
     this.uid = uid;
     this.title = title;
     this.url = url;
@@ -28,16 +28,4 @@ export class Credential {
     this.secret = secret;
     this.description = description;
   }
-
-  // get publicKey() {
-  //   return this._publicKey;
-  // }
-
-  // get label() {
-  //   return this._label;
-  // }
-
-  // get secret() {
-  //   return this._secret;
-  // }
 }
