@@ -5,7 +5,6 @@ import {
   IconButton,
   List,
   styled,
-  SwipeableDrawer,
   SxProps,
   Typography,
   useTheme
@@ -72,6 +71,11 @@ const MenuDrawer = (props: Props) => {
     }
   };
 
+  const handleSelectedOption = (optionAction: () => void) => {
+    optionAction();
+    onToggle(false);
+  };
+
   const renderAccount = (account: { id: string; address: string }) => {
     return (
       <Box>
@@ -97,7 +101,7 @@ const MenuDrawer = (props: Props) => {
   };
 
   return (
-    <SwipeableDrawer
+    <Drawer
       {...otherProps}
       sx={{
         width: MENU_DRAWER_WIDTH,
@@ -111,7 +115,6 @@ const MenuDrawer = (props: Props) => {
       anchor="left"
       open={open}
       onClose={() => onToggle(false)}
-      onOpen={() => onToggle(true)}
     >
       <DrawerHeader>
         <IconButton onClick={() => onToggle(false)}>
@@ -131,7 +134,11 @@ const MenuDrawer = (props: Props) => {
       <Divider />
       <List>
         {[
-          { title: t("settings"), icon: <SettingsIcon />, action: () => ({}) },
+          {
+            title: t("settings"),
+            icon: <SettingsIcon />,
+            action: () => handleSelectedOption(() => navigate("/settings"))
+          },
           { title: t("lock_wallet"), icon: <LockIcon />, action: handleLock }
         ].map((item, index) => (
           <ListItem key={index} disablePadding onClick={item.action}>
@@ -142,7 +149,7 @@ const MenuDrawer = (props: Props) => {
           </ListItem>
         ))}
       </List>
-    </SwipeableDrawer>
+    </Drawer>
   );
 };
 
