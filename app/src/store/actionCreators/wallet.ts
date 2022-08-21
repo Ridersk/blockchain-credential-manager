@@ -78,6 +78,23 @@ export const unlockWalletAction = createAsyncThunk<
   return isUnlocked;
 });
 
+export const lockWalletAction = createAsyncThunk<
+  boolean,
+  void,
+  {
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+  }
+>(WalletActionType.LOCK_WALLET, async (_, thunkAPI) => {
+  const response = await background.lockWallet();
+  const isUnlocked = response.result;
+
+  if (isUnlocked) {
+    thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
+  }
+
+  return isUnlocked;
+});
+
 export const getAccountsAction = createAsyncThunk<
   VaultAccount[],
   void,

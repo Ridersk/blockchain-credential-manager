@@ -53,6 +53,7 @@ export class WalletManager {
       addNewAccount: this.addNewAccount.bind(this),
       getAccounts: this._keyringController.getAccounts.bind(this._keyringController),
       unlockWallet: this.unlockWallet.bind(this),
+      lockWallet: this.lockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
       fullUpdate: this.fullUpdate.bind(this),
@@ -146,6 +147,11 @@ export class WalletManager {
       }
     } catch (e) {}
     return unlocked;
+  }
+
+  async lockWallet() {
+    const vaultData = await this._keyringController.lock();
+    return vaultData.isUnlocked;
   }
 
   async isUnlocked() {

@@ -61,7 +61,7 @@ export class KeyringController {
       }
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
-      await this._updateKeyring(password, vault);
+      await this._updateKeyringSession(password, vault);
       return (await this.sessionStore.getState()).keyring;
     } catch (err) {
       if (err instanceof Error && err.message === "Incorrect password") {
@@ -71,8 +71,17 @@ export class KeyringController {
     }
   }
 
+  async lock() {
+    try {
+      await this._updateKeyringSession(null, null, false);
+      return await this.sessionStore.getState();
+    } catch (err) {
+      throw new WalletLockedError("Error on locking keyring");
+    }
+  }
+
   async createKeyring(password: string, keyring: VaultKeyring) {
-    await this._updateKeyring(password, keyring);
+    await this._updatePersistentKeyring(password, keyring);
   }
 
   async getKeyring(): Promise<VaultKeyring> {
@@ -94,7 +103,7 @@ export class KeyringController {
     const keyring = await this.getKeyring();
     keyring.accounts.push(account);
     const password = (await this.sessionStore.getState()).password!;
-    await this._updateKeyring(password, keyring);
+    await this._updatePersistentKeyring(password, keyring);
   }
 
   async getKeypairFromAddress(address: string): Promise<Keypair | null> {
@@ -106,11 +115,19 @@ export class KeyringController {
     return this._getUserKeypairFromPrivateKeyEncoded(account.privateKey);
   }
 
-  async _updateKeyring(password: string, keyring: VaultKeyring) {
+  async _updatePersistentKeyring(password: string, keyring: VaultKeyring) {
     const encryptedVault = await this._encryptor.encrypt(password, keyring);
     await this.persistentStore.putState({ vault: encryptedVault });
-    this.sessionStore.updateState({
-      isUnlocked: true,
+    await this._updateKeyringSession(password, keyring);
+  }
+
+  async _updateKeyringSession(
+    password: string | null,
+    keyring: VaultKeyring | null,
+    isUnlocked: boolean = true
+  ) {
+    await this.sessionStore.updateState({
+      isUnlocked,
       keyring,
       password
     });

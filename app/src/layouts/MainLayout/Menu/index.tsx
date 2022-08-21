@@ -21,9 +21,11 @@ import LockIcon from "@mui/icons-material/Lock";
 import { useTranslation } from "react-i18next";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
-import { getAccountsAction } from "store/actionCreators";
+import { getAccountsAction, lockWalletAction } from "store/actionCreators";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { formatAddress } from "utils/address";
+import useNotification from "hooks/useNotification";
+import { useNavigate } from "react-router";
 
 const MENU_DRAWER_WIDTH = 240;
 
@@ -37,6 +39,8 @@ const MenuDrawer = (props: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
+  const navigate = useNavigate();
+  const sendNotification = useNotification();
   const [accounts, setAccounts] = useState<{ id: string; address: string }[]>([]);
   const { open, onToggle, ...otherProps } = props;
 
@@ -51,6 +55,22 @@ const MenuDrawer = (props: Props) => {
     }
     getAccounts();
   }, []);
+
+  const handleLock = async () => {
+    try {
+      const isUnlocked = unwrapResult(await dispatch(lockWalletAction()));
+
+      if (isUnlocked) {
+        throw new Error("Error on locking wallet");
+      }
+
+      window.location.reload();
+      navigate({ pathname: "/" });
+    } catch (err) {
+      console.error(err);
+      sendNotification({ message: t("error_lock_wallet"), variant: "error" });
+    }
+  };
 
   const renderAccount = (account: { id: string; address: string }) => {
     return (
@@ -111,10 +131,10 @@ const MenuDrawer = (props: Props) => {
       <Divider />
       <List>
         {[
-          { title: t("settings"), icon: <SettingsIcon /> },
-          { title: t("lock_wallet"), icon: <LockIcon /> }
+          { title: t("settings"), icon: <SettingsIcon />, action: () => ({}) },
+          { title: t("lock_wallet"), icon: <LockIcon />, action: handleLock }
         ].map((item, index) => (
-          <ListItem key={index} disablePadding>
+          <ListItem key={index} disablePadding onClick={item.action}>
             <ListItemButton>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.title} />
