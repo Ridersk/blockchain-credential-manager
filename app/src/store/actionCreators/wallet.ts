@@ -37,6 +37,7 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   const keyring = (response?.result as any).keyring;
   const preferences = (response?.result as any).preferences;
   const selectedAccount: SelectedAccount = preferences?.selectedAccount;
+  const mnemonic = keyring?.keyring?.mnemonic;
 
   if (!isInitialized || !selectedAccount) {
     return thunkAPI.rejectWithValue(new WalletNoKeyringFoundError("Wallet not initialized"));
@@ -47,7 +48,11 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   }
 
   thunkAPI.dispatch(
-    updateWalletAction({ id: selectedAccount.id, address: selectedAccount.address })
+    updateWalletAction({
+      id: selectedAccount.id,
+      address: selectedAccount.address,
+      mnemonic
+    })
   );
 });
 

@@ -8,7 +8,7 @@ const SettingsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const handleGoToPage = (subpath: string) => {
+  const handleGoToSetting = (subpath: string) => {
     navigate({ pathname: `${BASE_PATH}/${subpath}` });
   };
 
@@ -21,14 +21,19 @@ const SettingsPage = () => {
       </Box>
 
       <Box my={4} display="flex" flexDirection="column">
-        <SettingButton color="info" variant="contained" size="medium" onClick={() => ({})}>
+        <SettingButton
+          color="info"
+          variant="contained"
+          size="medium"
+          onClick={() => handleGoToSetting("show-mnemonic")}
+        >
           {t("show_mnemonic")}
         </SettingButton>
         <SettingButton
           color="info"
           variant="contained"
           size="medium"
-          onClick={() => handleGoToPage("change-language")}
+          onClick={() => handleGoToSetting("change-language")}
         >
           {t("change_language")}
         </SettingButton>
