@@ -1,5 +1,7 @@
 import { createAsyncThunk, unwrapResult } from "@reduxjs/toolkit";
-import { WalletLockedError, WalletNoKeyringFoundError } from "exceptions";
+import { AccountNotFoundError, WalletLockedError, WalletNoKeyringFoundError } from "exceptions";
+import { VaultAccount } from "scripts/wallet-manager/controllers/keyring";
+import { SelectedAccount } from "scripts/wallet-manager/controllers/preferences";
 import { background } from "services/background-connection/background-msg";
 import { NewWalletData, WalletActionType, VaultData } from "../actionTypes/wallet";
 
@@ -8,8 +10,22 @@ export const updateWalletAction = (data: VaultData) => ({
   data
 });
 
+export const createNewWalletAction = createAsyncThunk<
+  boolean,
+  NewWalletData,
+  {
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+  }
+>(
+  WalletActionType.CREATE_NEW_WALLET,
+  async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
+    await background.registerNewWallet(mnemonic, password, firstVaultAccount);
+    return unwrapResult(await thunkAPI.dispatch(unlockWalletAction(password)));
+  }
+);
+
 export const updateWalletFromBackgroundAction = createAsyncThunk<
-  string,
+  void,
   void,
   {
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
@@ -20,9 +36,9 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   const isInitialized = response?.result?.isInitialized;
   const keyring = (response?.result as any).keyring;
   const preferences = (response?.result as any).preferences;
-  const selectedAddress = preferences?.selectedAddress;
+  const selectedAccount: SelectedAccount = preferences?.selectedAccount;
 
-  if (!isInitialized || !selectedAddress) {
+  if (!isInitialized || !selectedAccount) {
     return thunkAPI.rejectWithValue(new WalletNoKeyringFoundError("Wallet not initialized"));
   }
 
@@ -30,9 +46,9 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
     return thunkAPI.rejectWithValue(new WalletLockedError("Wallet locked"));
   }
 
-  thunkAPI.dispatch(updateWalletAction({ id: "Vault 1", address: selectedAddress }));
-
-  return selectedAddress;
+  thunkAPI.dispatch(
+    updateWalletAction({ id: selectedAccount.id, address: selectedAccount.address })
+  );
 });
 
 export const forceUpdateWalletAction = createAsyncThunk<
@@ -51,11 +67,9 @@ export const unlockWalletAction = createAsyncThunk<
   {
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
->(WalletActionType.UNLOCK_WALLET, async (password: string, thunkAPI): Promise<boolean> => {
-  let isUnlocked = false;
-
+>(WalletActionType.UNLOCK_WALLET, async (password: string, thunkAPI) => {
   const response = await background.unlockWallet(password);
-  isUnlocked = response.result;
+  const isUnlocked = response.result;
 
   if (isUnlocked) {
     unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
@@ -64,16 +78,35 @@ export const unlockWalletAction = createAsyncThunk<
   return isUnlocked;
 });
 
-export const createNewWalletAction = createAsyncThunk<
+export const lockWalletAction = createAsyncThunk<
   boolean,
-  NewWalletData,
+  void,
   {
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
->(
-  WalletActionType.CREATE_NEW_WALLET,
-  async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
-    await background.registerNewWallet(mnemonic, password, firstVaultAccount);
-    return unwrapResult(await thunkAPI.dispatch(unlockWalletAction(password)));
+>(WalletActionType.LOCK_WALLET, async (_, thunkAPI) => {
+  const response = await background.lockWallet();
+  const isUnlocked = response.result;
+
+  if (isUnlocked) {
+    thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
   }
-);
+
+  return isUnlocked;
+});
+
+export const getAccountsAction = createAsyncThunk<
+  VaultAccount[],
+  void,
+  {
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError | AccountNotFoundError;
+  }
+>(WalletActionType.GET_ACCOUNTS, async (_, thunkAPI) => {
+  const response = await background.getAccounts();
+
+  if (!response.result) {
+    return thunkAPI.rejectWithValue(new AccountNotFoundError("Wallet not initialized"));
+  }
+
+  return response.result;
+});

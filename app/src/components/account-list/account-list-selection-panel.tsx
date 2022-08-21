@@ -5,7 +5,7 @@ import AccountList from "./account-list";
 
 type Props = {
   mnemonic: string;
-  onSelected?: (account: { publicKey: string; privateKey: string }) => Promise<void>;
+  onSelected?: (account: { id: string; publicKey: string; privateKey: string }) => Promise<void>;
   onCancel?: () => void;
 };
 

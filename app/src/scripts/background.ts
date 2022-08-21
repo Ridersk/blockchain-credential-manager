@@ -47,7 +47,6 @@ async function messageHandler(request: { action: string; data: any[] }) {
       throw new Error(`Action ${request.action} not found`);
     }
   } catch (err) {
-    console.log(err);
     if (err instanceof Error) {
       error = err.message;
     }

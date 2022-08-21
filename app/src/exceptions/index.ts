@@ -21,3 +21,15 @@ export class WalletLockedError extends Error {
     super(message);
   }
 }
+
+export class AccountNotFoundError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
+export class AccountAlreadyExistsError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}

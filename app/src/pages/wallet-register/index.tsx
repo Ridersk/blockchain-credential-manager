@@ -19,17 +19,14 @@ const WalletRegisterPage = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [walletFormData, setWalletFormData] = useState<WalletFormData>();
 
-  async function submitWallet(account: { publicKey: string; privateKey: string }) {
+  async function submitWallet(account: { id: string; publicKey: string; privateKey: string }) {
     try {
       const isUnlocked: boolean = unwrapResult(
         await dispatch(
           createNewWalletAction({
             mnemonic: walletFormData?.mnemonic as string,
             password: walletFormData?.password as string,
-            firstVaultAccount: {
-              publicKey: account.publicKey,
-              privateKey: account.privateKey
-            }
+            firstVaultAccount: account
           })
         )
       );

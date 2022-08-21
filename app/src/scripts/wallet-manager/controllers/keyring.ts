@@ -21,7 +21,8 @@ export type SessionVault = {
 };
 
 export type VaultAccount = {
-  address: string;
+  id: string;
+  publicKey: string;
   privateKey: string;
 };
 
@@ -60,7 +61,7 @@ export class KeyringController {
       }
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
-      await this._updateKeyring(password, vault);
+      await this._updateKeyringSession(password, vault);
       return (await this.sessionStore.getState()).keyring;
     } catch (err) {
       if (err instanceof Error && err.message === "Incorrect password") {
@@ -70,12 +71,17 @@ export class KeyringController {
     }
   }
 
-  async createKeyring(password: string, keyring: VaultKeyring) {
-    const encryptedVault = await this._encryptor.encrypt(password, keyring);
-    await this.persistentStore.putState({ vault: encryptedVault });
-    this._updateKeyring(password, keyring);
+  async lock() {
+    try {
+      await this._updateKeyringSession(null, null, false);
+      return await this.sessionStore.getState();
+    } catch (err) {
+      throw new WalletLockedError("Error on locking keyring");
+    }
+  }
 
-    return encryptedVault;
+  async createKeyring(password: string, keyring: VaultKeyring) {
+    await this._updatePersistentKeyring(password, keyring);
   }
 
   async getKeyring(): Promise<VaultKeyring> {
@@ -88,20 +94,42 @@ export class KeyringController {
     return keyring;
   }
 
+  async getAccounts(): Promise<VaultAccount[]> {
+    const keyring = await this.getKeyring();
+    return keyring.accounts;
+  }
+
+  async addAccount(account: VaultAccount) {
+    const keyring = await this.getKeyring();
+    keyring.accounts.push(account);
+    const password = (await this.sessionStore.getState()).password!;
+    await this._updatePersistentKeyring(password, keyring);
+  }
+
   async getKeypairFromAddress(address: string): Promise<Keypair | null> {
     const keyring = await this.getKeyring();
-    const account = keyring.accounts.find((_account) => _account.address === address);
+    const account = keyring.accounts.find((_account) => _account.publicKey === address);
     if (!account) {
       throw new Error("Account not found");
     }
     return this._getUserKeypairFromPrivateKeyEncoded(account.privateKey);
   }
 
-  async _updateKeyring(password: string, vault: VaultKeyring) {
-    this.sessionStore.updateState({
-      isUnlocked: true,
-      keyring: vault,
-      password: password
+  async _updatePersistentKeyring(password: string, keyring: VaultKeyring) {
+    const encryptedVault = await this._encryptor.encrypt(password, keyring);
+    await this.persistentStore.putState({ vault: encryptedVault });
+    await this._updateKeyringSession(password, keyring);
+  }
+
+  async _updateKeyringSession(
+    password: string | null,
+    keyring: VaultKeyring | null,
+    isUnlocked: boolean = true
+  ) {
+    await this.sessionStore.updateState({
+      isUnlocked,
+      keyring,
+      password
     });
   }
 
