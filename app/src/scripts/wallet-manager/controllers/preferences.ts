@@ -2,7 +2,7 @@ import { MemoryStore } from "../store/memory-store";
 import { PersistentStore } from "../store/persistent-store";
 
 export type PreferencesData = {
-  selectedAddress: string;
+  selectedAccount: SelectedAccount;
 };
 
 export type PreferencesControllerOpts = {
@@ -20,12 +20,17 @@ export class PreferencesController {
     this.persistentStore = new PersistentStore<PreferencesData>("preferences", initState);
   }
 
-  async setSelectedAddress(address: string) {
-    await this.sessionStore.updateState({ selectedAddress: address });
-    await this.persistentStore.updateState({ selectedAddress: address });
+  async setSelectedAccount(account: SelectedAccount) {
+    await this.sessionStore.updateState({ selectedAccount: account });
+    await this.persistentStore.updateState({ selectedAccount: account });
   }
 
-  async getSelectedAddress() {
-    return (await this.sessionStore.getState())?.selectedAddress;
+  async getSelectedAccount() {
+    return (await this.sessionStore.getState())?.selectedAccount;
   }
 }
+
+export type SelectedAccount = {
+  id: string;
+  address: string;
+};

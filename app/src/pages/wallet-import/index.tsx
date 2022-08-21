@@ -25,7 +25,7 @@ const WalletImportPage = () => {
   const [mnemonic, setMnemonic] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const submitAccount = async (account: { publicKey: string; privateKey: string }) => {
+  const submitAccount = async (account: { id: string; publicKey: string; privateKey: string }) => {
     try {
       const isUnlocked: boolean = unwrapResult(
         await dispatch(

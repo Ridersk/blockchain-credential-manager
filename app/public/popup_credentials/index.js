@@ -90,7 +90,6 @@ async function getCredentialsCurrentDomainFromBackground() {
 
     return response?.result;
   } catch (error) {
-    console.log(error);
     return [];
   }
 }

@@ -2,7 +2,8 @@ export enum WalletActionType {
   UPDATE_WALLET = "@wallet/UPDATE_WALLET",
   FORCE_UPDATE = "@wallet/FORCE_UPDATE",
   UNLOCK_WALLET = "@wallet/UNLOCK_WALLET",
-  CREATE_NEW_WALLET = "@wallet/CREATE_NEW_WALLET"
+  CREATE_NEW_WALLET = "@wallet/CREATE_NEW_WALLET",
+  GET_ACCOUNTS = "@wallet/GET_ACCOUNTS"
 }
 
 export interface VaultData {
@@ -16,6 +17,7 @@ export interface NewWalletData {
   password: string;
   mnemonic: string;
   firstVaultAccount: {
+    id: string;
     publicKey: string;
     privateKey: string;
   };

@@ -7,7 +7,7 @@ import AccountCard from "./account-card";
 
 type Props = {
   mnemonic: string;
-  onSelected?: (account: { publicKey: string; privateKey: string }) => Promise<void>;
+  onSelected?: (account: { id: string; publicKey: string; privateKey: string }) => Promise<void>;
 };
 
 const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: Props) => {
@@ -31,8 +31,16 @@ const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: P
     })();
   }, [mnemonic]);
 
-  const handleSelect = async (account: { publicKey: string; privateKey: string }) => {
-    await onSelected(account);
+  const handleSelect = async (account: {
+    index: number;
+    publicKey: string;
+    privateKey: string;
+  }) => {
+    await onSelected({
+      id: `Vault ${account.index + 1}`,
+      publicKey: account.publicKey,
+      privateKey: account.privateKey
+    });
   };
 
   return (
@@ -45,7 +53,9 @@ const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: P
               publicKey={item?.publicKey}
               privateKey={item?.privateKey}
               balance={item?.balance}
-              onClick={handleSelect}
+              onClick={({ publicKey, privateKey }) =>
+                handleSelect({ index, publicKey, privateKey })
+              }
             />
           </ListItem>
         )

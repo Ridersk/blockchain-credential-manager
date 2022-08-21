@@ -1,4 +1,4 @@
-import AppBar from "@mui/material/AppBar";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -14,6 +14,26 @@ import { copyTextToClipboard } from "utils/clipboard";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { formatAddress } from "utils/address";
+import MenuDrawer from "../Menu";
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open"
+})<AppBarProps>(({ theme, open }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen
+  }),
+  ...(open && {
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  })
+}));
 
 interface HeaderProps {
   sx?: SxProps;
@@ -25,10 +45,15 @@ function Header(props: HeaderProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [addressTooltip, setAddressTooltip] = useState<string>(t("copy_vault_address"));
+  const [menuOpen, setMenuOpen] = useState(false);
   const wallet = useTypedSelector((state) => state.wallet);
 
   const goToPreviousPage = () => {
     navigate(-1);
+  };
+
+  const handleMenuToggle = (open: boolean) => {
+    setMenuOpen(open);
   };
 
   const handleClickCopyAddress = () => {
@@ -49,9 +74,17 @@ function Header(props: HeaderProps) {
           bgcolor: theme.palette.background.default,
           backgroundImage: "none"
         }}
+        open={menuOpen}
       >
         <Toolbar sx={{ minHeight: "48px !important" }}>
-          <IconButton size="small" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2, ...(menuOpen && { display: "none" }) }}
+            onClick={() => handleMenuToggle(true)}
+          >
             <MenuIcon />
           </IconButton>
           <Box
@@ -89,6 +122,7 @@ function Header(props: HeaderProps) {
           )}
         </Toolbar>
       </AppBar>
+      <MenuDrawer open={menuOpen} onToggle={handleMenuToggle} />
     </Box>
   );
 }

@@ -6,6 +6,7 @@ import { PreferencesController, PreferencesData } from "./controllers/preference
 import { ComposableStore } from "./store/composable-store";
 import { CredentialsController } from "./controllers/credentials";
 import { VaultAccountController } from "./controllers/vault";
+import { AccountAlreadyExistsError, WalletNoKeyringFoundError } from "../../exceptions";
 
 type WalletInitialState = {
   keyring: KeyringEncryptedSerialized;
@@ -42,13 +43,6 @@ export class WalletManager {
         preferences: this._preferencesController.sessionStore
       }
     });
-
-    this.registerNewWallet = this.registerNewWallet.bind(this);
-    this.unlockWallet = this.unlockWallet.bind(this);
-    this.isUnlocked = this.isUnlocked.bind(this);
-    this.getState = this.getState.bind(this);
-    this.getSelectedAccountKeypair = this.getSelectedAccountKeypair.bind(this);
-    this.fullUpdate = this.fullUpdate.bind(this);
   }
 
   get api() {
@@ -56,6 +50,8 @@ export class WalletManager {
 
     return {
       registerNewWallet: this.registerNewWallet.bind(this),
+      addNewAccount: this.addNewAccount.bind(this),
+      getAccounts: this._keyringController.getAccounts.bind(this._keyringController),
       unlockWallet: this.unlockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
@@ -116,18 +112,28 @@ export class WalletManager {
   async registerNewWallet(
     mnemonic: string,
     password: string,
-    firstVaultAccount: { publicKey: string; privateKey: string }
+    firstVaultAccount: { id: string; publicKey: string; privateKey: string }
   ) {
-    const firstAccount = {
-      address: firstVaultAccount.publicKey,
-      privateKey: firstVaultAccount.privateKey
-    };
     await this._keyringController.createKeyring(password, {
       mnemonic,
-      accounts: [firstAccount]
+      accounts: []
     });
-    await this._preferencesController.setSelectedAddress(firstAccount.address);
-    return firstAccount;
+    await this._keyringController.addAccount(firstVaultAccount);
+    await this._preferencesController.setSelectedAccount({
+      id: firstVaultAccount.id,
+      address: firstVaultAccount.publicKey
+    });
+  }
+
+  async addNewAccount(account: { id: string; publicKey: string; privateKey: string }) {
+    await this._keyringController.getKeyring();
+    const oldAccounts = await this._keyringController.getAccounts();
+
+    if (oldAccounts.filter(({ publicKey }) => publicKey !== account.publicKey).length > 0) {
+      throw new AccountAlreadyExistsError("Account already exists");
+    }
+
+    await this._keyringController.addAccount(account);
   }
 
   async unlockWallet(password: string) {
@@ -158,8 +164,8 @@ export class WalletManager {
 
   async getSelectedAccountKeypair() {
     try {
-      const selectedAddress = await this._preferencesController.getSelectedAddress();
-      return this._keyringController.getKeypairFromAddress(selectedAddress);
+      const selectedAccount = await this._preferencesController.getSelectedAccount();
+      return this._keyringController.getKeypairFromAddress(selectedAccount.address);
     } catch (e) {
       return null;
     }
