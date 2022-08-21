@@ -5,6 +5,7 @@ import CredentialGeneratorPage from "pages/credential-generator";
 import HomePage from "pages/home";
 import SettingsPage from "pages/settings";
 import ChangeLanguagePage from "pages/settings/setting-options/change-language";
+import ShowMnemonicPage from "pages/settings/setting-options/show-mnemonic";
 import { Outlet } from "react-router";
 
 // ==============================|| ROUTING ||============================== //
@@ -35,6 +36,10 @@ const MainRoutes = {
         {
           path: "change-language",
           element: <ChangeLanguagePage />
+        },
+        {
+          path: "show-mnemonic",
+          element: <ShowMnemonicPage />
         }
       ]
     }
