@@ -6,7 +6,6 @@ import { PreferencesController, PreferencesData } from "./controllers/preference
 import { ComposableStore } from "./store/composable-store";
 import { CredentialsController } from "./controllers/credentials";
 import { VaultAccountController } from "./controllers/vault";
-import { AccountAlreadyExistsError, WalletNoKeyringFoundError } from "../../exceptions";
 
 type WalletInitialState = {
   keyring: KeyringEncryptedSerialized;
@@ -50,8 +49,9 @@ export class WalletManager {
 
     return {
       registerNewWallet: this.registerNewWallet.bind(this),
-      addNewAccount: this.addNewAccount.bind(this),
+      addNewAccount: this._keyringController.addAccount.bind(this._keyringController),
       getAccounts: this._keyringController.getAccounts.bind(this._keyringController),
+      getAccount: this._keyringController.getAccount.bind(this._keyringController),
       unlockWallet: this.unlockWallet.bind(this),
       lockWallet: this.lockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
@@ -124,17 +124,6 @@ export class WalletManager {
       id: firstVaultAccount.id,
       address: firstVaultAccount.publicKey
     });
-  }
-
-  async addNewAccount(account: { id: string; publicKey: string; privateKey: string }) {
-    await this._keyringController.getKeyring();
-    const oldAccounts = await this._keyringController.getAccounts();
-
-    if (oldAccounts.filter(({ publicKey }) => publicKey !== account.publicKey).length > 0) {
-      throw new AccountAlreadyExistsError("Account already exists");
-    }
-
-    await this._keyringController.addAccount(account);
   }
 
   async unlockWallet(password: string) {

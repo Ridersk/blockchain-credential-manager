@@ -1,4 +1,6 @@
 {
+  "account_added": "Nova conta adicionada",
+  "account_name": "Nome da conta",
   "add_account": "Adicionar conta",
   "btn_add_credential": "Adicionar",
   "btn_deposit": "Depositar",
@@ -79,6 +81,8 @@
   "transaction_to": "Para",
   "unexpected_error": "Erro inesperado",
   "uppercase_option": "Letras maiúsculas",
+  "warning_add_account_description": "Você está prestes a adicionar uma nova conta. Isso criará uma nova conta para você e será salvo em sua lista de contas. Você poderá acessar esta conta na lista de contas.",
+  "warning_add_account_title": "Adicionar Nova Conta",
   "warning_default_accept": "Aceitar",
   "warning_default_cancel": "Cancelar",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a conta do cofre. Não será possível recuperar a credencial depois de removida.",

@@ -68,7 +68,7 @@ const WalletImportPage = () => {
   const setFormData = async (values: ImportWithMnemonicParams) => {
     setMnemonic(values.mnemonic);
     setPassword(values.password);
-    setActiveStep(activeStep + 1);
+    handleStepChange(activeStep + 1);
   };
 
   return (

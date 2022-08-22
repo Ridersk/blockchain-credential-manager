@@ -43,7 +43,7 @@ function App() {
   }, []);
 
   return (
-    <div style={{ minWidth: "400px", minHeight: "600px" }}>
+    <div style={{ width: "400px", height: "600px", display: "flex", flexDirection: "column" }}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />

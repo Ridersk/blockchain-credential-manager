@@ -1,4 +1,4 @@
-import { List, ListItem } from "@mui/material";
+import { List, ListItem, SxProps } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
@@ -6,11 +6,13 @@ import { generateAccountsListAction, GeneratedAccountDetails } from "store/actio
 import AccountCard from "./account-card";
 
 type Props = {
+  sx?: SxProps;
   mnemonic: string;
   onSelected?: (account: { id: string; publicKey: string; privateKey: string }) => Promise<void>;
 };
 
-const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: Props) => {
+const AccountList = (props: Props) => {
+  const { mnemonic, onSelected = () => new Promise(() => ({})), ...otherProps } = props;
   const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<Array<GeneratedAccountDetails>>([]);
@@ -24,7 +26,7 @@ const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: P
           setAccountList(accounts);
         }
       } catch (err) {
-        console.error(err);
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -44,7 +46,7 @@ const AccountList = ({ mnemonic, onSelected = () => new Promise(() => ({})) }: P
   };
 
   return (
-    <List>
+    <List {...otherProps}>
       {(loading ? Array.from(new Array<GeneratedAccountDetails>(5)) : accountList).map(
         (item, index) => (
           <ListItem sx={{ display: "block", padding: "8px 0px 8px 0px" }} key={index}>

@@ -37,7 +37,12 @@ const SettingsPage = () => {
         >
           {t("change_language")}
         </SettingButton>
-        <SettingButton color="info" variant="contained" size="medium" onClick={() => ({})}>
+        <SettingButton
+          color="info"
+          variant="contained"
+          size="medium"
+          onClick={() => handleGoToSetting("add-account")}
+        >
           {t("add_account")}
         </SettingButton>
         <SettingButton color="warning" variant="contained" size="medium" onClick={() => ({})}>

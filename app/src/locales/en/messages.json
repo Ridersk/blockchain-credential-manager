@@ -1,4 +1,6 @@
 {
+  "account_added": "Account added",
+  "account_name": "Account name",
   "add_account": "Add account",
   "btn_add_credential": "Add",
   "btn_deposit": "Deposit",
@@ -79,6 +81,8 @@
   "transaction_to": "To",
   "unexpected_error": "Unexpected error",
   "uppercase_option": "Uppercase",
+  "warning_add_account_description": "You are about to add a new account. This will create a new account for you and will be saved in your account list. You will be able to access this account from the account list.",
+  "warning_add_account_title": "Add New Account",
   "warning_default_accept": "Accept",
   "warning_default_cancel": "Cancel",
   "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the vault account. It will not be possible to retrieve the credential once it has been removed.",

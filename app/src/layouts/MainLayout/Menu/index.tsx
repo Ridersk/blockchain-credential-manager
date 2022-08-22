@@ -53,7 +53,7 @@ const MenuDrawer = (props: Props) => {
       setAccounts(formattedAccounts);
     }
     getAccounts();
-  }, []);
+  }, [accounts]);
 
   const handleLock = async () => {
     try {
@@ -66,7 +66,7 @@ const MenuDrawer = (props: Props) => {
       window.location.reload();
       navigate({ pathname: "/" });
     } catch (err) {
-      console.error(err);
+      console.log(err);
       sendNotification({ message: t("error_lock_wallet"), variant: "error" });
     }
   };

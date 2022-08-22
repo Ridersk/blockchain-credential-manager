@@ -3,26 +3,12 @@ import { AccountNotFoundError, WalletLockedError, WalletNoKeyringFoundError } fr
 import { VaultAccount } from "scripts/wallet-manager/controllers/keyring";
 import { SelectedAccount } from "scripts/wallet-manager/controllers/preferences";
 import { background } from "services/background-connection/background-msg";
-import { NewWalletData, WalletActionType, VaultData } from "../actionTypes/wallet";
+import { NewWalletData, WalletActionType, VaultData, AccountData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: VaultData) => ({
   type: WalletActionType.UPDATE_WALLET,
   data
 });
-
-export const createNewWalletAction = createAsyncThunk<
-  boolean,
-  NewWalletData,
-  {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
-  }
->(
-  WalletActionType.CREATE_NEW_WALLET,
-  async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
-    await background.registerNewWallet(mnemonic, password, firstVaultAccount);
-    return unwrapResult(await thunkAPI.dispatch(unlockWalletAction(password)));
-  }
-);
 
 export const updateWalletFromBackgroundAction = createAsyncThunk<
   void,
@@ -56,15 +42,12 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   );
 });
 
-export const forceUpdateWalletAction = createAsyncThunk<
-  void,
-  void,
-  {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+export const forceUpdateWalletAction = createAsyncThunk<void, void>(
+  WalletActionType.FORCE_UPDATE,
+  async () => {
+    await background.fullUpdate();
   }
->(WalletActionType.FORCE_UPDATE, async () => {
-  await background.fullUpdate();
-});
+);
 
 export const unlockWalletAction = createAsyncThunk<
   boolean,
@@ -83,28 +66,58 @@ export const unlockWalletAction = createAsyncThunk<
   return isUnlocked;
 });
 
-export const lockWalletAction = createAsyncThunk<
+export const createNewWalletAction = createAsyncThunk<
   boolean,
-  void,
+  NewWalletData,
   {
     rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
->(WalletActionType.LOCK_WALLET, async (_, thunkAPI) => {
-  const response = await background.lockWallet();
-  const isUnlocked = response.result;
+>(
+  WalletActionType.CREATE_NEW_WALLET,
+  async ({ mnemonic, password, firstVaultAccount }: NewWalletData, thunkAPI) => {
+    await background.registerNewWallet(mnemonic, password, firstVaultAccount);
+    return unwrapResult(await thunkAPI.dispatch(unlockWalletAction(password)));
+  }
+);
 
-  if (isUnlocked) {
-    thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
+export const lockWalletAction = createAsyncThunk<boolean, void>(
+  WalletActionType.LOCK_WALLET,
+  async (_, thunkAPI) => {
+    const response = await background.lockWallet();
+    const isUnlocked = response.result;
+
+    if (isUnlocked) {
+      thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
+    }
+
+    return isUnlocked;
+  }
+);
+
+export const addNewAccountAction = createAsyncThunk<
+  boolean,
+  AccountData,
+  {
+    rejectValue: WalletRequestError;
+  }
+>(WalletActionType.ADD_NEW_ACCOUNT, async (account: AccountData, thunkAPI) => {
+  const response = await background.addNewAccount(account);
+  const status = response.status;
+  const error = response.error;
+
+  console.log("Response:", response);
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new WalletRequestError(error));
   }
 
-  return isUnlocked;
+  return Boolean(unwrapResult(await thunkAPI.dispatch(getAccountAction(account.publicKey))));
 });
 
 export const getAccountsAction = createAsyncThunk<
   VaultAccount[],
   void,
   {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError | AccountNotFoundError;
+    rejectValue: AccountNotFoundError;
   }
 >(WalletActionType.GET_ACCOUNTS, async (_, thunkAPI) => {
   const response = await background.getAccounts();
@@ -115,3 +128,25 @@ export const getAccountsAction = createAsyncThunk<
 
   return response.result;
 });
+
+export const getAccountAction = createAsyncThunk<
+  VaultAccount,
+  string,
+  {
+    rejectValue: AccountNotFoundError;
+  }
+>(WalletActionType.GET_ACCOUNT, async (address: string, thunkAPI) => {
+  const response = await background.getAccount(address);
+
+  if (!response.result) {
+    return thunkAPI.rejectWithValue(new AccountNotFoundError("Account not found"));
+  }
+
+  return response.result;
+});
+
+export class WalletRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

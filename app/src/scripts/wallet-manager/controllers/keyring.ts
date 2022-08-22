@@ -4,7 +4,8 @@ import passEncryptor from "browser-passworder";
 import {
   WalletIncorrectPasswordError,
   WalletNoKeyringFoundError,
-  WalletLockedError
+  WalletLockedError,
+  AccountAlreadyExistsError
 } from "../../../exceptions";
 import { PersistentStore } from "../store/persistent-store";
 import { Keypair } from "@solana/web3.js";
@@ -94,16 +95,27 @@ export class KeyringController {
     return keyring;
   }
 
+  async addAccount(account: VaultAccount) {
+    const keyring = await this.getKeyring();
+    const oldAccounts = await this.getAccounts();
+
+    if (oldAccounts.filter(({ publicKey }) => publicKey === account.publicKey).length > 0) {
+      throw new AccountAlreadyExistsError("Account already exists");
+    }
+
+    keyring.accounts.push(account);
+    const password = (await this.sessionStore.getState()).password!;
+    await this._updatePersistentKeyring(password, keyring);
+  }
+
   async getAccounts(): Promise<VaultAccount[]> {
     const keyring = await this.getKeyring();
     return keyring.accounts;
   }
 
-  async addAccount(account: VaultAccount) {
+  async getAccount(address: string): Promise<VaultAccount | undefined> {
     const keyring = await this.getKeyring();
-    keyring.accounts.push(account);
-    const password = (await this.sessionStore.getState()).password!;
-    await this._updatePersistentKeyring(password, keyring);
+    return keyring.accounts.find((_account) => _account.publicKey === address);
   }
 
   async getKeypairFromAddress(address: string): Promise<Keypair | null> {
