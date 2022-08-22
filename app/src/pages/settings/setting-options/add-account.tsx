@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Container, Typography } from "@mui/material";
+import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
 import AccountList from "components/account-list/account-list";
 import { FormInput } from "components/ui/form/inputs/form-input";
@@ -7,12 +7,13 @@ import WarningModal from "components/ui/modal/modal-warning";
 import useNotification from "hooks/useNotification";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useTypedSelector } from "hooks/useTypedSelector";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
-import { addNewAccountAction, WalletRequestError } from "store/actionCreators";
+import { addNewAccountAction, getAccountsAction, WalletRequestError } from "store/actionCreators";
 import { sleep } from "utils/time";
+import { extractURLHashSearchParams } from "utils/url";
 
 const AddAccountPage = () => {
   const { t } = useTranslation();
@@ -25,13 +26,42 @@ const AddAccountPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [customId, setCustomId] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<SelectedAccount>();
+  const [savedAccounts, setSavedAccounts] = useState<{ publicKey: string }[]>([]);
+  const [savedAccountsLoaded, setSavedAccountsLoaded] = useState<boolean>(false);
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
+
+  useEffect(() => {
+    const locationUrlQsParams = extractURLHashSearchParams(window.location.toString());
+    const selectedAccountAddress = new URLSearchParams(locationUrlQsParams).get("address");
+
+    if (selectedAccountAddress) {
+      setIsUpdate(true);
+      handleSelectAccount({ publicKey: selectedAccountAddress, privateKey: "" });
+    }
+  });
+
+  useEffect(() => {
+    async function getAccounts() {
+      try {
+        const _savedAccounts = unwrapResult(await dispatch(getAccountsAction()));
+        const formattedAccounts = [];
+        for (const account of _savedAccounts) {
+          formattedAccounts.push({ publicKey: account.publicKey });
+        }
+        setSavedAccounts(formattedAccounts);
+      } finally {
+        setSavedAccountsLoaded(true);
+      }
+    }
+    getAccounts();
+  }, []);
 
   const handleAddAccount = async () => {
     try {
-      const accountId: string = customId ? customId : selectedAccount?.id!;
+      setLoading(true);
       const accountCreated: boolean = unwrapResult(
         await dispatch(
-          addNewAccountAction({ ...(selectedAccount as SelectedAccount), id: accountId })
+          addNewAccountAction({ ...(selectedAccount as SelectedAccount), id: customId })
         )
       );
       if (accountCreated) {
@@ -53,6 +83,8 @@ const AddAccountPage = () => {
           variant: "error"
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,7 +122,7 @@ const AddAccountPage = () => {
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
-            {t("add_account")}
+            {!isUpdate ? t("add_account") : t("edit_account")}
           </Typography>
         </Box>
 
@@ -108,11 +140,27 @@ const AddAccountPage = () => {
 
         <Box my={4}>
           <SwipeableViews index={activeStep} onChangeIndex={handleStepChange}>
-            <AccountList
-              sx={{ height: "264px" }}
-              mnemonic={mnemonic}
-              onSelected={handleSelectAccount}
-            />
+            {savedAccountsLoaded ? (
+              <AccountList
+                sx={{ height: "264px" }}
+                mnemonic={mnemonic}
+                excludeAccounts={savedAccounts}
+                onSelected={handleSelectAccount}
+              />
+            ) : (
+              <Box
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <CircularProgress color="secondary" />
+              </Box>
+            )}
             <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-start" }}>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <LoadingButton
@@ -148,7 +196,6 @@ const AddAccountPage = () => {
 export default AddAccountPage;
 
 export type SelectedAccount = {
-  id: string;
   publicKey: string;
   privateKey: string;
 };

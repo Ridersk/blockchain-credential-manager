@@ -113,15 +113,15 @@ export class WalletManager {
   async registerNewWallet(
     mnemonic: string,
     password: string,
-    firstVaultAccount: { id: string; publicKey: string; privateKey: string }
+    firstVaultAccount: { id?: string; publicKey: string; privateKey: string }
   ) {
     await this._keyringController.createKeyring(password, {
       mnemonic,
       accounts: []
     });
-    await this._keyringController.addAccount(firstVaultAccount);
+    const createdAccount = await this._keyringController.addAccount(firstVaultAccount);
     await this._preferencesController.setSelectedAccount({
-      id: firstVaultAccount.id,
+      id: createdAccount.id,
       address: firstVaultAccount.publicKey
     });
   }

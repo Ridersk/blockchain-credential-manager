@@ -30,6 +30,7 @@
   "credential_form_url": "URL",
   "delete_account": "Remover conta",
   "delete_credential": "Apagar",
+  "edit_account": "Editar Conta",
   "edit_credential": "Editar credencial",
   "error_lock_wallet": "Erro ao tentar bloquear carteira",
   "form_cancel": "Cancelar",

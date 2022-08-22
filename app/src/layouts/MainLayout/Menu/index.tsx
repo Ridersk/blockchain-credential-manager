@@ -53,7 +53,7 @@ const MenuDrawer = (props: Props) => {
       setAccounts(formattedAccounts);
     }
     getAccounts();
-  }, [accounts]);
+  }, [open]);
 
   const handleLock = async () => {
     try {
@@ -125,7 +125,16 @@ const MenuDrawer = (props: Props) => {
       <List>
         {accounts.map((account, index) => (
           <ListItem key={index} disablePadding>
-            <ListItemButton>
+            <ListItemButton
+              onClick={() =>
+                handleSelectedOption(() =>
+                  navigate({
+                    pathname: "/settings/add-account",
+                    search: `?address=${account.address}`
+                  })
+                )
+              }
+            >
               <ListItemText primary={renderAccount(account)} />
             </ListItemButton>
           </ListItem>

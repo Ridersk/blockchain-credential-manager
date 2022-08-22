@@ -17,7 +17,7 @@ export interface VaultData {
 }
 
 export interface AccountData {
-  id: string;
+  id?: string;
   publicKey: string;
   privateKey: string;
 }

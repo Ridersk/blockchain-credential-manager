@@ -39,6 +39,6 @@ export class AccountRequestError extends Error {
 
 export type GeneratedAccountDetails = {
   publicKey: string;
-  privateKey: string;
-  balance: number;
+  privateKey?: string;
+  balance?: number;
 };

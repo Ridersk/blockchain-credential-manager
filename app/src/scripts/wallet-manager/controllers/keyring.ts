@@ -95,17 +95,29 @@ export class KeyringController {
     return keyring;
   }
 
-  async addAccount(account: VaultAccount) {
+  async addAccount(account: {
+    id?: string;
+    publicKey: string;
+    privateKey: string;
+  }): Promise<VaultAccount> {
     const keyring = await this.getKeyring();
     const oldAccounts = await this.getAccounts();
+    const newAccountId = account.id ? account.id : `Vault ${oldAccounts.length + 1}`;
+    const newAccount = {
+      id: newAccountId,
+      publicKey: account.publicKey,
+      privateKey: account.privateKey
+    };
 
     if (oldAccounts.filter(({ publicKey }) => publicKey === account.publicKey).length > 0) {
       throw new AccountAlreadyExistsError("Account already exists");
     }
 
-    keyring.accounts.push(account);
+    keyring.accounts.push(newAccount);
     const password = (await this.sessionStore.getState()).password!;
     await this._updatePersistentKeyring(password, keyring);
+
+    return newAccount;
   }
 
   async getAccounts(): Promise<VaultAccount[]> {
