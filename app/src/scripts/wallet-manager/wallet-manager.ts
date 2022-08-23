@@ -51,6 +51,7 @@ export class WalletManager {
       registerNewWallet: this.registerNewWallet.bind(this),
       addAccount: this._keyringController.addAccount.bind(this._keyringController),
       editAccount: this._keyringController.editAccount.bind(this._keyringController),
+      deleteAccount: this._keyringController.deleteAccount.bind(this._keyringController),
       getAccounts: this._keyringController.getAccounts.bind(this._keyringController),
       getAccount: this._keyringController.getAccount.bind(this._keyringController),
       unlockWallet: this.unlockWallet.bind(this),

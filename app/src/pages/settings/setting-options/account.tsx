@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
 import {
   addNewAccountAction,
+  deleteAccountAction,
   editAccountAction,
   getAccountAction,
   getAccountsAction,
@@ -27,7 +28,14 @@ const AccountPage = () => {
   const dispatch = useTypedDispatch();
   const sendNotification = useNotification();
   const mnemonic = useTypedSelector((state) => state.wallet.mnemonic);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState<{
+    open: boolean;
+    title?: string;
+    description?: string;
+    action?: () => Promise<void>;
+  }>({
+    open: false
+  });
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [customId, setCustomId] = useState("");
@@ -116,6 +124,29 @@ const AccountPage = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      unwrapResult(await dispatch(deleteAccountAction(selectedAccount?.publicKey!)));
+      sendNotification({
+        message: t("account_deleted"),
+        variant: "success"
+      });
+      await sleep(100);
+      navigate(-1);
+    } catch (err) {
+      if (err instanceof WalletRequestError) {
+        sendNotification({ message: err?.message, variant: "error" });
+      } else {
+        sendNotification({
+          message: t("unexpected_error"),
+          variant: "error"
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStepChange = (index: number) => {
     console.log("Change to step: ", index);
     setActiveStep(index);
@@ -138,20 +169,34 @@ const AccountPage = () => {
     handleStepChange(activeStep + 1);
   };
 
-  const handleOpenAddAccountModal = () => {
-    setModalOpen(true);
+  const handleOpenSubmitAccountModalConfirmation = () => {
+    setModalConfig({
+      open: true,
+      title: !isUpdate ? t("warning_add_account_title") : t("warning_update_account_title"),
+      description: isUpdate
+        ? t("warning_add_account_description")
+        : t("warning_update_account_description"),
+      action: handleSubmitAccount
+    });
+  };
+
+  const handleOpenDeleteAccountModalConfirmation = () => {
+    setModalConfig({
+      open: true,
+      title: t("warning_delete_account_title"),
+      description: t("warning_delete_account_description"),
+      action: handleDeleteAccount
+    });
   };
 
   return (
     <div>
       <WarningModal
-        open={modalOpen}
-        title={!isUpdate ? t("warning_add_account_title") : t("warning_update_account_title")}
-        description={
-          isUpdate ? t("warning_add_account_description") : t("warning_update_account_description")
-        }
-        onCancel={() => setModalOpen(false)}
-        onAccept={handleSubmitAccount}
+        open={modalConfig.open}
+        title={modalConfig.title!}
+        description={modalConfig.description!}
+        onCancel={() => setModalConfig({ open: false })}
+        onAccept={modalConfig.action!}
       />
 
       <Container maxWidth="sm">
@@ -207,6 +252,19 @@ const AccountPage = () => {
                 >
                   {t("form_cancel")}
                 </LoadingButton>
+
+                {isUpdate && (
+                  <LoadingButton
+                    disabled={loading}
+                    size="medium"
+                    variant="contained"
+                    color="warning"
+                    onClick={handleOpenDeleteAccountModalConfirmation}
+                  >
+                    {t("delete_credential")}
+                  </LoadingButton>
+                )}
+
                 <LoadingButton
                   type="submit"
                   size="medium"
@@ -215,7 +273,7 @@ const AccountPage = () => {
                   disabled={loading}
                   variant="contained"
                   color="primary"
-                  onClick={handleOpenAddAccountModal}
+                  onClick={handleOpenSubmitAccountModalConfirmation}
                 >
                   {t("form_save")}
                 </LoadingButton>

@@ -130,6 +130,22 @@ export const editAccountAction = createAsyncThunk<
   return Boolean(unwrapResult(await thunkAPI.dispatch(getAccountAction(account.publicKey))));
 });
 
+export const deleteAccountAction = createAsyncThunk<
+  void,
+  string,
+  {
+    rejectValue: WalletRequestError;
+  }
+>(WalletActionType.DELETE_ACCOUNT, async (publicKey: string, thunkAPI) => {
+  const response = await background.deleteAccount(publicKey);
+  const status = response.status;
+  const error = response.error;
+
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new WalletRequestError(error));
+  }
+});
+
 export const getAccountsAction = createAsyncThunk<
   VaultAccount[],
   void,
