@@ -101,11 +101,28 @@ export const addNewAccountAction = createAsyncThunk<
     rejectValue: WalletRequestError;
   }
 >(WalletActionType.ADD_NEW_ACCOUNT, async (account: AccountData, thunkAPI) => {
-  const response = await background.addNewAccount(account);
+  const response = await background.addAccount(account);
   const status = response.status;
   const error = response.error;
 
-  console.log("Response:", response);
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new WalletRequestError(error));
+  }
+
+  return Boolean(unwrapResult(await thunkAPI.dispatch(getAccountAction(account.publicKey))));
+});
+
+export const editAccountAction = createAsyncThunk<
+  boolean,
+  AccountData,
+  {
+    rejectValue: WalletRequestError;
+  }
+>(WalletActionType.EDIT_ACCOUNT, async (account: AccountData, thunkAPI) => {
+  const response = await background.editAccount(account);
+  const status = response.status;
+  const error = response.error;
+
   if (status === "error") {
     return thunkAPI.rejectWithValue(new WalletRequestError(error));
   }

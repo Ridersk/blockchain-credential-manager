@@ -129,7 +129,7 @@ const MenuDrawer = (props: Props) => {
               onClick={() =>
                 handleSelectedOption(() =>
                   navigate({
-                    pathname: "/settings/add-account",
+                    pathname: "/settings/account",
                     search: `?address=${account.address}`
                   })
                 )

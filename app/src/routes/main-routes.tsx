@@ -4,7 +4,7 @@ import CredentialPage from "pages/credential";
 import CredentialGeneratorPage from "pages/credential-generator";
 import HomePage from "pages/home";
 import SettingsPage from "pages/settings";
-import AddAccountPage from "pages/settings/setting-options/add-account";
+import AccountPage from "pages/settings/setting-options/account";
 import ChangeLanguagePage from "pages/settings/setting-options/change-language";
 import ShowMnemonicPage from "pages/settings/setting-options/show-mnemonic";
 
@@ -42,8 +42,8 @@ const MainRoutes = {
           element: <ShowMnemonicPage />
         },
         {
-          path: "add-account",
-          element: <AddAccountPage />
+          path: "account",
+          element: <AccountPage />
         }
       ]
     }

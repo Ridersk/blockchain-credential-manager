@@ -1,5 +1,6 @@
 {
   "account_added": "Nova conta adicionada",
+  "account_edited": "Conta editada",
   "account_name": "Nome da conta",
   "add_account": "Adicionar conta",
   "btn_add_credential": "Adicionar",
@@ -88,6 +89,8 @@
   "warning_default_cancel": "Cancelar",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a conta do cofre. Não será possível recuperar a credencial depois de removida.",
   "warning_delete_credential_title": "Deseja apagar a credencial?",
+  "warning_update_account_description": "Você está prestes a editar dados desta conta.",
+  "warning_update_account_title": "Atualizar conta",
   "welcome_back": "Bem vindo novamente!",
   "welcome_new_user": "Novo no MetaVault?"
 }

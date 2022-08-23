@@ -120,6 +120,28 @@ export class KeyringController {
     return newAccount;
   }
 
+  async editAccount(account: { id?: string; publicKey: string }): Promise<VaultAccount> {
+    const savedAccount = await this.getAccount(account.publicKey);
+    if (!savedAccount) {
+      throw new Error("Account not found");
+    }
+
+    const keyring = await this.getKeyring();
+    const index = keyring.accounts.findIndex(
+      (_account) => _account.publicKey === account.publicKey
+    );
+    const updatedAccount = {
+      ...savedAccount,
+      id: account.id ? account.id : savedAccount.id
+    };
+    keyring.accounts[index] = updatedAccount;
+
+    const password = (await this.sessionStore.getState()).password!;
+    await this._updatePersistentKeyring(password, keyring);
+
+    return updatedAccount;
+  }
+
   async getAccounts(): Promise<VaultAccount[]> {
     const keyring = await this.getKeyring();
     return keyring.accounts;

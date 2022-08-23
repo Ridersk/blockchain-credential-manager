@@ -41,7 +41,7 @@ const SettingsPage = () => {
           color="info"
           variant="contained"
           size="medium"
-          onClick={() => handleGoToSetting("add-account")}
+          onClick={() => handleGoToSetting("account")}
         >
           {t("add_account")}
         </SettingButton>

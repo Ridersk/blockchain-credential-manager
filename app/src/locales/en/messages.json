@@ -1,5 +1,6 @@
 {
   "account_added": "Account added",
+  "account_edited": "Account edited",
   "account_name": "Account name",
   "add_account": "Add account",
   "btn_add_credential": "Add",
@@ -88,6 +89,8 @@
   "warning_default_cancel": "Cancel",
   "warning_delete_credential_description": "The SOLs spent on creating the credential will be returned to the vault account. It will not be possible to retrieve the credential once it has been removed.",
   "warning_delete_credential_title": "Do you want to delete the credential?",
+  "warning_update_account_description": "You are about to update account's data.",
+  "warning_update_account_title": "Update account",
   "welcome_back": "Welcome back!",
   "welcome_new_user": "New to MetaVault?"
 }

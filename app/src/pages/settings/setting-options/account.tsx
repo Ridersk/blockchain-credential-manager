@@ -11,11 +11,17 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
-import { addNewAccountAction, getAccountsAction, WalletRequestError } from "store/actionCreators";
+import {
+  addNewAccountAction,
+  editAccountAction,
+  getAccountAction,
+  getAccountsAction,
+  WalletRequestError
+} from "store/actionCreators";
 import { sleep } from "utils/time";
 import { extractURLHashSearchParams } from "utils/url";
 
-const AddAccountPage = () => {
+const AccountPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useTypedDispatch();
@@ -31,14 +37,15 @@ const AddAccountPage = () => {
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
   useEffect(() => {
-    const locationUrlQsParams = extractURLHashSearchParams(window.location.toString());
-    const selectedAccountAddress = new URLSearchParams(locationUrlQsParams).get("address");
+    (async () => {
+      const locationUrlQsParams = extractURLHashSearchParams(window.location.toString());
+      const selectedAccountAddress = new URLSearchParams(locationUrlQsParams).get("address");
 
-    if (selectedAccountAddress) {
-      setIsUpdate(true);
-      handleSelectAccount({ publicKey: selectedAccountAddress, privateKey: "" });
-    }
-  });
+      if (selectedAccountAddress) {
+        await prepareUpdateAccountData(selectedAccountAddress);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     async function getAccounts() {
@@ -56,24 +63,45 @@ const AddAccountPage = () => {
     getAccounts();
   }, []);
 
-  const handleAddAccount = async () => {
+  const prepareUpdateAccountData = async (selectedAccountAddress: string) => {
+    setIsUpdate(true);
+    const account = unwrapResult(await dispatch(getAccountAction(selectedAccountAddress)));
+    await handleSelectAccount(account);
+    setCustomId(account.id);
+  };
+
+  const handleSubmitAccount = async () => {
     try {
       setLoading(true);
-      const accountCreated: boolean = unwrapResult(
+      if (isUpdate) {
         await dispatch(
-          addNewAccountAction({ ...(selectedAccount as SelectedAccount), id: customId })
-        )
-      );
-      if (accountCreated) {
+          editAccountAction({
+            ...(selectedAccount as SelectedAccount),
+            id: customId
+          })
+        );
+
         sendNotification({
-          message: t("register_successfully"),
+          message: t("account_edited"),
           variant: "success"
         });
-        await sleep(100);
-        navigate(-1);
       } else {
-        throw new Error("Error on add account");
+        const accountCreated: boolean = unwrapResult(
+          await dispatch(
+            addNewAccountAction({ ...(selectedAccount as SelectedAccount), id: customId })
+          )
+        );
+        if (accountCreated) {
+          sendNotification({
+            message: t("account_added"),
+            variant: "success"
+          });
+        } else {
+          throw new Error("Error on add account");
+        }
       }
+      await sleep(100);
+      navigate(-1);
     } catch (err) {
       if (err instanceof WalletRequestError) {
         sendNotification({ message: err?.message, variant: "error" });
@@ -89,11 +117,16 @@ const AddAccountPage = () => {
   };
 
   const handleStepChange = (index: number) => {
+    console.log("Change to step: ", index);
     setActiveStep(index);
   };
 
   const handleBackStep = () => {
-    setActiveStep(activeStep > 0 ? activeStep - 1 : 0);
+    if (!isUpdate) {
+      setActiveStep(activeStep > 0 ? activeStep - 1 : 0);
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleCustomIdChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,10 +146,12 @@ const AddAccountPage = () => {
     <div>
       <WarningModal
         open={modalOpen}
-        title={t("warning_add_account_title")}
-        description={t("warning_add_account_description")}
+        title={!isUpdate ? t("warning_add_account_title") : t("warning_update_account_title")}
+        description={
+          isUpdate ? t("warning_add_account_description") : t("warning_update_account_description")
+        }
         onCancel={() => setModalOpen(false)}
-        onAccept={handleAddAccount}
+        onAccept={handleSubmitAccount}
       />
 
       <Container maxWidth="sm">
@@ -193,7 +228,7 @@ const AddAccountPage = () => {
   );
 };
 
-export default AddAccountPage;
+export default AccountPage;
 
 export type SelectedAccount = {
   publicKey: string;
