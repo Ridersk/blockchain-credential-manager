@@ -28,6 +28,11 @@ export class PreferencesController {
   async getSelectedAccount() {
     return (await this.sessionStore.getState())?.selectedAccount;
   }
+
+  async reset() {
+    await this.sessionStore.clearState();
+    await this.persistentStore.clearState();
+  }
 }
 
 export type SelectedAccount = {

@@ -6,7 +6,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
 import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { SecretInput } from "../form/inputs/secret-input";
 
 export type WarningModalProps = {
   open: boolean;
@@ -14,8 +15,9 @@ export type WarningModalProps = {
   description: string;
   cancelText?: string;
   acceptText?: string;
+  requestPassword?: boolean;
   onCancel: () => void;
-  onAccept: () => Promise<void>;
+  onAccept: (password?: string) => Promise<void>;
 };
 
 const WarningModal = ({
@@ -24,20 +26,30 @@ const WarningModal = ({
   description,
   cancelText,
   acceptText,
+  requestPassword = false,
   onCancel,
   onAccept
 }: WarningModalProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState<string>();
   const handleCancel = () => onCancel();
 
   const handleAccept = async () => {
     try {
       setLoading(true);
-      await onAccept();
+      if (requestPassword) {
+        await onAccept(password);
+      } else {
+        await onAccept();
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
   };
 
   return (
@@ -87,6 +99,17 @@ const WarningModal = ({
             >
               {description}
             </Typography>
+
+            {requestPassword && (
+              <SecretInput
+                id="wallet-password"
+                name="password"
+                label={t("password")}
+                value={password}
+                onChange={handlePasswordChange}
+                valueCopy={false}
+              />
+            )}
           </Box>
           <Box
             sx={{ flex: 1, flexDirection: "column", display: "flex", justifyContent: "flex-end" }}

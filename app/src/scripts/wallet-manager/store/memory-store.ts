@@ -34,4 +34,8 @@ export class MemoryStore<T> implements StoreInterface {
     this._state = { ...this._state, ...partialState };
     await this.storageMethod.set({ [this._key]: this._state });
   }
+
+  async clearState() {
+    await this.storageMethod.clear();
+  }
 }

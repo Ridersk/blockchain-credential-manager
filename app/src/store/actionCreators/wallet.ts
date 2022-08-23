@@ -105,14 +105,30 @@ export const lockWalletAction = createAsyncThunk<boolean, void>(
     const isUnlocked = response.result;
 
     if (isUnlocked) {
-      await thunkAPI.dispatch(
-        updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" })
-      );
+      thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
     }
 
     return isUnlocked;
   }
 );
+
+export const resetWalletAction = createAsyncThunk<
+  void,
+  string,
+  {
+    rejectValue: WalletRequestError;
+  }
+>(WalletActionType.RESET_WALLET, async (password: string, thunkAPI) => {
+  const response = await background.resetWallet(password);
+  const status = response.status;
+  const error = response.error;
+
+  if (status === "error") {
+    return thunkAPI.rejectWithValue(new WalletRequestError(error));
+  }
+
+  thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
+});
 
 export const addNewAccountAction = createAsyncThunk<
   boolean,

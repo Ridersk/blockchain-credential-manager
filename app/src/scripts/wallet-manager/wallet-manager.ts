@@ -52,6 +52,7 @@ export class WalletManager {
       unlockWallet: this.unlockWallet.bind(this),
       selectAccount: this.selectAccount.bind(this),
       lockWallet: this.lockWallet.bind(this),
+      resetWallet: this.resetWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
       fullUpdate: this.fullUpdate.bind(this),
@@ -159,6 +160,13 @@ export class WalletManager {
     return vaultData.isUnlocked;
   }
 
+  async resetWallet(password: string) {
+    await this._keyringController.unlock(password);
+    await this._keyringController.reset();
+    await this._preferencesController.reset();
+    await this.fullUpdate();
+  }
+
   async isUnlocked() {
     return (await this._keyringController.sessionStore.getState()).isUnlocked;
   }
@@ -203,6 +211,9 @@ export class WalletManager {
           }
         });
       });
+    } else {
+      this._credentialsController = undefined;
+      this._vaultAccountController = undefined;
     }
   }
 }

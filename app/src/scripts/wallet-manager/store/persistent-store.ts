@@ -24,4 +24,8 @@ export class PersistentStore<T> implements StoreInterface {
     this._state = { ...this._state, ...partialState };
     await selectedStorage.setData(this._key, this._state);
   }
+
+  async clearState() {
+    await selectedStorage.clearData();
+  }
 }

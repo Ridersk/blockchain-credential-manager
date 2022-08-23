@@ -18,4 +18,8 @@ export class LocalStorage extends BaseStorage {
   async deleteData(key: string): Promise<void> {
     localStorage.removeItem(key);
   }
+
+  async clearData(): Promise<void> {
+    localStorage.clear();
+  }
 }
