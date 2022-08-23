@@ -25,14 +25,14 @@ const WalletImportPage = () => {
   const [mnemonic, setMnemonic] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const submitAccount = async (account: { id: string; publicKey: string; privateKey: string }) => {
+  const submitAccount = async (account: { publicKey: string; privateKey: string }) => {
     try {
       const isUnlocked: boolean = unwrapResult(
         await dispatch(
           createNewWalletAction({
             mnemonic,
             password,
-            firstVaultAccount: { ...account }
+            firstVaultAccount: account
           })
         )
       );
@@ -68,7 +68,7 @@ const WalletImportPage = () => {
   const setFormData = async (values: ImportWithMnemonicParams) => {
     setMnemonic(values.mnemonic);
     setPassword(values.password);
-    setActiveStep(activeStep + 1);
+    handleStepChange(activeStep + 1);
   };
 
   return (

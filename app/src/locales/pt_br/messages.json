@@ -1,4 +1,8 @@
 {
+  "account_added": "Nova conta adicionada",
+  "account_deleted": "Conta deletada",
+  "account_edited": "Conta editada",
+  "account_name": "Nome da conta",
   "add_account": "Adicionar conta",
   "btn_add_credential": "Adicionar",
   "btn_deposit": "Depositar",
@@ -28,6 +32,7 @@
   "credential_form_url": "URL",
   "delete_account": "Remover conta",
   "delete_credential": "Apagar",
+  "edit_account": "Editar Conta",
   "edit_credential": "Editar credencial",
   "error_lock_wallet": "Erro ao tentar bloquear carteira",
   "form_cancel": "Cancelar",
@@ -79,10 +84,16 @@
   "transaction_to": "Para",
   "unexpected_error": "Erro inesperado",
   "uppercase_option": "Letras maiúsculas",
+  "warning_add_account_description": "Você está prestes a adicionar uma nova conta. Isso criará uma nova conta para você e será salvo em sua lista de contas. Você poderá acessar esta conta na lista de contas.",
+  "warning_add_account_title": "Adicionar Nova Conta",
   "warning_default_accept": "Aceitar",
   "warning_default_cancel": "Cancelar",
+  "warning_delete_account_description": "Tem certeza de que deseja excluir esta conta?",
+  "warning_delete_account_title": "Deleção de conta",
   "warning_delete_credential_description": "Os SOLs gastos para a criação da credencial retornarão para a conta do cofre. Não será possível recuperar a credencial depois de removida.",
   "warning_delete_credential_title": "Deseja apagar a credencial?",
+  "warning_update_account_description": "Você está prestes a editar dados desta conta.",
+  "warning_update_account_title": "Atualizar conta",
   "welcome_back": "Bem vindo novamente!",
   "welcome_new_user": "Novo no MetaVault?"
 }

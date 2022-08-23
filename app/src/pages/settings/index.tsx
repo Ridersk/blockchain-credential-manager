@@ -37,11 +37,13 @@ const SettingsPage = () => {
         >
           {t("change_language")}
         </SettingButton>
-        <SettingButton color="info" variant="contained" size="medium" onClick={() => ({})}>
+        <SettingButton
+          color="info"
+          variant="contained"
+          size="medium"
+          onClick={() => handleGoToSetting("account")}
+        >
           {t("add_account")}
-        </SettingButton>
-        <SettingButton color="warning" variant="contained" size="medium" onClick={() => ({})}>
-          {t("delete_account")}
         </SettingButton>
         <SettingButton color="warning" variant="contained" size="medium" onClick={() => ({})}>
           {t("reset_wallet")}

@@ -64,21 +64,19 @@ export const theme = createTheme({
     },
     MuiCssBaseline: {
       styleOverrides: {
-        body: {
-          "&::-webkit-scrollbar": {
-            width: "0.5em"
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#aaa",
-            borderRadius: "4px"
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#1e1e2f",
-            borderRadius: "4px"
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#434358"
-          }
+        "&::-webkit-scrollbar": {
+          width: "0.5em"
+        },
+        "&::-webkit-scrollbar-track": {
+          background: "#aaa",
+          borderRadius: "4px"
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "#1e1e2f",
+          borderRadius: "4px"
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#434358"
         }
       }
     }
