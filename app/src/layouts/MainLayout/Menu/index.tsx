@@ -71,7 +71,6 @@ const MenuDrawer = (props: Props) => {
       refreshAppUI();
       navigate({ pathname: "/" });
     } catch (err) {
-      console.log(err);
       sendNotification({ message: t("error_lock_wallet"), variant: "error" });
     }
   };

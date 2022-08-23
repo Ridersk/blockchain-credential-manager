@@ -148,7 +148,6 @@ const AccountPage = () => {
   };
 
   const handleStepChange = (index: number) => {
-    console.log("Change to step: ", index);
     setActiveStep(index);
   };
 

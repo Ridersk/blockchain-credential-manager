@@ -4,7 +4,6 @@ import { VaultAccount } from "scripts/wallet-manager/controllers/keyring";
 import { SelectedAccount } from "scripts/wallet-manager/controllers/preferences";
 import { background } from "services/background-connection/background-msg";
 import { NewWalletData, WalletActionType, VaultData, AccountData } from "../actionTypes/wallet";
-import { getDetailsAction, VaultAccountRequestError } from "./vault";
 
 export const updateWalletAction = (data: VaultData) => ({
   type: WalletActionType.UPDATE_WALLET,
@@ -15,11 +14,10 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   void,
   void,
   {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError | VaultAccountRequestError;
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
   }
 >(WalletActionType.FORCE_UPDATE, async (_, thunkAPI) => {
   const response = await background.getState();
-
   const isInitialized = response?.result?.isInitialized;
   const keyring = (response?.result as any).keyring;
   const preferences = (response?.result as any).preferences;
@@ -34,13 +32,11 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
     return thunkAPI.rejectWithValue(new WalletLockedError("Wallet locked"));
   }
 
-  const vaultAccountDetails = unwrapResult(await thunkAPI.dispatch(getDetailsAction()));
   thunkAPI.dispatch(
     updateWalletAction({
       id: selectedAccount.id,
       address: selectedAccount.address,
-      mnemonic,
-      balance: vaultAccountDetails.balance
+      mnemonic
     })
   );
 });

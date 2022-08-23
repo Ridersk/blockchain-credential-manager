@@ -30,8 +30,6 @@ const AccountList = (props: Props) => {
           setLoading(true);
           const accounts = unwrapResult(await dispatch(generateAccountsListAction(mnemonic)));
 
-          console.log("Excluded Accounts:", excludeAccounts);
-
           if (excludeAccounts) {
             for (const account of accounts) {
               if (
@@ -47,7 +45,6 @@ const AccountList = (props: Props) => {
           setAccountList(accounts);
         }
       } catch (err) {
-        console.log(err);
       } finally {
         setLoading(false);
       }

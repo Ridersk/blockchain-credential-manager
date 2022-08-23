@@ -10,7 +10,15 @@ const MainLayout = () => {
           marginBottom: "32px"
         }}
       />
-      <Container sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          paddingLeft: "8px",
+          paddingRight: "8px"
+        }}
+      >
         <Outlet />
       </Container>
     </Container>
