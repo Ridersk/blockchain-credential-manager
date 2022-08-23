@@ -5,6 +5,7 @@ export enum WalletActionType {
   SELECT_ACCOUNT = "@wallet/SELECT_ACCOUNT",
   UNLOCK_WALLET = "@wallet/UNLOCK_WALLET",
   LOCK_WALLET = "@wallet/LOCK_WALLET",
+  RESET_WALLET = "@wallet/RESET_WALLET",
   ADD_NEW_ACCOUNT = "@wallet/ADD_NEW_ACCOUNT",
   EDIT_ACCOUNT = "@wallet/EDIT_ACCOUNT",
   DELETE_ACCOUNT = "@wallet/DELETE_ACCOUNT",

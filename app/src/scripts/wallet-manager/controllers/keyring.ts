@@ -72,15 +72,6 @@ export class KeyringController {
     }
   }
 
-  async lock() {
-    try {
-      await this._updateKeyringSession(null, null, false);
-      return await this.sessionStore.getState();
-    } catch (err) {
-      throw new WalletLockedError("Error on locking keyring");
-    }
-  }
-
   async createKeyring(password: string, keyring: VaultKeyring) {
     await this._updatePersistentKeyring(password, keyring);
   }
@@ -93,6 +84,20 @@ export class KeyringController {
     }
 
     return keyring;
+  }
+
+  async lock() {
+    try {
+      await this._updateKeyringSession(null, null, false);
+      return await this.sessionStore.getState();
+    } catch (err) {
+      throw new WalletLockedError("Error on locking keyring");
+    }
+  }
+
+  async reset() {
+    await this.persistentStore.clearState();
+    await this.sessionStore.clearState();
   }
 
   async addAccount(account: {
