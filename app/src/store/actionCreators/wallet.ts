@@ -114,12 +114,12 @@ export const lockWalletAction = createAsyncThunk<boolean, void>(
 
 export const resetWalletAction = createAsyncThunk<
   void,
-  void,
+  string,
   {
     rejectValue: WalletRequestError;
   }
->(WalletActionType.RESET_WALLET, async (_, thunkAPI) => {
-  const response = await background.resetWallet();
+>(WalletActionType.RESET_WALLET, async (password: string, thunkAPI) => {
+  const response = await background.resetWallet(password);
   const status = response.status;
   const error = response.error;
 

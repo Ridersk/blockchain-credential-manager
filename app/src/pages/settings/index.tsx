@@ -6,7 +6,7 @@ import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { resetWalletAction } from "store/actionCreators";
+import { resetWalletAction, WalletRequestError } from "store/actionCreators";
 import { sleep } from "utils/time";
 
 const BASE_PATH = "/settings";
@@ -20,18 +20,23 @@ const SettingsPage = () => {
     open: boolean;
     title?: string;
     description?: string;
+    requestPassword?: boolean;
     action?: () => Promise<void>;
   }>({
-    open: false
+    open: false,
+    title: "",
+    description: "",
+    requestPassword: false,
+    action: () => Promise.resolve()
   });
 
   const handleGoToSetting = (subpath: string) => {
     navigate({ pathname: `${BASE_PATH}/${subpath}` });
   };
 
-  const handleResetWallet = async () => {
+  const handleResetWallet = async (password?: string) => {
     try {
-      unwrapResult(await dispatch(resetWalletAction()));
+      unwrapResult(await dispatch(resetWalletAction(password!)));
       await sleep(100);
       sendNotification({
         message: t("wallet_reseted_successfully"),
@@ -41,10 +46,14 @@ const SettingsPage = () => {
       window.location.reload();
       navigate({ pathname: "/" });
     } catch (error) {
-      sendNotification({
-        message: t("unexpected_error"),
-        variant: "error"
-      });
+      if (error instanceof WalletRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
+      } else {
+        sendNotification({
+          message: t("unexpected_error"),
+          variant: "error"
+        });
+      }
     }
   };
 
@@ -53,6 +62,7 @@ const SettingsPage = () => {
       open: true,
       title: t("warning_reset_wallet_title"),
       description: t("warning_reset_wallet_description"),
+      requestPassword: true,
       action: handleResetWallet
     });
   };
@@ -63,6 +73,7 @@ const SettingsPage = () => {
         open={modalConfig.open}
         title={modalConfig.title!}
         description={modalConfig.description!}
+        requestPassword={modalConfig.requestPassword}
         onCancel={() => setModalConfig({ open: false })}
         onAccept={modalConfig.action!}
       />
