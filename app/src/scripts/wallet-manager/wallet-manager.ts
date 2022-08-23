@@ -1,5 +1,5 @@
 import selectedStorage from "../storage";
-import { KeyringController, KeyringEncryptedSerialized } from "./controllers/keyring";
+import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
 import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
@@ -45,21 +45,22 @@ export class WalletManager {
   }
 
   get api() {
-    const { _credentialsController, _vaultAccountController } = this;
+    const { _keyringController, _credentialsController, _vaultAccountController } = this;
 
     return {
       registerNewWallet: this.registerNewWallet.bind(this),
-      addAccount: this._keyringController.addAccount.bind(this._keyringController),
-      editAccount: this._keyringController.editAccount.bind(this._keyringController),
-      deleteAccount: this._keyringController.deleteAccount.bind(this._keyringController),
-      getAccounts: this._keyringController.getAccounts.bind(this._keyringController),
-      getAccount: this._keyringController.getAccount.bind(this._keyringController),
       unlockWallet: this.unlockWallet.bind(this),
+      selectAccount: this.selectAccount.bind(this),
       lockWallet: this.lockWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
       fullUpdate: this.fullUpdate.bind(this),
       openPopup: this.openPopup.bind(this),
+      addAccount: _keyringController.addAccount.bind(_keyringController),
+      editAccount: _keyringController.editAccount.bind(_keyringController),
+      deleteAccount: _keyringController.deleteAccount.bind(_keyringController),
+      getAccounts: _keyringController.getAccounts.bind(_keyringController),
+      getAccount: _keyringController.getAccount.bind(_keyringController),
       createCredential: _credentialsController?.createCredential.bind(_credentialsController)!,
       editCredential: _credentialsController?.editCredential.bind(_credentialsController)!,
       deleteCredential: _credentialsController?.deleteCredential.bind(_credentialsController)!,
@@ -138,6 +139,19 @@ export class WalletManager {
       }
     } catch (e) {}
     return unlocked;
+  }
+
+  async selectAccount(address: string) {
+    const selectedAccount: VaultAccount = (await this._keyringController.getAccount(address))!;
+    if (selectedAccount) {
+      await this._preferencesController.setSelectedAccount({
+        id: selectedAccount.id,
+        address: selectedAccount.publicKey
+      });
+
+      await this.fullUpdate();
+    }
+    return selectedAccount;
   }
 
   async lockWallet() {

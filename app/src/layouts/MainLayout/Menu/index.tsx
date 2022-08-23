@@ -13,14 +13,15 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import EditIcon from "@mui/icons-material/Edit";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LockIcon from "@mui/icons-material/Lock";
 import { useTranslation } from "react-i18next";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
-import { getAccountsAction, lockWalletAction } from "store/actionCreators";
+import { getAccountsAction, lockWalletAction, selectAccountAction } from "store/actionCreators";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { formatAddress } from "utils/address";
 import useNotification from "hooks/useNotification";
@@ -55,6 +56,10 @@ const MenuDrawer = (props: Props) => {
     getAccounts();
   }, [open]);
 
+  const refreshAppUI = () => {
+    window.location.reload();
+  };
+
   const handleLock = async () => {
     try {
       const isUnlocked = unwrapResult(await dispatch(lockWalletAction()));
@@ -63,12 +68,18 @@ const MenuDrawer = (props: Props) => {
         throw new Error("Error on locking wallet");
       }
 
-      window.location.reload();
+      refreshAppUI();
       navigate({ pathname: "/" });
     } catch (err) {
       console.log(err);
       sendNotification({ message: t("error_lock_wallet"), variant: "error" });
     }
+  };
+
+  const handleSelectAccount = async (address: string) => {
+    unwrapResult(await dispatch(selectAccountAction(address)));
+    refreshAppUI();
+    onToggle(false);
   };
 
   const handleSelectedOption = (optionAction: () => void) => {
@@ -126,16 +137,24 @@ const MenuDrawer = (props: Props) => {
         {accounts.map((account, index) => (
           <ListItem key={index} disablePadding>
             <ListItemButton
-              onClick={() =>
-                handleSelectedOption(() =>
-                  navigate({
-                    pathname: "/settings/account",
-                    search: `?address=${account.address}`
-                  })
-                )
-              }
+              onClick={() => {
+                handleSelectAccount(account.address);
+              }}
             >
               <ListItemText primary={renderAccount(account)} />
+              <IconButton
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleSelectedOption(() =>
+                    navigate({
+                      pathname: "/settings/account",
+                      search: `?address=${account.address}`
+                    })
+                  );
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
             </ListItemButton>
           </ListItem>
         ))}

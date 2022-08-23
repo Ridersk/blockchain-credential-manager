@@ -46,9 +46,6 @@ const SettingsPage = () => {
           {t("add_account")}
         </SettingButton>
         <SettingButton color="warning" variant="contained" size="medium" onClick={() => ({})}>
-          {t("delete_account")}
-        </SettingButton>
-        <SettingButton color="warning" variant="contained" size="medium" onClick={() => ({})}>
           {t("reset_wallet")}
         </SettingButton>
       </Box>

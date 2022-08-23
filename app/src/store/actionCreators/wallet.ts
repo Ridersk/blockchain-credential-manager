@@ -4,6 +4,7 @@ import { VaultAccount } from "scripts/wallet-manager/controllers/keyring";
 import { SelectedAccount } from "scripts/wallet-manager/controllers/preferences";
 import { background } from "services/background-connection/background-msg";
 import { NewWalletData, WalletActionType, VaultData, AccountData } from "../actionTypes/wallet";
+import { getDetailsAction, VaultAccountRequestError } from "./vault";
 
 export const updateWalletAction = (data: VaultData) => ({
   type: WalletActionType.UPDATE_WALLET,
@@ -14,7 +15,7 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
   void,
   void,
   {
-    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError | VaultAccountRequestError;
   }
 >(WalletActionType.FORCE_UPDATE, async (_, thunkAPI) => {
   const response = await background.getState();
@@ -33,11 +34,13 @@ export const updateWalletFromBackgroundAction = createAsyncThunk<
     return thunkAPI.rejectWithValue(new WalletLockedError("Wallet locked"));
   }
 
+  const vaultAccountDetails = unwrapResult(await thunkAPI.dispatch(getDetailsAction()));
   thunkAPI.dispatch(
     updateWalletAction({
       id: selectedAccount.id,
       address: selectedAccount.address,
-      mnemonic
+      mnemonic,
+      balance: vaultAccountDetails.balance
     })
   );
 });
@@ -80,6 +83,21 @@ export const createNewWalletAction = createAsyncThunk<
   }
 );
 
+export const selectAccountAction = createAsyncThunk<
+  void,
+  string,
+  {
+    rejectValue: WalletNoKeyringFoundError | WalletLockedError;
+  }
+>(WalletActionType.SELECT_ACCOUNT, async (address: string, thunkAPI) => {
+  const response = await background.selectAccount(address);
+  const isSelected = response.result;
+
+  if (isSelected) {
+    unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+  }
+});
+
 export const lockWalletAction = createAsyncThunk<boolean, void>(
   WalletActionType.LOCK_WALLET,
   async (_, thunkAPI) => {
@@ -87,7 +105,9 @@ export const lockWalletAction = createAsyncThunk<boolean, void>(
     const isUnlocked = response.result;
 
     if (isUnlocked) {
-      thunkAPI.dispatch(updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" }));
+      await thunkAPI.dispatch(
+        updateWalletAction({ id: "", address: "", balance: 0, mnemonic: "" })
+      );
     }
 
     return isUnlocked;
