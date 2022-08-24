@@ -4,8 +4,8 @@
   cursor: pointer;
   z-index: 99999999;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  /* top: 50%;
+  transform: translateY(-50%); */
 }
 
 #bcm-toggle-popup-btn img {
