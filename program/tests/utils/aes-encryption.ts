@@ -8,12 +8,18 @@ export class EncryptionUtils {
   }
 
   async encrypt(password: string, data: any) {
-    const passwordDerivedKey = await this._keyFromPassword(password, this.passwordSalt);
+    const passwordDerivedKey = await this._keyFromPassword(
+      password,
+      this.passwordSalt
+    );
     return this._encryptWithKey(passwordDerivedKey, data, this.encryptionIv);
   }
 
   async decrypt(password: string, data: string) {
-    const passwordDerivedKey = await this._keyFromPassword(password, this.passwordSalt);
+    const passwordDerivedKey = await this._keyFromPassword(
+      password,
+      this.passwordSalt
+    );
     return this._decryptWithKey(passwordDerivedKey, data, this.encryptionIv);
   }
 
@@ -24,7 +30,7 @@ export class EncryptionUtils {
     const buf = await global.crypto.subtle.encrypt(
       {
         name: "AES-GCM",
-        iv: ivArray
+        iv: ivArray,
       },
       key,
       dataBuffer
@@ -40,7 +46,7 @@ export class EncryptionUtils {
       const buf = await global.crypto.subtle.decrypt(
         {
           name: "AES-GCM",
-          iv: ivArray
+          iv: ivArray,
         },
         key,
         encryptedData
@@ -57,10 +63,13 @@ export class EncryptionUtils {
     const passBuffer = Buffer.from(password, "utf8");
     const saltBuffer = Buffer.from(salt, "base64");
 
-    const key = await global.crypto.subtle.importKey("raw", passBuffer, { name: "PBKDF2" }, false, [
-      "deriveBits",
-      "deriveKey"
-    ]);
+    const key = await global.crypto.subtle.importKey(
+      "raw",
+      passBuffer,
+      { name: "PBKDF2" },
+      false,
+      ["deriveBits", "deriveKey"]
+    );
     return global.crypto.subtle.deriveKey(
       { name: "PBKDF2", salt: saltBuffer, iterations: 10000, hash: "SHA-256" },
       key,

@@ -29,11 +29,6 @@ function getUserInput() {
     );
   }
 
-  console.log(
-    "Complete username XPATH: ",
-    `//input[(${matchOptions.join(" or ")}) and not(@type="hidden")]`
-  );
-
   return getElementByXpath(`//input[(${matchOptions.join(" or ")}) and not(@type="hidden")]`);
 }
 
