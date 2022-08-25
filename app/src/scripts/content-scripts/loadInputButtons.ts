@@ -12,25 +12,30 @@ function installButton() {
       const { labelInput, passwordInput } = getCredentialsInputs();
 
       if (passwordInput) {
-        const size = passwordInput?.offsetHeight * 0.8;
+        const size = passwordInput?.offsetHeight * 0.72;
+        const btnMargin = 8;
+        const btnPasswordTopPos =
+          passwordInput.offsetTop + passwordInput.offsetHeight / 2 - size / 2;
+        const btnPasswordLeftPos = passwordInput.offsetLeft - size - btnMargin;
 
-        const buttonContainer = document.createElement("div");
-        buttonContainer.id = BUTTON_ID;
-        buttonContainer.style.height = `${size}px`;
-        buttonContainer.style.width = `${size}px`;
+        const btnPassword = document.createElement("div");
+        btnPassword.id = BUTTON_ID;
+        btnPassword.style.height = `${size}px`;
+        btnPassword.style.width = `${size}px`;
+        btnPassword.style.top = `${btnPasswordTopPos}px`;
+        btnPassword.style.left = `${btnPasswordLeftPos}px`;
 
         const buttonImg = document.createElement("img");
         buttonImg.src = chrome.runtime.getURL("assets/action-btn.png");
-        buttonContainer.appendChild(buttonImg);
+        btnPassword.appendChild(buttonImg);
+        passwordInput?.parentNode?.insertBefore(btnPassword, passwordInput.nextSibling);
 
-        passwordInput?.parentNode?.insertBefore(
-          buttonContainer.cloneNode(true),
-          passwordInput.nextSibling
-        );
-        labelInput?.parentNode?.insertBefore(
-          buttonContainer.cloneNode(true),
-          labelInput.nextSibling
-        );
+        const btnLabel: HTMLDivElement = btnPassword.cloneNode(true) as HTMLDivElement;
+        const btnLabelTopPos = labelInput.offsetTop + labelInput.offsetHeight / 2 - size / 2;
+        const btnLabelLeftPos = labelInput.offsetLeft - size - btnMargin;
+        btnLabel.style.top = `${btnLabelTopPos}px`;
+        btnLabel.style.left = `${btnLabelLeftPos}px`;
+        labelInput?.parentNode?.insertBefore(btnLabel, labelInput.nextSibling);
 
         const btnsAction: NodeListOf<HTMLElement> = document?.querySelectorAll(`#${BUTTON_ID}`);
         for (let btn of btnsAction) {
