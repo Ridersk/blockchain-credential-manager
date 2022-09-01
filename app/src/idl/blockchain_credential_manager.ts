@@ -1,277 +1,277 @@
 export type BlockchainCredentialManager = {
-  "version": "0.1.0",
-  "name": "blockchain_credential_manager",
-  "instructions": [
+  version: "0.1.0";
+  name: "blockchain_credential_manager";
+  instructions: [
     {
-      "name": "createCredential",
-      "accounts": [
+      name: "createCredential";
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: "owner";
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
         }
-      ],
-      "args": [
+      ];
+      args: [
         {
-          "name": "credentialUid",
-          "type": "u64"
+          name: "credentialUid";
+          type: "u64";
         },
         {
-          "name": "credentialData",
-          "type": "string"
+          name: "credentialData";
+          type: "string";
         },
         {
-          "name": "iv",
-          "type": "string"
+          name: "iv";
+          type: "string";
         },
         {
-          "name": "salt",
-          "type": "string"
+          name: "salt";
+          type: "string";
         }
-      ]
+      ];
     },
     {
-      "name": "editCredential",
-      "accounts": [
+      name: "editCredential";
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
+          name: "owner";
+          isMut: false;
+          isSigner: true;
         }
-      ],
-      "args": [
+      ];
+      args: [
         {
-          "name": "credentialUid",
-          "type": "u64"
+          name: "credentialUid";
+          type: "u64";
         },
         {
-          "name": "credentialData",
-          "type": "string"
+          name: "credentialData";
+          type: "string";
         },
         {
-          "name": "iv",
-          "type": "string"
+          name: "iv";
+          type: "string";
         },
         {
-          "name": "salt",
-          "type": "string"
+          name: "salt";
+          type: "string";
         }
-      ]
+      ];
     },
     {
-      "name": "deleteCredential",
-      "accounts": [
+      name: "deleteCredential";
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount";
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: "owner";
+          isMut: true;
+          isSigner: true;
         }
-      ],
-      "args": []
+      ];
+      args: [];
     }
-  ],
-  "accounts": [
+  ];
+  accounts: [
     {
-      "name": "credentialAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: "credentialAccount";
+      type: {
+        kind: "struct";
+        fields: [
           {
-            "name": "owner",
-            "type": "publicKey"
+            name: "owner";
+            type: "publicKey";
           },
           {
-            "name": "uid",
-            "type": "u64"
+            name: "uid";
+            type: "u64";
           },
           {
-            "name": "credentialData",
-            "type": "string"
+            name: "credentialData";
+            type: "string";
           },
           {
-            "name": "iv",
-            "type": "string"
+            name: "iv";
+            type: "string";
           },
           {
-            "name": "salt",
-            "type": "string"
+            name: "salt";
+            type: "string";
           },
           {
-            "name": "createdAt",
-            "type": "i64"
+            name: "createdAt";
+            type: "i64";
           },
           {
-            "name": "updatedAt",
-            "type": "i64"
+            name: "updatedAt";
+            type: "i64";
           }
-        ]
-      }
+        ];
+      };
     }
-  ],
-  "errors": [
+  ];
+  errors: [
     {
-      "code": 6000,
-      "name": "CredentialataTooLong",
-      "msg": "Credential data too long."
+      code: 6000;
+      name: "CredentialataTooLong";
+      msg: "Credential data too long.";
     }
-  ]
+  ];
 };
 
 export const IDL: BlockchainCredentialManager = {
-  "version": "0.1.0",
-  "name": "blockchain_credential_manager",
-  "instructions": [
+  version: "0.1.0",
+  name: "blockchain_credential_manager",
+  instructions: [
     {
-      "name": "createCredential",
-      "accounts": [
+      name: "createCredential",
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false
         },
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: "owner",
+          isMut: true,
+          isSigner: true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false
         }
       ],
-      "args": [
+      args: [
         {
-          "name": "credentialUid",
-          "type": "u64"
+          name: "credentialUid",
+          type: "u64"
         },
         {
-          "name": "credentialData",
-          "type": "string"
+          name: "credentialData",
+          type: "string"
         },
         {
-          "name": "iv",
-          "type": "string"
+          name: "iv",
+          type: "string"
         },
         {
-          "name": "salt",
-          "type": "string"
+          name: "salt",
+          type: "string"
         }
       ]
     },
     {
-      "name": "editCredential",
-      "accounts": [
+      name: "editCredential",
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
+          name: "owner",
+          isMut: false,
+          isSigner: true
         }
       ],
-      "args": [
+      args: [
         {
-          "name": "credentialUid",
-          "type": "u64"
+          name: "credentialUid",
+          type: "u64"
         },
         {
-          "name": "credentialData",
-          "type": "string"
+          name: "credentialData",
+          type: "string"
         },
         {
-          "name": "iv",
-          "type": "string"
+          name: "iv",
+          type: "string"
         },
         {
-          "name": "salt",
-          "type": "string"
+          name: "salt",
+          type: "string"
         }
       ]
     },
     {
-      "name": "deleteCredential",
-      "accounts": [
+      name: "deleteCredential",
+      accounts: [
         {
-          "name": "credentialAccount",
-          "isMut": true,
-          "isSigner": false
+          name: "credentialAccount",
+          isMut: true,
+          isSigner: false
         },
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: "owner",
+          isMut: true,
+          isSigner: true
         }
       ],
-      "args": []
+      args: []
     }
   ],
-  "accounts": [
+  accounts: [
     {
-      "name": "credentialAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: "credentialAccount",
+      type: {
+        kind: "struct",
+        fields: [
           {
-            "name": "owner",
-            "type": "publicKey"
+            name: "owner",
+            type: "publicKey"
           },
           {
-            "name": "uid",
-            "type": "u64"
+            name: "uid",
+            type: "u64"
           },
           {
-            "name": "credentialData",
-            "type": "string"
+            name: "credentialData",
+            type: "string"
           },
           {
-            "name": "iv",
-            "type": "string"
+            name: "iv",
+            type: "string"
           },
           {
-            "name": "salt",
-            "type": "string"
+            name: "salt",
+            type: "string"
           },
           {
-            "name": "createdAt",
-            "type": "i64"
+            name: "createdAt",
+            type: "i64"
           },
           {
-            "name": "updatedAt",
-            "type": "i64"
+            name: "updatedAt",
+            type: "i64"
           }
         ]
       }
     }
   ],
-  "errors": [
+  errors: [
     {
-      "code": 6000,
-      "name": "CredentialataTooLong",
-      "msg": "Credential data too long."
+      code: 6000,
+      name: "CredentialataTooLong",
+      msg: "Credential data too long."
     }
   ]
 };

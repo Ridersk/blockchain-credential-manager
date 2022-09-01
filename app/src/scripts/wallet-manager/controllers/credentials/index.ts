@@ -9,6 +9,7 @@ import { FilterOption, ownerFilter } from "./ledger-filters";
 import { sleep } from "../../../../utils/time";
 import { extractURLOrigin } from "../../../../utils/url";
 import { EncryptionUtils } from "../../../../utils/aes-encryption";
+import { filterCredentialsByURL } from "../../../../utils/credential-filters";
 
 const CREDENTIAL_NAMESPACE = "credential";
 
@@ -94,7 +95,7 @@ export class CredentialsController {
   async getCredentialsFromCurrentTabURL() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const urlOrigin = extractURLOrigin(tab.url!);
-    return this.getCredentials();
+    return filterCredentialsByURL(await this.getCredentials(), urlOrigin);
   }
 
   async createCredential({ title, url, label, secret, description }: NewCredentialParams) {

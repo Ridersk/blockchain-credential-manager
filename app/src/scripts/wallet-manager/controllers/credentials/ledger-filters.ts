@@ -13,4 +13,3 @@ export const ownerFilter = (ownerBase58PublicKey: string): FilterOption => ({
     bytes: ownerBase58PublicKey
   }
 });
-
