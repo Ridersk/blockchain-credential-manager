@@ -27,19 +27,15 @@ export type BlockchainCredentialManager = {
           type: "u64";
         },
         {
-          name: "title";
-          type: "string";
-        },
-        {
-          name: "url";
-          type: "string";
-        },
-        {
           name: "credentialData";
           type: "string";
         },
         {
-          name: "description";
+          name: "iv";
+          type: "string";
+        },
+        {
+          name: "salt";
           type: "string";
         }
       ];
@@ -64,19 +60,15 @@ export type BlockchainCredentialManager = {
           type: "u64";
         },
         {
-          name: "title";
-          type: "string";
-        },
-        {
-          name: "url";
-          type: "string";
-        },
-        {
           name: "credentialData";
           type: "string";
         },
         {
-          name: "description";
+          name: "iv";
+          type: "string";
+        },
+        {
+          name: "salt";
           type: "string";
         }
       ];
@@ -113,19 +105,15 @@ export type BlockchainCredentialManager = {
             type: "u64";
           },
           {
-            name: "url";
-            type: "string";
-          },
-          {
-            name: "title";
-            type: "string";
-          },
-          {
             name: "credentialData";
             type: "string";
           },
           {
-            name: "description";
+            name: "iv";
+            type: "string";
+          },
+          {
+            name: "salt";
             type: "string";
           },
           {
@@ -143,23 +131,8 @@ export type BlockchainCredentialManager = {
   errors: [
     {
       code: 6000;
-      name: "TitleTooLong";
-      msg: "Title should be 50 characters long maximum.";
-    },
-    {
-      code: 6001;
-      name: "URLTooLong";
-      msg: "URL should be 100 characters long maximum.";
-    },
-    {
-      code: 6002;
-      name: "CredentialDataTooLong";
-      msg: "Credential data should be 512 characters long.";
-    },
-    {
-      code: 6003;
-      name: "DescriptionTooLong";
-      msg: "Description should be 100 characters long maximum.";
+      name: "CredentialataTooLong";
+      msg: "Credential data too long.";
     }
   ];
 };
@@ -193,19 +166,15 @@ export const IDL: BlockchainCredentialManager = {
           type: "u64"
         },
         {
-          name: "title",
-          type: "string"
-        },
-        {
-          name: "url",
-          type: "string"
-        },
-        {
           name: "credentialData",
           type: "string"
         },
         {
-          name: "description",
+          name: "iv",
+          type: "string"
+        },
+        {
+          name: "salt",
           type: "string"
         }
       ]
@@ -230,19 +199,15 @@ export const IDL: BlockchainCredentialManager = {
           type: "u64"
         },
         {
-          name: "title",
-          type: "string"
-        },
-        {
-          name: "url",
-          type: "string"
-        },
-        {
           name: "credentialData",
           type: "string"
         },
         {
-          name: "description",
+          name: "iv",
+          type: "string"
+        },
+        {
+          name: "salt",
           type: "string"
         }
       ]
@@ -279,19 +244,15 @@ export const IDL: BlockchainCredentialManager = {
             type: "u64"
           },
           {
-            name: "url",
-            type: "string"
-          },
-          {
-            name: "title",
-            type: "string"
-          },
-          {
             name: "credentialData",
             type: "string"
           },
           {
-            name: "description",
+            name: "iv",
+            type: "string"
+          },
+          {
+            name: "salt",
             type: "string"
           },
           {
@@ -309,23 +270,8 @@ export const IDL: BlockchainCredentialManager = {
   errors: [
     {
       code: 6000,
-      name: "TitleTooLong",
-      msg: "Title should be 50 characters long maximum."
-    },
-    {
-      code: 6001,
-      name: "URLTooLong",
-      msg: "URL should be 100 characters long maximum."
-    },
-    {
-      code: 6002,
-      name: "CredentialDataTooLong",
-      msg: "Credential data should be 512 characters long."
-    },
-    {
-      code: 6003,
-      name: "DescriptionTooLong",
-      msg: "Description should be 100 characters long maximum."
+      name: "CredentialataTooLong",
+      msg: "Credential data too long."
     }
   ]
 };
