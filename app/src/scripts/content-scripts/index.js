@@ -1,2 +1,2 @@
-import * as loadInputButtons from "./loadInputButtons";
-import * as popupListener from "./popupListener";
+import * as contentScriptLoader from "./loader";
+import * as dataListener from "./data-listener";
