@@ -3,7 +3,7 @@ import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
 import { getPdaParams, requestAirdrop } from "./utils/testing-utils";
-import passEncryptor from "browser-passworder";
+import { EncryptionUtils } from "./utils/aes-encryption";
 
 global.crypto = require("crypto").webcrypto;
 
@@ -24,6 +24,7 @@ const CREDENTIAL_NAMESPACE = "credential";
 describe("credential-edition", () => {
   let owner;
   let credentialPda;
+  const encryptor = new EncryptionUtils();
   const password = "password123";
 
   it("Create support credential account", async () => {
@@ -37,20 +38,23 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
-    const credentialData = { label, secret };
-    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
 
     await program.rpc.createCredential(
       credentialPda.uid,
-      title,
-      url,
-      iconUrl,
-      encryptedData,
-      description,
+      encryptedCredentialData,
+      encryptor.encryptionIv,
+      encryptor.passwordSalt,
       {
         accounts: {
           credentialAccount: credentialAccountKey,
@@ -68,20 +72,23 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
-    const credentialData = { label, secret };
-    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login [UPDATED]";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
 
     await program.rpc.editCredential(
       credentialPda.uid,
-      title,
-      url,
-      iconUrl,
-      encryptedData,
-      description,
+      encryptedCredentialData,
+      encryptor.encryptionIv,
+      encryptor.passwordSalt,
       {
         accounts: {
           credentialAccount: credentialAccountKey,
@@ -94,7 +101,7 @@ describe("credential-edition", () => {
     const credentialAccountData = await program.account.credentialAccount.fetch(
       credentialAccountKey
     );
-    const responseCredentialData = await passEncryptor.decrypt(
+    const decryptedCredential = await encryptor.decrypt(
       password,
       credentialAccountData.credentialData
     );
@@ -108,12 +115,11 @@ describe("credential-edition", () => {
       credentialPda.uid.toNumber(),
       credentialAccountData.uid.toNumber()
     );
-    assert.equal(title, credentialAccountData.title);
-    assert.equal(url, credentialAccountData.url);
-    assert.equal(iconUrl, credentialAccountData.iconUrl);
-    assert.equal(label, responseCredentialData.label);
-    assert.equal(secret, responseCredentialData.secret);
-    assert.equal(description, credentialAccountData.description);
+    assert.equal(title, decryptedCredential.title);
+    assert.equal(url, decryptedCredential.url);
+    assert.equal(label, decryptedCredential.label);
+    assert.equal(secret, decryptedCredential.secret);
+    assert.equal(description, decryptedCredential.description);
   });
 
   it("Cannot edit a existing credential of another user", async () => {
@@ -123,21 +129,24 @@ describe("credential-edition", () => {
 
     const title = "Github Credentials [UPDATE]";
     const url = "https://www.github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-002";
     const secret = "password1234";
-    const credentialData = { label, secret };
-    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login [UPDATED]";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
 
     await assert.rejects(
       program.rpc.editCredential(
         credentialPda.uid,
-        title,
-        url,
-        iconUrl,
-        encryptedData,
-        description,
+        encryptedCredentialData,
+        encryptor.encryptionIv,
+        encryptor.passwordSalt,
         {
           accounts: {
             credentialAccount: credentialAccountKey,

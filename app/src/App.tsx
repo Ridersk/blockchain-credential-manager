@@ -3,10 +3,9 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 
 import { theme } from "themes";
 import Routes from "routes";
-import NavigationScroll from "./layouts/NavigationScroll";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { forceUpdateWalletAction } from "store/actionCreators";
+import { updateWalletFromBackgroundAction } from "store/actionCreators";
 import { WalletNoKeyringFoundError } from "exceptions";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -28,7 +27,7 @@ function App() {
     async function setupVault() {
       try {
         setLoading(true);
-        unwrapResult(await dispatch(forceUpdateWalletAction()));
+        unwrapResult(await dispatch(updateWalletFromBackgroundAction()));
       } catch (err) {
         if (err instanceof WalletNoKeyringFoundError) {
           goToWelcomePage();
@@ -44,11 +43,11 @@ function App() {
   }, []);
 
   return (
-    <div style={{ minWidth: "400px", minHeight: "600px" }}>
+    <div style={{ width: "400px", height: "600px", display: "flex", flexDirection: "column" }}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <NavigationScroll>{!loading && <Routes />}</NavigationScroll>
+          {!loading && <Routes />}
         </ThemeProvider>
       </StyledEngineProvider>
     </div>

@@ -26,10 +26,7 @@ const WalletRegisterPage = () => {
           createNewWalletAction({
             mnemonic: walletFormData?.mnemonic as string,
             password: walletFormData?.password as string,
-            firstVaultAccount: {
-              publicKey: account.publicKey,
-              privateKey: account.privateKey
-            }
+            firstVaultAccount: account
           })
         )
       );

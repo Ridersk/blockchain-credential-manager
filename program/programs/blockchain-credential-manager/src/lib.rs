@@ -20,13 +20,9 @@ pub mod blockchain_credential_manager {
     pub fn create_credential(
         ctx: Context<CreateCredentialInstruction>,
         credential_uid: u64,
-        title: String,
-        url: String,
-        icon_url: String,
         credential_data: String,
-        // iv: String,
-        // salt: String,
-        description: String,
+        iv: String,
+        salt: String,
     ) -> Result<()> {
         let credential_account: &mut Account<CredentialAccount> =
             &mut ctx.accounts.credential_account;
@@ -35,13 +31,9 @@ pub mod blockchain_credential_manager {
             credential_account,
             *ctx.accounts.owner.key,
             credential_uid,
-            title,
-            url,
-            icon_url,
             credential_data,
-            // iv,
-            // salt,
-            description,
+            iv,
+            salt,
         )?;
 
         Ok(())
@@ -50,13 +42,9 @@ pub mod blockchain_credential_manager {
     pub fn edit_credential(
         ctx: Context<EditCredentialInstruction>,
         credential_uid: u64,
-        title: String,
-        url: String,
-        icon_url: String,
         credential_data: String,
-        // iv: String,
-        // salt: String,
-        description: String,
+        iv: String,
+        salt: String,
     ) -> Result<()> {
         let credential_account: &mut Account<CredentialAccount> =
             &mut ctx.accounts.credential_account;
@@ -65,13 +53,9 @@ pub mod blockchain_credential_manager {
             credential_account,
             *ctx.accounts.owner.key,
             credential_uid,
-            title,
-            url,
-            icon_url,
             credential_data,
-            // iv,
-            // salt,
-            description,
+            iv,
+            salt,
         )?;
         Ok(())
     }

@@ -3,7 +3,7 @@ import { Program } from "@project-serum/anchor";
 import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
 import { getPdaParams, requestAirdrop } from "./utils/testing-utils";
-import passEncryptor from "browser-passworder";
+import { EncryptionUtils } from "./utils/aes-encryption";
 
 global.crypto = require("crypto").webcrypto;
 
@@ -22,6 +22,7 @@ const CREDENTIAL_NAMESPACE = "credential";
  * CREDENTIAL DELETION
  */
 describe("credential-deletion", () => {
+  const encryptor = new EncryptionUtils();
   const password = "password123";
 
   it("Can delete a existing credential account", async () => {
@@ -36,20 +37,23 @@ describe("credential-deletion", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
-    const credentialData = { label, secret };
-    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
 
     await program.rpc.createCredential(
       credentialPda.uid,
-      title,
-      url,
-      iconUrl,
-      encryptedData,
-      description,
+      encryptedCredentialData,
+      encryptor.encryptionIv,
+      encryptor.passwordSalt,
       {
         accounts: {
           credentialAccount: credentialAccountKey,
@@ -94,20 +98,23 @@ describe("credential-deletion", () => {
 
     const title = "Github Credentials";
     const url = "https://github.com";
-    const iconUrl = "https://github.githubassets.com/favicons/favicon.svg";
     const label = "user-001";
     const secret = "password123";
-    const credentialData = { label, secret };
-    const encryptedData = await passEncryptor.encrypt(password, credentialData);
     const description = "Github Login";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
 
     await program.rpc.createCredential(
       credentialPda.uid,
-      title,
-      url,
-      iconUrl,
-      encryptedData,
-      description,
+      encryptedCredentialData,
+      encryptor.encryptionIv,
+      encryptor.passwordSalt,
       {
         accounts: {
           credentialAccount: credentialAccountKey,

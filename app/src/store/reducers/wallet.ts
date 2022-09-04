@@ -8,16 +8,13 @@ export interface WalletState {
 }
 
 export const initialState = {
-  id: "Vault 0",
+  id: "",
   address: "",
   mnemonic: "",
   balance: 0
 };
 
-const customizationReducer = (
-  state: WalletState = initialState,
-  action: WalletAction
-): WalletState => {
+const walletReducer = (state: WalletState = initialState, action: WalletAction): WalletState => {
   switch (action.type) {
     case WalletActionType.UPDATE_WALLET:
       return {
@@ -29,4 +26,4 @@ const customizationReducer = (
   }
 };
 
-export default customizationReducer;
+export default walletReducer;

@@ -5,15 +5,15 @@ import { Credential } from "models/Credential";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { getCredentialsAction } from "store/actionCreators/credential";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { filterCredentialsByText } from "utils/credential-filters";
 
 interface Props {
   textFilter?: string;
 }
 
 type CredentialAttributes = {
-  publicKey: string;
+  address: string;
   url: string;
-  iconUrl: string;
   label: string;
   secret: string;
 };
@@ -23,24 +23,10 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<Array<CredentialAttributes>>([]);
 
-  const filterCredentials = (credentials: Array<Credential>) => {
-    if (textFilter) {
-      const searchText = textFilter.toLowerCase();
-      return credentials?.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchText) ||
-          item.url.toLowerCase().includes(searchText) ||
-          item.label.toLowerCase().includes(searchText)
-      );
-    }
-    return credentials;
-  };
-
   const formatCredentials = (credentials: Array<Credential>): CredentialAttributes[] => {
     return credentials.map((item) => ({
-      publicKey: item?.publicKey,
+      address: item?.address,
       url: item?.url,
-      iconUrl: item?.iconUrl,
       label: item?.label,
       secret: item?.secret
     }));
@@ -51,7 +37,9 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
       try {
         setLoading(true);
         const credentials = unwrapResult(await dispatch(getCredentialsAction()));
-        const credentialsFormatted = formatCredentials(filterCredentials(credentials));
+        const credentialsFormatted = formatCredentials(
+          filterCredentialsByText(credentials, textFilter)
+        );
         setList(credentialsFormatted);
         setLoading(false);
       } catch (err) {}
@@ -66,9 +54,8 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
         <ListItem sx={{ display: "block", padding: "8px 0px 8px 0px" }} key={index}>
           <CredentialCard
             dataLoaded={!!item}
-            credentialKey={item?.publicKey}
+            credentialKey={item?.address}
             url={item?.url}
-            iconUrl={item?.iconUrl}
             label={item?.label}
             secret={item?.secret}
           />

@@ -24,4 +24,8 @@ export class ExtensionLocalStorage extends BaseStorage {
   async getAllData(): Promise<any> {
     return this.storageMethod.get(null);
   }
+
+  async clearData(): Promise<void> {
+    await this.storageMethod.clear();
+  }
 }

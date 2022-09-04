@@ -1,9 +1,143 @@
-#bcm-credentials-container {
-  position: absolute;
-  cursor: pointer;
-  z-index: 1000;
+/* Popup in Page */
+#bcm-popup-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
 }
 
-#bcm-credentials-container img {
-  max-height: 100%;
+.popup-anchor {
+  background-image: url(../assets/bg-anchor-up.svg);
+  height: 23px;
+  width: 300px;
+}
+
+.content-wrapper {
+  box-shadow: 0px 5px 10px rgb(0 0 0 / 50%);
+  width: 300px;
+  background-color: #ffffff;
+}
+
+.bcm-popup-content {
+  width: 300px;
+  height: 250px;
+  max-height: 275px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #ffffff;
+  position: relative;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bcm-popup-title {
+  position: relative;
+  margin-top: 15px;
+  height: 32px;
+  font-size: 18px;
+  text-align: center;
+  color: #333333;
+}
+
+/* Buttons */
+.btn-group {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.action-btn,
+.main-action-btn {
+  width: 280px;
+  height: 48px;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  flex: 1;
+  background-color: #9a9a9a;
+  color: #1e1e2f;
+}
+
+.main-action-btn {
+  background-color: #4e44ce;
+  color: #ffffff;
+}
+
+/* List Group */
+.list-group-item {
+  border: none;
+}
+
+.list-group-item-action:focus,
+.list-group-item-action:hover {
+  color: white;
+  background-color: #4e44ce;
+  cursor: pointer;
+}
+
+#bcm-credentials-content {
+  flex: 1;
+}
+
+/* Credential Item */
+.credential-item-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.credential-item-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+}
+
+.credential-item-title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.credential-item-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #495057;
+}
+
+.edit-btn {
+  background-color: transparent;
+  color: #495057;
+}
+
+/* General Styles */
+.not-display {
+  display: none !important;
+}
+
+.loading-div {
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  background: #aaa;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e1e2f;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #434358;
 }

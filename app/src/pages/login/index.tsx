@@ -5,6 +5,7 @@ import { SecretInput } from "components/ui/form/inputs/secret-input";
 import { Form, Formik } from "formik";
 import useNotification from "hooks/useNotification";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { unlockWalletAction } from "store/actionCreators";
@@ -20,6 +21,15 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const sendNotification = useNotification();
   const dispatch = useTypedDispatch();
+  const [originIsPopupInPage, setOriginIsPopupInPage] = useState(false);
+
+  // Get Data from blockchain to edit existing credential
+  useEffect(() => {
+    const origin = new URLSearchParams(window.location.search).get("origin");
+    if (origin === "popupInPage") {
+      setOriginIsPopupInPage(true);
+    }
+  }, []);
 
   const handleSubmit = async (values: LoginParams) => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
@@ -31,6 +41,11 @@ const LoginPage = () => {
           variant: "success"
         });
         await sleep(100);
+
+        if (originIsPopupInPage) {
+          const windowsId = (await chrome.windows.getCurrent()).id;
+          await chrome.windows.remove(windowsId!);
+        }
         navigate({ pathname: "/" });
       } else {
         sendNotification({
@@ -73,7 +88,7 @@ const LoginPage = () => {
             onSubmit={handleSubmit}
           >
             {({ errors, handleBlur, handleChange, isSubmitting, touched, values }) => (
-              <Form id="wallet-login">
+              <Form id="wallet-login-form">
                 <SecretInput
                   id="wallet-password"
                   name="password"

@@ -38,14 +38,19 @@ async function messageHandler(request: { action: string; data: any[] }) {
   try {
     // @ts-ignore: Unreachable code error
     const walletManagerApiMethod = walletManager.api[request.action];
-    if (typeof walletManagerApiMethod === "function") {
-      // @ts-ignore: Unreachable code error
-      result = await walletManagerApiMethod(...request.data);
+    if (walletManagerApiMethod) {
+      if (typeof walletManagerApiMethod === "function") {
+        // @ts-ignore: Unreachable code error
+        result = await walletManagerApiMethod(...request.data);
+      }
+    } else {
+      throw new Error(`Action ${request.action} not found`);
     }
   } catch (err) {
-    console.error(err);
+    if (err instanceof Error) {
+      error = err.message;
+    }
     status = "error";
-    error = err;
   }
 
   return { status, result, error };

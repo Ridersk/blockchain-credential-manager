@@ -23,6 +23,10 @@ const VaultAccountOptionsGroup = (props: VaultAccountOptionsGroupProps) => {
     navigate({ pathname: "/credential" });
   };
 
+  const goToCreateCredentialGeneratorPage = () => {
+    navigate({ pathname: "/generate" });
+  };
+
   const handleRequestAirdrop = async () => {
     try {
       await dispatch(requestAirdropAction());
@@ -47,7 +51,10 @@ const VaultAccountOptionsGroup = (props: VaultAccountOptionsGroupProps) => {
         title={t("btn_add_credential")}
         onClick={goToCreateCredentialPage}
       />
-      <VaultAccountOptionButton title={t("btn_generate_credential")} onClick={() => {}} />
+      <VaultAccountOptionButton
+        title={t("btn_generate_credential")}
+        onClick={goToCreateCredentialGeneratorPage}
+      />
       <VaultAccountOptionButton title={t("btn_deposit")} onClick={handleRequestAirdrop} />
     </Box>
   );

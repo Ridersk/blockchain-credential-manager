@@ -1,5 +1,5 @@
 import selectedStorage from "../storage";
-import { KeyringController, KeyringEncryptedSerialized } from "./controllers/keyring";
+import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
 import { MemoryStore } from "./store/memory-store";
 import { EncryptorInterface } from "./encryptor";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
@@ -42,28 +42,33 @@ export class WalletManager {
         preferences: this._preferencesController.sessionStore
       }
     });
-
-    this.registerNewWallet = this.registerNewWallet.bind(this);
-    this.unlockWallet = this.unlockWallet.bind(this);
-    this.isUnlocked = this.isUnlocked.bind(this);
-    this.getState = this.getState.bind(this);
-    this.getSelectedAccountKeypair = this.getSelectedAccountKeypair.bind(this);
-    this.fullUpdate = this.fullUpdate.bind(this);
   }
 
   get api() {
-    const { _credentialsController, _vaultAccountController } = this;
+    const { _keyringController, _credentialsController, _vaultAccountController } = this;
 
     return {
       registerNewWallet: this.registerNewWallet.bind(this),
       unlockWallet: this.unlockWallet.bind(this),
+      selectAccount: this.selectAccount.bind(this),
+      lockWallet: this.lockWallet.bind(this),
+      resetWallet: this.resetWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
       getState: this.getState.bind(this),
+      fullUpdate: this.fullUpdate.bind(this),
+      openPopup: this.openPopup.bind(this),
+      addAccount: _keyringController.addAccount.bind(_keyringController),
+      editAccount: _keyringController.editAccount.bind(_keyringController),
+      deleteAccount: _keyringController.deleteAccount.bind(_keyringController),
+      getAccounts: _keyringController.getAccounts.bind(_keyringController),
+      getAccount: _keyringController.getAccount.bind(_keyringController),
       createCredential: _credentialsController?.createCredential.bind(_credentialsController)!,
       editCredential: _credentialsController?.editCredential.bind(_credentialsController)!,
       deleteCredential: _credentialsController?.deleteCredential.bind(_credentialsController)!,
       getCredential: _credentialsController?.getCredential.bind(_credentialsController)!,
       getCredentials: _credentialsController?.getCredentials.bind(_credentialsController)!,
+      getCredentialsFromCurrentTabURL:
+        _credentialsController?.getCredentialsFromCurrentTabURL.bind(_credentialsController)!,
       getVaultDetails: _vaultAccountController?.getVaultDetails.bind(_vaultAccountController)!,
       getActivities: _vaultAccountController?.getActivities.bind(_vaultAccountController)!,
       requestAirdrop: _vaultAccountController?.requestAirdrop.bind(_vaultAccountController)!
@@ -78,21 +83,51 @@ export class WalletManager {
     return this._vaultAccountController;
   }
 
+  async openPopup(path?: string, customSearchParams?: { [key: string]: any }) {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    let popupUrl = await chrome.action.getPopup({ tabId: tab.id });
+    const windowInfo = await chrome.windows.getCurrent();
+    const width = 400;
+    const height = 600;
+    const top = 0;
+    const left = (windowInfo.width ? windowInfo.width - 400 : 0) + (windowInfo.left || 0);
+
+    if (path) {
+      popupUrl += `#/${path}`;
+    }
+
+    if (!customSearchParams) {
+      customSearchParams = {};
+    }
+    customSearchParams["tab-id"] = tab.id;
+    customSearchParams["window-id"] = tab.windowId;
+    customSearchParams["origin"] = "popupInPage";
+
+    chrome.windows.create({
+      url: `${popupUrl}?${new URLSearchParams(customSearchParams).toString()}`,
+      type: "popup",
+      height,
+      width,
+      top,
+      left
+    });
+    return popupUrl;
+  }
+
   async registerNewWallet(
     mnemonic: string,
     password: string,
-    firstVaultAccount: { publicKey: string; privateKey: string }
+    firstVaultAccount: { id?: string; publicKey: string; privateKey: string }
   ) {
-    const firstAccount = {
-      address: firstVaultAccount.publicKey,
-      privateKey: firstVaultAccount.privateKey
-    };
     await this._keyringController.createKeyring(password, {
       mnemonic,
-      accounts: [firstAccount]
+      accounts: []
     });
-    await this._preferencesController.setSelectedAddress(firstAccount.address);
-    return firstAccount;
+    const createdAccount = await this._keyringController.addAccount(firstVaultAccount);
+    await this._preferencesController.setSelectedAccount({
+      id: createdAccount.id,
+      address: firstVaultAccount.publicKey
+    });
   }
 
   async unlockWallet(password: string) {
@@ -105,6 +140,31 @@ export class WalletManager {
       }
     } catch (e) {}
     return unlocked;
+  }
+
+  async selectAccount(address: string) {
+    const selectedAccount: VaultAccount = (await this._keyringController.getAccount(address))!;
+    if (selectedAccount) {
+      await this._preferencesController.setSelectedAccount({
+        id: selectedAccount.id,
+        address: selectedAccount.publicKey
+      });
+
+      await this.fullUpdate();
+    }
+    return selectedAccount;
+  }
+
+  async lockWallet() {
+    const vaultData = await this._keyringController.lock();
+    return vaultData.isUnlocked;
+  }
+
+  async resetWallet(password: string) {
+    await this._keyringController.unlock(password);
+    await this._keyringController.reset();
+    await this._preferencesController.reset();
+    await this.fullUpdate();
   }
 
   async isUnlocked() {
@@ -123,8 +183,8 @@ export class WalletManager {
 
   async getSelectedAccountKeypair() {
     try {
-      const selectedAddress = await this._preferencesController.getSelectedAddress();
-      return this._keyringController.getKeypairFromAddress(selectedAddress);
+      const selectedAccount = await this._preferencesController.getSelectedAccount();
+      return this._keyringController.getKeypairFromAddress(selectedAccount.address);
     } catch (e) {
       return null;
     }
@@ -141,6 +201,19 @@ export class WalletManager {
         this._credentialsController.ledgerProgram,
         keypair
       );
+
+      chrome.windows.getAll({ populate: true }, (windows) => {
+        windows.forEach((window) => {
+          if (window.tabs) {
+            window.tabs.forEach((tab) => {
+              chrome.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
+            });
+          }
+        });
+      });
+    } else {
+      this._credentialsController = undefined;
+      this._vaultAccountController = undefined;
     }
   }
 }
