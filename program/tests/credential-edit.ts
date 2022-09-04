@@ -26,6 +26,7 @@ describe("credential-edition", () => {
   let credentialPda;
   const encryptor = new EncryptionUtils();
   const password = "password123";
+  let existingAccountData;
 
   it("Create support credential account", async () => {
     owner = Keypair.generate();
@@ -63,6 +64,10 @@ describe("credential-edition", () => {
         },
         signers: [owner],
       }
+    );
+
+    existingAccountData = await program.account.credentialAccount.fetch(
+      credentialAccountKey
     );
   });
 
@@ -120,6 +125,17 @@ describe("credential-edition", () => {
     assert.equal(label, decryptedCredential.label);
     assert.equal(secret, decryptedCredential.secret);
     assert.equal(description, decryptedCredential.description);
+    assert.equal(encryptor.encryptionIv, credentialAccountData.iv);
+    assert.equal(encryptor.passwordSalt, credentialAccountData.salt);
+    assert.ok(
+      credentialAccountData.createdAt.toNumber() ===
+        existingAccountData.createdAt.toNumber()
+    );
+    assert.ok(credentialAccountData.updatedAt.toNumber() > 0);
+    assert.ok(
+      credentialAccountData.updatedAt.toNumber() !==
+        existingAccountData.updatedAt.toNumber()
+    );
   });
 
   it("Cannot edit a existing credential of another user", async () => {

@@ -80,6 +80,10 @@ describe("credential-creation", () => {
     assert.equal(label, decryptedCredential.label);
     assert.equal(secret, decryptedCredential.secret);
     assert.equal(description, decryptedCredential.description);
+    assert.equal(encryptor.encryptionIv, credentialAccountData.iv);
+    assert.equal(encryptor.passwordSalt, credentialAccountData.salt);
+    assert.ok(credentialAccountData.createdAt.toNumber() > 0);
+    assert.ok(credentialAccountData.updatedAt.toNumber() > 0);
   });
 
   it("Can add new credential with custom owner", async () => {
@@ -142,6 +146,10 @@ describe("credential-creation", () => {
     assert.equal(label, decryptedCredential.label);
     assert.equal(secret, decryptedCredential.secret);
     assert.equal(description, decryptedCredential.description);
+    assert.equal(encryptor.encryptionIv, credentialAccountData.iv);
+    assert.equal(encryptor.passwordSalt, credentialAccountData.salt);
+    assert.ok(credentialAccountData.createdAt.toNumber() > 0);
+    assert.ok(credentialAccountData.updatedAt.toNumber() > 0);
   });
 
   it("Cannot exceed credential data", async () => {

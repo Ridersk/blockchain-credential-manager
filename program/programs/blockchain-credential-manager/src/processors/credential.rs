@@ -22,7 +22,11 @@ pub fn process_save_credential(
     credential_account.credential_data = credential_data;
     credential_account.iv = iv;
     credential_account.salt = salt;
-    credential_account.created_at = curr_timestamp;
+
+    if credential_account.created_at == 0 {
+        credential_account.created_at = curr_timestamp;
+    }
+
     credential_account.updated_at = curr_timestamp;
 
     Ok(())
