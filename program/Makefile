@@ -1,8 +1,15 @@
-SET_LOCALHOST = solana config set --url localhost
-SET_DEVNET = solana config set --url devnet
+CLUSTER = localnet
+CLUSTER_URL = http://localhost:8899
+
+AUTHORITY_KEYPAIR_FILE = $${HOME}/.config/solana/id.json
+AUTHORITY_ID = $$(solana-keygen pubkey $${AUTHORITY_KEYPAIR_FILE})
+
+PROGRAM_FILE = target/deploy/blockchain_credential_manager.so
+PROGRAM_KEYPAIR_FILE = target/deploy/blockchain_credential_manager-keypair.json
+PROGRAM_ID = $$(solana address -k ${PROGRAM_KEYPAIR_FILE})
 
 
-### 1
+### Setup
 install-dependencies:
 	sudo apt install -y libudev1 libudev-dev pkg-config &&\
 	curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh &&\
@@ -12,63 +19,62 @@ install-dependencies:
 set-solana-env:
 	export PATH="$PATH:$HOME/.local/share/solana/install/active_release/bin/"
 
-###### Switch Networks
-### 1.1
-switch-localhost:
-	${SET_LOCALHOST}
+###### Network Configs
+switch-local:
+	solana config set --url localhost
 
 switch-devnet:
-	${SET_DEVNET}
+	solana config set --url devnet
+
+switch-custom:
+	solana config set --url ${CLUSTER_URL}
 
 show-net:
 	solana config get
 
-### 1.2
-# Setup a fake solana cluster on localnet
-start-localnet-cluster:
+# Start a local node
+start-localnet:
 	solana-test-validator --limit-ledger-size 100000
 
-### 2
+###### Authority Configs
 gen-account:
-	solana-keygen new
+	solana-keygen new --outfile ${AUTHORITY_KEYPAIR_FILE}
+
+show-authority-id:
+	@echo ${AUTHORITY_ID}
+
+show-authority-balance:
+	solana balance ${AUTHORITY_ID}
 
 airdrop:
-	solana airdrop 5 &&\
-	solana balance
+	solana airdrop 2 --keypair ${AUTHORITY_KEYPAIR_FILE} &&\
+	solana balance --keypair ${AUTHORITY_KEYPAIR_FILE}
 
-### 3
-# Use default anchor program id
-test-localnet:
-	anchor test --provider.cluster localnet
+###### Program Configs
+show-program-id:
+	@echo ${PROGRAM_ID}
 
-test-localnet-net-started:
-	anchor test --provider.cluster localnet
-
-test-devnet:
-	anchor test --provider.cluster devnet
-
-###### Deploy
 build:
 	anchor build
 
-deploy-devnet:
-	${SET_DEVNET} &&\
+###### Testing the Program
+test:
+	anchor test --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE}
+
+###### Deploy
+# To deploy local, run "make start-localnet" first
+deploy:
 	anchor build &&\
-	anchor deploy --provider.cluster devnet &&\
-	${SET_LOCALHOST} &&\
+	anchor deploy --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE} &&\
 	anchor run copy-idl &&\
 	anchor run copy-types
 
-# To deploy local, run "make start-localnet-cluster" first
-deploy-localnet:
-	${SET_LOCALHOST} &&\
+###### Upgrade
+upgrade:
 	anchor build &&\
-	anchor deploy --provider.cluster localnet &&\
+	anchor upgrade --program-id ${PROGRAM_ID} --provider.cluster ${CLUSTER} ${PROGRAM_FILE} --provider.wallet ${AUTHORITY_KEYPAIR_FILE} &&\
 	anchor run copy-idl &&\
 	anchor run copy-types
-
-show-program-id:
-	@echo PROGRAM_ID: $$(solana address -k target/deploy/blockchain_credential_manager-keypair.json)
 
 ###### Styling
 code-formatting:

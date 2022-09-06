@@ -5,28 +5,16 @@
   "description": "Store sensitive informations secure in blockchain Solana platform.",
   "author": "Ridersk",
   "version": "0.0.1",
-  "permissions": [
-    "storage",
-    "tabs",
-    "activeTab",
-    "scripting",
-    "alarms"
-  ],
+  "permissions": ["storage", "tabs", "activeTab", "scripting", "alarms"],
   "action": {
     "default_popup": "index.html",
     "default_title": "Blockchain Credentials Manager"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://*/*"
-      ],
-      "js": [
-        "./contentscript.js"
-      ],
-      "css": [
-        "./styles.css"
-      ]
+      "matches": ["https://*/*"],
+      "js": ["./contentscript.js"],
+      "css": ["./styles.css"]
     }
   ],
   "background": {
@@ -41,9 +29,7 @@
         "popup_credentials/styles.css",
         "assets/action-btn.png"
       ],
-      "matches": [
-        "https://*/*"
-      ]
+      "matches": ["https://*/*"]
     }
   ]
 }

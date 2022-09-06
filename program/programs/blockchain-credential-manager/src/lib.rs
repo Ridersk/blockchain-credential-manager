@@ -10,7 +10,7 @@ use crate::{
     states::credential::CredentialAccount,
 };
 
-declare_id!("5ZJTTxRsgehbwPeZcjz98xcXA9z8QeiSwMrthLrmwsNQ");
+declare_id!("4Y8nXDhUJ4tGM2n8485ZErt3tVhGa8xRTN1ozMDWEkqE");
 
 #[program]
 pub mod blockchain_credential_manager {

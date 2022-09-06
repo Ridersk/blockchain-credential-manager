@@ -3,6 +3,7 @@ import ReceivedIcon from "@mui/icons-material/CallReceivedRounded";
 import ErrorIcon from "@mui/icons-material/ErrorOutlineRounded";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { CLUSTER_URL } from "scripts/wallet-manager/controllers/ledger";
 
 interface Props {
   title: string;
@@ -46,7 +47,7 @@ const ActivityCard = ({
           }}
         >
           <IconButton
-            href={`https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=${process.env.REACT_APP_CLUSTER_URL}`}
+            href={`https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=${CLUSTER_URL}`}
             target="_blank"
           >
             {renderIcon()}

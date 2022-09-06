@@ -75,7 +75,7 @@
     "dist": "yarn build && rm -rf ../static && mv build/static ../static",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
-    "lint:fix": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" -w",
+    "lint:fix": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --write .",
     "lint": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --check"
   },
   "eslintConfig": {

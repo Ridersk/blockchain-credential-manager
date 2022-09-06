@@ -1,0 +1,106 @@
+name: Project CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+
+jobs:
+  cicd-program:
+    name: CI - Program
+    runs-on: ubuntu-latest
+    env:
+      GIT_SHA: ${{ github.sha }}
+      PROGRAM_AUTHORITY_KEYPAIR: ${{ secrets.PROGRAM_AUTHORITY_KEYPAIR }}
+      PROGRAM_KEYPAIR: ${{ secrets.PROGRAM_KEYPAIR }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build -t bcm-program ./program
+      - name: Create Authority Keypair File
+        run: echo "$PROGRAM_AUTHORITY_KEYPAIR" > ./program/target/deploy/id.json && cat ./program/target/deploy/id.json
+      - name: Create Program Keypair File
+        run: echo "$PROGRAM_KEYPAIR" > ./program/target/deploy/blockchain_credential_manager-keypair.json
+      - name: Run tests
+        run: |
+          docker run --rm --volume=$(pwd)/program/target/deploy:/program/target/deploy \
+          -e PROGRAM_AUTHORITY_KEYPAIR_FILE=/program/target/deploy/id.json \
+          -e PROGRAM_KEYPAIR_FILE=/program/target/deploy/blockchain_credential_manager-keypair.json \
+          bcm-program bash -c 'make test AUTHORITY_KEYPAIR_FILE="${PROGRAM_AUTHORITY_KEYPAIR_FILE}"'
+      - name: Deploy
+        run: |
+          docker run --rm --volume=$(pwd)/program/target/deploy:/program/target/deploy \
+          -e PROGRAM_AUTHORITY_KEYPAIR_FILE=/program/target/deploy/id.json \
+          -e PROGRAM_KEYPAIR_FILE=/program/target/deploy/blockchain_credential_manager-keypair.json \
+          bcm-program bash -c '\
+            make switch-devnet &&\
+            make airdrop AUTHORITY_KEYPAIR_FILE="${PROGRAM_AUTHORITY_KEYPAIR_FILE}" &&\
+            make deploy AUTHORITY_KEYPAIR_FILE="${PROGRAM_AUTHORITY_KEYPAIR_FILE}" CLUSTER=devnet \
+          '
+
+  ci-front:
+    name: CI - Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install dependencies
+        run: yarn --cwd ./app install
+      - name: Lint
+        run: yarn --cwd ./app lint
+      - name: Build app
+        run: CI=false yarn --cwd ./app build
+      - name: Zip app
+        run: zip -r app.zip ./app/build
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app_artifact
+          path: app.zip
+          retention-days: 1
+
+  build-app:
+    name: CD - App
+    runs-on: ubuntu-latest
+    if: |
+      startsWith(github.ref, 'refs/heads/release/') &&
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true
+    needs: ci-front
+    permissions:
+      contents: write
+    steps:
+      - name: Download app artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: app_artifact
+      - name: Create Release
+        id: createRelease
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: true
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.createRelease.outputs.upload_url }}
+          asset_path: app.zip
+          asset_name: app.zip
+          asset_content_type: application/zip
