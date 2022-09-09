@@ -1,11 +1,9 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 
-// const CLUSTER_URL = process.env.REACT_APP_CLUSTER_URL || "devnet";
-export const CLUSTER_URL = "https://api.devnet.solana.com";
-// export const CLUSTER_URL = "http://127.0.0.1:8899";
+export const CLUSTER_URL = process.env.REACT_APP_CLUSTER_URL!;
+export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
-const COMMITMENT = "confirmed";
 
 console.log("CLUSTER_URL:", CLUSTER_URL);
 

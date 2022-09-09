@@ -26,6 +26,9 @@ switch-local:
 switch-devnet:
 	solana config set --url devnet
 
+switch-testnet:
+	solana config set --url testnet
+
 switch-custom:
 	solana config set --url ${CLUSTER_URL}
 
@@ -55,7 +58,9 @@ show-program-id:
 	@echo ${PROGRAM_ID}
 
 build:
-	anchor build
+	anchor build &&\
+	anchor run copy-idl &&\
+	anchor run copy-types
 
 ###### Testing the Program
 test:
@@ -64,17 +69,13 @@ test:
 ###### Deploy
 # To deploy local, run "make start-localnet" first
 deploy:
-	anchor build &&\
-	anchor deploy --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE} &&\
-	anchor run copy-idl &&\
-	anchor run copy-types
+	$(MAKE) build &&\
+	anchor deploy --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE}
 
 ###### Upgrade
 upgrade:
-	anchor build &&\
-	anchor upgrade --program-id ${PROGRAM_ID} --provider.cluster ${CLUSTER} ${PROGRAM_FILE} --provider.wallet ${AUTHORITY_KEYPAIR_FILE} &&\
-	anchor run copy-idl &&\
-	anchor run copy-types
+	$(MAKE) build &&\
+	anchor upgrade --program-id ${PROGRAM_ID} --provider.cluster ${CLUSTER} ${PROGRAM_FILE} --provider.wallet ${AUTHORITY_KEYPAIR_FILE}
 
 ###### Styling
 code-formatting:
