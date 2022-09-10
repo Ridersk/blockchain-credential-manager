@@ -127,8 +127,8 @@ jobs:
           path: app.zip
           retention-days: 1
 
-  build-app:
-    name: CD - App
+  release:
+    name: Release App
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/release/') || github.ref == 'refs/heads/main'
     needs: [ci-front, deploy-program]
