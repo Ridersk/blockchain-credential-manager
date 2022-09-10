@@ -2,10 +2,10 @@
 seeds = false
 
 [programs.localnet]
-blockchain_credential_manager = "5ZJTTxRsgehbwPeZcjz98xcXA9z8QeiSwMrthLrmwsNQ"
+blockchain_credential_manager = "4Y8nXDhUJ4tGM2n8485ZErt3tVhGa8xRTN1ozMDWEkqE"
 
 [programs.devnet]
-blockchain_credential_manager = "5ZJTTxRsgehbwPeZcjz98xcXA9z8QeiSwMrthLrmwsNQ"
+blockchain_credential_manager = "4Y8nXDhUJ4tGM2n8485ZErt3tVhGa8xRTN1ozMDWEkqE"
 
 [programs.mainnet]
 blockchain_credential_manager = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"

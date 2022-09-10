@@ -1,9 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
+require("dotenv").config();
 
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {
-  mode: "development",
   entry: {
     contentscript: path.resolve(__dirname, "src/scripts/content-scripts/index.js"),
     background: path.resolve(__dirname, "src/scripts/background.ts")
@@ -41,8 +41,10 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve("process/browser"),
       XMLHttpRequest: require.resolve("xhr2"),
-      // "window.WebSocket": require.resolve("ws"),
       Buffer: ["buffer", "Buffer"]
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(process.env)
     })
   ]
 };
