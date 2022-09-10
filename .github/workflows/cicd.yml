@@ -134,17 +134,15 @@ jobs:
     needs: [ci-front, deploy-program]
     permissions:
       contents: write
-    env:
-      GITHUB_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v2
       - name: Download app artifact
         uses: actions/download-artifact@v2
         with:
           name: app_artifact
-      - name: Get Short Commit SHA
-        id: commitSHA
-        run: echo "::set-output name=short_sha::${GITHUB_SHA::7}"
+      - name: Get Version
+        id: getVersion
+        run: echo "::set-output name=version::$(sed -n 's/ *version:\([[:print:]]*\).*/\1/p' project.yaml)"
       - name: Create Pre Release
         id: createPreRelease
         if: startsWith(github.ref, 'refs/heads/release/')
@@ -152,8 +150,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.commitSHA.outputs.short_sha }}
-          release_name: Pre Release ${{ steps.commitSHA.outputs.short_sha }}
+          tag_name: ${{ steps.getVersion.outputs.version }}-rc
+          release_name: Pre Release ${{ steps.getVersion.outputs.version }}
           draft: false
           prerelease: true
       - name: Upload Pre Release Asset
@@ -164,7 +162,7 @@ jobs:
         with:
           upload_url: ${{ steps.createPreRelease.outputs.upload_url }}
           asset_path: app.zip
-          asset_name: app_pre_release_${{ steps.commitSHA.outputs.short_sha }}.zip
+          asset_name: app_pre_release_${{ steps.getVersion.outputs.version }}.zip
           asset_content_type: application/zip
       - name: Create Release
         id: createRelease
@@ -173,8 +171,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.commitSHA.outputs.short_sha }}
-          release_name: Release ${{ steps.commitSHA.outputs.short_sha }}
+          tag_name: ${{ steps.getVersion.outputs.version }}
+          release_name: Release ${{ steps.getVersion.outputs.version }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
@@ -185,5 +183,5 @@ jobs:
         with:
           upload_url: ${{ steps.createRelease.outputs.upload_url }}
           asset_path: app.zip
-          asset_name: app_${{ steps.commitSHA.outputs.short_sha }}.zip
+          asset_name: app_${{ steps.getVersion.outputs.version }}.zip
           asset_content_type: application/zip
