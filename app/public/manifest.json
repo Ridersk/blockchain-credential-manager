@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "short_name": "BCManager",
-  "name": "Blockchain Credentials Manager",
+  "short_name": "MetaVault",
+  "name": "MetaVault",
   "description": "Store sensitive informations secure in blockchain Solana platform.",
   "author": "Ridersk",
-  "version": "0.0.1",
+  "version": "0.3.2",
   "permissions": ["storage", "tabs", "activeTab", "scripting", "alarms"],
   "action": {
     "default_popup": "index.html",
-    "default_title": "Blockchain Credentials Manager"
+    "default_title": "MetaVault"
   },
   "content_scripts": [
     {

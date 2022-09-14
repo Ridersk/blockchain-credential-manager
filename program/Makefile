@@ -58,9 +58,7 @@ show-program-id:
 	@echo ${PROGRAM_ID}
 
 build:
-	anchor build &&\
-	anchor run copy-idl &&\
-	anchor run copy-types
+	anchor build
 
 ###### Testing the Program
 test:
@@ -70,12 +68,18 @@ test:
 # To deploy local, run "make start-localnet" first
 deploy:
 	$(MAKE) build &&\
-	anchor deploy --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE}
+	anchor deploy --provider.cluster ${CLUSTER} --provider.wallet ${AUTHORITY_KEYPAIR_FILE} &&\
+	$(MAKE) export-program-idl
 
 ###### Upgrade
 upgrade:
 	$(MAKE) build &&\
 	anchor upgrade --program-id ${PROGRAM_ID} --provider.cluster ${CLUSTER} ${PROGRAM_FILE} --provider.wallet ${AUTHORITY_KEYPAIR_FILE}
+
+
+export-program-idl:
+	anchor run copy-idl &&\
+	anchor run copy-types
 
 ###### Styling
 code-formatting:
