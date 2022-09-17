@@ -49,7 +49,7 @@ const WalletImportPage = () => {
           variant: "error"
         });
       }
-    } catch (err) {
+    } catch (error) {
       sendNotification({
         message: t("unexpected_error"),
         variant: "error"

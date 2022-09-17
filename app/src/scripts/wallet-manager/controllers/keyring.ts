@@ -64,11 +64,11 @@ export class KeyringController {
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
       await this._updateKeyringSession(password, vault);
       return (await this.sessionStore.getState()).keyring;
-    } catch (err) {
-      if (err instanceof Error && err.message === "Incorrect password") {
+    } catch (error) {
+      if (error instanceof Error && error.message === "Incorrect password") {
         throw new WalletIncorrectPasswordError("Incorrect password");
       }
-      throw err;
+      throw error;
     }
   }
 
@@ -90,7 +90,7 @@ export class KeyringController {
     try {
       await this._updateKeyringSession(null, null, false);
       return await this.sessionStore.getState();
-    } catch (err) {
+    } catch (error) {
       throw new WalletLockedError("Error on locking keyring");
     }
   }

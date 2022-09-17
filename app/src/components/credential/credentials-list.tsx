@@ -42,7 +42,7 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
         );
         setList(credentialsFormatted);
         setLoading(false);
-      } catch (err) {}
+      } catch (error) {}
     }
 
     getCredentialsList();

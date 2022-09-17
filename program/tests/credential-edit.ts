@@ -171,11 +171,11 @@ describe("credential-edition", () => {
           signers: [user2],
         }
       ),
-      (err: Error) => {
-        assert.strictEqual("Error", err.name);
+      (error: Error) => {
+        assert.strictEqual("Error", error.name);
         assert.strictEqual(
           `unknown signer: ${user2.publicKey.toBase58()}`,
-          err.message
+          error.message
         );
         return true;
       }

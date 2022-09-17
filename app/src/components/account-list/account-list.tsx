@@ -44,7 +44,7 @@ const AccountList = (props: Props) => {
 
           setAccountList(accounts);
         }
-      } catch (err) {
+      } catch (error) {
       } finally {
         setLoading(false);
       }

@@ -174,13 +174,13 @@ export class CredentialsController {
           owner: ownerPublicKey
         })
         .rpc();
-    } catch (e: any) {
-      if (!(e instanceof ReferenceError)) {
+    } catch (error: any) {
+      if (!(error instanceof ReferenceError)) {
         let errorMessage = "";
-        if (e.error && e.error.errorMessage) {
-          errorMessage = e.error?.errorMessage;
+        if (error.error && error.error.errorMessage) {
+          errorMessage = error.error?.errorMessage;
         } else {
-          errorMessage = e.message;
+          errorMessage = error.message;
         }
 
         throw new CredentialControllerError(errorMessage);

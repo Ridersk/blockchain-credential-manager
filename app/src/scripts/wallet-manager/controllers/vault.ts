@@ -72,7 +72,7 @@ export class VaultAccountController {
         toAddress = accounts[1].pubkey.toBase58();
         txStatus = transactionError ? "error" : "success";
         direction = "output";
-      } catch (err) {
+      } catch (error) {
         try {
           const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
           const instructionParsedData = programInstruction.parsed;

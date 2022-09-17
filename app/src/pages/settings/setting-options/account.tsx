@@ -64,6 +64,7 @@ const AccountPage = () => {
           formattedAccounts.push({ publicKey: account.publicKey });
         }
         setSavedAccounts(formattedAccounts);
+      } catch (error) {
       } finally {
         setSavedAccountsLoaded(true);
       }
@@ -110,9 +111,9 @@ const AccountPage = () => {
       }
       await sleep(100);
       navigate(-1);
-    } catch (err) {
-      if (err instanceof WalletRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      if (error instanceof WalletRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({
           message: t("unexpected_error"),
@@ -133,9 +134,9 @@ const AccountPage = () => {
       });
       await sleep(100);
       navigate(-1);
-    } catch (err) {
-      if (err instanceof WalletRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      if (error instanceof WalletRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({
           message: t("unexpected_error"),

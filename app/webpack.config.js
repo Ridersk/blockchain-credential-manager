@@ -4,6 +4,7 @@ require("dotenv").config();
 
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {
+  mode: "development",
   entry: {
     contentscript: path.resolve(__dirname, "src/scripts/content-scripts/index.js"),
     background: path.resolve(__dirname, "src/scripts/background.ts")

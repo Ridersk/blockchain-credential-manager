@@ -33,7 +33,7 @@ const VaultAccountOptionsGroup = (props: VaultAccountOptionsGroupProps) => {
       const vaultAccountDetails = unwrapResult(await dispatch(getDetailsAction()));
       dispatch(updateWalletAction({ balance: vaultAccountDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
-    } catch (err) {
+    } catch (error) {
       sendNotification({ message: t("operation_deposit_error"), variant: "error" });
     }
   };

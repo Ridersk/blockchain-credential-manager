@@ -28,8 +28,8 @@ function App() {
       try {
         setLoading(true);
         unwrapResult(await dispatch(updateWalletFromBackgroundAction()));
-      } catch (err) {
-        if (err instanceof WalletNoKeyringFoundError) {
+      } catch (error) {
+        if (error instanceof WalletNoKeyringFoundError) {
           goToWelcomePage();
         } else {
           goToLoginPage();

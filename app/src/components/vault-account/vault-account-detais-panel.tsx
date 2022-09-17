@@ -17,6 +17,7 @@ const VaultAccountDetailsPanel = () => {
         setLoading(true);
         const vaultAccountDetails = unwrapResult(await dispatch(getDetailsAction()));
         dispatch(updateWalletAction({ balance: vaultAccountDetails.balance }));
+      } catch (error) {
       } finally {
         setLoading(false);
       }

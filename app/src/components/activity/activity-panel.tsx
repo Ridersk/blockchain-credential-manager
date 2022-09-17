@@ -24,11 +24,13 @@ export const ActivityPanel = () => {
   const [transactions, setTransactions] = useState<VaultActivity[]>([]);
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setTransactions(unwrapResult(await dispatch(getActivitiesAction())));
-      setLoading(false);
-    })();
+    try {
+      (async () => {
+        setLoading(true);
+        setTransactions(unwrapResult(await dispatch(getActivitiesAction())));
+        setLoading(false);
+      })();
+    } catch (error) {}
   }, []);
 
   return (

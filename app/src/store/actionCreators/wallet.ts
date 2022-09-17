@@ -59,7 +59,9 @@ export const unlockWalletAction = createAsyncThunk<
   const isUnlocked = response.result;
 
   if (isUnlocked) {
-    unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+    try {
+      unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+    } catch (error) {}
   }
 
   return isUnlocked;

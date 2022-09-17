@@ -22,7 +22,7 @@ const VaultAccountBalanceCard = (props: VaultAccountBalanceCardProps) => {
         const priceDetails = await getPrice({ target: "brl", balance });
         setFiatPrice(priceDetails.formattedPrice);
         setLoading(false);
-      } catch (err) {}
+      } catch (error) {}
     }
 
     handleGetCurrentPrice();

@@ -45,7 +45,7 @@ function installButton() {
           };
         }
       }
-    } catch (err) {}
+    } catch (error) {}
   }
 }
 

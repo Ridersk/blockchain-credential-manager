@@ -53,7 +53,7 @@ const LoginPage = () => {
           variant: "error"
         });
       }
-    } catch (err) {
+    } catch (error) {
       sendNotification({
         message: t("wallet_unexpected_error"),
         variant: "error"

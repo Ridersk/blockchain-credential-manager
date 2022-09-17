@@ -202,9 +202,9 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
@@ -240,9 +240,9 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
