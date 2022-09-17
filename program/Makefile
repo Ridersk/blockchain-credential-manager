@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 CLUSTER = localnet
 CLUSTER_URL = http://localhost:8899
 
@@ -10,14 +12,28 @@ PROGRAM_ID = $$(solana address -k ${PROGRAM_KEYPAIR_FILE})
 
 
 ### Setup
-install-dependencies:
-	sudo apt install -y libudev1 libudev-dev pkg-config &&\
+install:
+	sudo apt install -y build-essential pkg-config libudev-dev libudev1 libssl-dev &&\
+	$(MAKE) _rust-setup &&\
+	$(MAKE) _solana-setup &&\
+	$(MAKE) _anchor-setup &&\
+	$(MAKE) _yarn-setup
+
+_rust-setup:
 	curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh &&\
+	source ~/.profile
+
+_solana-setup:
 	sh -c "$$(curl -sSfL https://release.solana.com/stable/install)" && . ~/.profile &&\
+	printf "\n\n# Solana Environment\nexport PATH=\$$PATH:\$$HOME/.local/share/solana/install/active_release/bin/\n\n" >> $$HOME/.profile &&\
+	source $$HOME/.profile
+
+_anchor-setup:
 	cargo install --git https://github.com/project-serum/anchor anchor-cli --locked
 
-set-solana-env:
-	export PATH="$PATH:$HOME/.local/share/solana/install/active_release/bin/"
+_yarn-setup:
+	npm install --global yarn &&\
+	yarn install
 
 ###### Network Configs
 switch-local:
