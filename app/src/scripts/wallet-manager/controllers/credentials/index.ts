@@ -175,6 +175,7 @@ export class CredentialsController {
         })
         .rpc();
     } catch (error: any) {
+      console.error(error);
       if (!(error instanceof ReferenceError)) {
         let errorMessage = "";
         if (error.error && error.error.errorMessage) {

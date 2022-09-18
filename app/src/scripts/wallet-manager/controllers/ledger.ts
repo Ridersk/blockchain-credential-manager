@@ -6,6 +6,10 @@ export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
 
 console.log("CLUSTER_URL:", CLUSTER_URL);
+console.log(
+  "IS BROWSER:",
+  process.env.BROWSER || (typeof window !== "undefined" && !window.process?.hasOwnProperty("type"))
+);
 
 export class LedgerProgram<IDL extends Idl = Idl> {
   vaultSigner: VaultAccountSigner;
