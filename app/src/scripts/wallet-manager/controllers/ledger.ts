@@ -3,7 +3,7 @@ import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 import { sleep } from "../../../utils/time";
 import Logger from "../../../utils/log";
 
-export const CLUSTER_URL = process.env.REACT_APP_CLUSTER_URL!;
+export const CLUSTER_URL = process.env.CLUSTER_URL!;
 export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
 

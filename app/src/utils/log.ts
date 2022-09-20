@@ -7,6 +7,8 @@ const AVAILABLE_LOG_LEVELS = {
 export const LOG_LEVEL =
   AVAILABLE_LOG_LEVELS[(process.env.LOG_LEVEL as keyof typeof AVAILABLE_LOG_LEVELS) || "debug"];
 
+console.log("LOG_LEVEL:", LOG_LEVEL);
+
 export default class Logger {
   static info(message?: any, ...optionalParams: any[]) {
     if (LOG_LEVEL <= AVAILABLE_LOG_LEVELS.debug) {

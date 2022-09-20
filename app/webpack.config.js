@@ -2,8 +2,6 @@ const path = require("path");
 const webpack = require("webpack");
 require("dotenv").config();
 
-// const ws = require("ws");
-// const rpcWebsocket = require("rpc-websockets");
 
 // Webpack configuration to extension scripts (background.js and content.js)
 module.exports = {

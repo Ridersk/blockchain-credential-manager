@@ -8,7 +8,7 @@ import {
   Connection
 } from "@solana/web3.js";
 import base58 from "bs58";
-import { sleep } from "../../../utils/time";
+import Logger from "../../../utils/log";
 import { LedgerProgram } from "./ledger";
 
 export class VaultAccountController {
@@ -73,6 +73,7 @@ export class VaultAccountController {
         txStatus = transactionError ? "error" : "success";
         direction = "output";
       } catch (error) {
+        Logger.error(error);
         try {
           const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
           const instructionParsedData = programInstruction.parsed;
@@ -83,6 +84,7 @@ export class VaultAccountController {
           toAddress = instructionParsedData.info.destination;
           extraParams = { solAmount: instructionParsedData.info.lamports / LAMPORTS_PER_SOL };
         } catch (error) {
+          Logger.error(error);
           transactionType = !transactionError
             ? InstructionTypeCode.success
             : InstructionTypeCode.error;

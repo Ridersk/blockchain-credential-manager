@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { unlockWalletAction } from "store/actionCreators";
+import Logger from "utils/log";
 import { sleep } from "utils/time";
 import * as Yup from "yup";
 
@@ -54,6 +55,7 @@ const LoginPage = () => {
         });
       }
     } catch (error) {
+      Logger.error(error);
       sendNotification({
         message: t("wallet_unexpected_error"),
         variant: "error"

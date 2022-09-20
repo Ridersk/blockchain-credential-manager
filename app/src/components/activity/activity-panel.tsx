@@ -7,6 +7,7 @@ import { VaultActivity } from "scripts/wallet-manager/controllers/vault";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { getActivitiesAction } from "store/actionCreators/vault";
 import { unwrapResult } from "@reduxjs/toolkit";
+import Logger from "utils/log";
 
 enum InstructionTypeTitle {
   "CREATE_CREDENTIAL" = "transaction_credential_created",
@@ -30,7 +31,9 @@ export const ActivityPanel = () => {
         setTransactions(unwrapResult(await dispatch(getActivitiesAction())));
         setLoading(false);
       })();
-    } catch (error) {}
+    } catch (error) {
+      Logger.error(error);
+    }
   }, []);
 
   return (

@@ -1,3 +1,5 @@
+import Logger from "./log";
+
 export function copyTextToClipboard(text: string) {
   if (!navigator.clipboard) {
     fallbackCopyTextToClipboard(text);
@@ -22,6 +24,7 @@ function fallbackCopyTextToClipboard(text: string) {
   try {
     document.execCommand("copy");
   } catch (error) {
+    Logger.error(error);
     return;
   }
 

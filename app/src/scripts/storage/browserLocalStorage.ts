@@ -1,3 +1,4 @@
+import Logger from "../../utils/log";
 import { BaseStorage } from "./baseStorage";
 
 export class LocalStorage extends BaseStorage {
@@ -11,6 +12,7 @@ export class LocalStorage extends BaseStorage {
     try {
       return JSON.parse(localStorage.getItem(key || "") as string);
     } catch (error) {
+      Logger.error(error);
       return null;
     }
   }

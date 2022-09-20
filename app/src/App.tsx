@@ -9,6 +9,7 @@ import { updateWalletFromBackgroundAction } from "store/actionCreators";
 import { WalletNoKeyringFoundError } from "exceptions";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
+import Logger from "utils/log";
 
 function App() {
   const dispatch = useTypedDispatch();
@@ -29,6 +30,7 @@ function App() {
         setLoading(true);
         unwrapResult(await dispatch(updateWalletFromBackgroundAction()));
       } catch (error) {
+        Logger.error(error);
         if (error instanceof WalletNoKeyringFoundError) {
           goToWelcomePage();
         } else {

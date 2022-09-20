@@ -6,6 +6,7 @@ import { updateWalletAction } from "store/actionCreators";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { getDetailsAction } from "store/actionCreators/vault";
+import Logger from "utils/log";
 
 const VaultAccountDetailsPanel = () => {
   const dispatch = useTypedDispatch();
@@ -18,6 +19,7 @@ const VaultAccountDetailsPanel = () => {
         const vaultAccountDetails = unwrapResult(await dispatch(getDetailsAction()));
         dispatch(updateWalletAction({ balance: vaultAccountDetails.balance }));
       } catch (error) {
+        Logger.error(error);
       } finally {
         setLoading(false);
       }

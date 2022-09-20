@@ -1,6 +1,14 @@
-// final version of the file
+const webpack = require("webpack");
+require("dotenv").config();
+
+const findWebpackPlugin = (plugins, pluginName) =>
+  plugins.find((plugin) => plugin.constructor.name === pluginName);
+
 module.exports = function override(config) {
+  const plugin = findWebpackPlugin(config.plugins, "DefinePlugin");
   const fallback = config.resolve.fallback || {};
+  const processEnv = plugin.definitions["process.env"] || {};
+
   Object.assign(fallback, {
     stream: require.resolve("stream-browserify"),
     crypto: require.resolve("crypto-browserify"),
@@ -10,5 +18,19 @@ module.exports = function override(config) {
   });
   config.resolve.fallback = fallback;
   config.ignoreWarnings = [/Failed to parse source map/];
+
+  // console.log("ENV:", processEnv);
+  // console.log("DOTENV:", process.env);
+
+  // config.plugins = (config.plugins || []).concat([
+  //   new webpack.DefinePlugin({
+  //     "process.env": JSON.stringify(process.env)
+  //   })
+  // ]);
+
+  plugin.definitions["process.env"] = {
+    ...{ CLUSTER_URL: `"${process.env.CLUSTER_URL}"`, LOG_LEVEL: `"${process.env.LOG_LEVEL}"` }
+  };
+
   return config;
 };

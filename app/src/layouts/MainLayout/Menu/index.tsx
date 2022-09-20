@@ -26,6 +26,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { formatAddress } from "utils/address";
 import useNotification from "hooks/useNotification";
 import { useNavigate } from "react-router";
+import Logger from "utils/log";
 
 const MENU_DRAWER_WIDTH = 240;
 
@@ -53,7 +54,9 @@ const MenuDrawer = (props: Props) => {
           formattedAccounts.push({ id: account.id, address: account.publicKey });
         }
         setAccounts(formattedAccounts);
-      } catch (error) {}
+      } catch (error) {
+        Logger.error(error);
+      }
     }
 
     getAccounts();
@@ -74,6 +77,7 @@ const MenuDrawer = (props: Props) => {
       refreshAppUI();
       navigate({ pathname: "/" });
     } catch (error) {
+      Logger.error(error);
       sendNotification({ message: t("error_lock_wallet"), variant: "error" });
     }
   };
@@ -83,7 +87,9 @@ const MenuDrawer = (props: Props) => {
       unwrapResult(await dispatch(selectAccountAction(address)));
       refreshAppUI();
       onToggle(false);
-    } catch (error) {}
+    } catch (error) {
+      Logger.error(error);
+    }
   };
 
   const handleSelectedOption = (optionAction: () => void) => {

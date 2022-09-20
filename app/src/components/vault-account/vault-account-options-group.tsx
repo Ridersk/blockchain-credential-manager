@@ -8,6 +8,7 @@ import useNotification from "hooks/useNotification";
 import { updateWalletAction } from "store/actionCreators";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { getDetailsAction, requestAirdropAction } from "store/actionCreators/vault";
+import Logger from "utils/log";
 
 interface VaultAccountOptionsGroupProps {
   sx?: SxProps;
@@ -34,6 +35,7 @@ const VaultAccountOptionsGroup = (props: VaultAccountOptionsGroupProps) => {
       dispatch(updateWalletAction({ balance: vaultAccountDetails.balance }));
       sendNotification({ message: t("operation_deposit_successfully"), variant: "info" });
     } catch (error) {
+      Logger.error(error);
       sendNotification({ message: t("operation_deposit_error"), variant: "error" });
     }
   };

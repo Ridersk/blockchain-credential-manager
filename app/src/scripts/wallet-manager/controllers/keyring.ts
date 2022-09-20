@@ -10,6 +10,7 @@ import {
 import { PersistentStore } from "../store/persistent-store";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
+import Logger from "../../../utils/log";
 
 export type KeyringEncryptedSerialized = {
   vault: string;
@@ -65,6 +66,7 @@ export class KeyringController {
       await this._updateKeyringSession(password, vault);
       return (await this.sessionStore.getState()).keyring;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof Error && error.message === "Incorrect password") {
         throw new WalletIncorrectPasswordError("Incorrect password");
       }
@@ -91,6 +93,7 @@ export class KeyringController {
       await this._updateKeyringSession(null, null, false);
       return await this.sessionStore.getState();
     } catch (error) {
+      Logger.error(error);
       throw new WalletLockedError("Error on locking keyring");
     }
   }

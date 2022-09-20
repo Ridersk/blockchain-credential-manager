@@ -19,6 +19,7 @@ import {
   getAccountsAction,
   WalletRequestError
 } from "store/actionCreators";
+import Logger from "utils/log";
 import { sleep } from "utils/time";
 import { extractURLHashSearchParams } from "utils/url";
 
@@ -65,6 +66,7 @@ const AccountPage = () => {
         }
         setSavedAccounts(formattedAccounts);
       } catch (error) {
+        Logger.error(error);
       } finally {
         setSavedAccountsLoaded(true);
       }
@@ -112,6 +114,7 @@ const AccountPage = () => {
       await sleep(100);
       navigate(-1);
     } catch (error) {
+      Logger.error(error);
       if (error instanceof WalletRequestError) {
         sendNotification({ message: error?.message, variant: "error" });
       } else {
@@ -135,6 +138,7 @@ const AccountPage = () => {
       await sleep(100);
       navigate(-1);
     } catch (error) {
+      Logger.error(error);
       if (error instanceof WalletRequestError) {
         sendNotification({ message: error?.message, variant: "error" });
       } else {

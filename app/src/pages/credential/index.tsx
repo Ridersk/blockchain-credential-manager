@@ -22,6 +22,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { forceUpdateWalletAction } from "store/actionCreators";
 import { sleep } from "utils/time";
 import { usePrev } from "hooks/usePrev";
+import Logger from "utils/log";
 
 const CredentialPage = () => {
   const location = useLocation();
@@ -203,6 +204,7 @@ const CredentialPage = () => {
 
       goToPreviousPage();
     } catch (error) {
+      Logger.error(error);
       if (error instanceof CredentialRequestError) {
         sendNotification({ message: error?.message, variant: "error" });
       } else {
@@ -241,6 +243,7 @@ const CredentialPage = () => {
 
       goToPreviousPage();
     } catch (error) {
+      Logger.error(error);
       if (error instanceof CredentialRequestError) {
         sendNotification({ message: error?.message, variant: "error" });
       } else {
