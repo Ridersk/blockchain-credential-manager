@@ -108,8 +108,8 @@ export class VaultAccountController {
 
   async requestAirdrop() {
     // Request airdrop of 1 SOL
-    await this._connection.requestAirdrop(this._accountAddress, 1000000000);
-    await sleep(1000);
+    const signature = await this._connection.requestAirdrop(this._accountAddress, 1000000000);
+    await this._ledgerProgram.confirmTransaction(signature);
   }
 
   _convertB58ToPrettyHex(b58Text: string): string {

@@ -191,7 +191,7 @@ describe("credential-creation", () => {
       .signers([owner])
       .transaction();
 
-    const txSig = await provider.connection.sendTransaction(tx, [owner]);
+    const signature = await provider.connection.sendTransaction(tx, [owner]);
 
     const waitTime = 500;
     let retries = 5;
@@ -199,7 +199,7 @@ describe("credential-creation", () => {
       await sleep(waitTime);
       const transaction =
         await program.provider.connection.getParsedTransaction(
-          txSig,
+          signature,
           "confirmed"
         );
       if (transaction) {

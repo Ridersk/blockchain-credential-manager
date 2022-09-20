@@ -19,9 +19,9 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }
   const [iconUrl, setIconUrl] = useState<string>();
 
   useEffect(() => {
-    if (url) {
+    try {
       setIconUrl(new URL(url).origin + "/favicon.ico");
-    }
+    } catch (error) {}
   }, [url]);
 
   const handleClickCopySecret = () => {

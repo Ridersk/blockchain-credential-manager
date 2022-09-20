@@ -1,5 +1,5 @@
+import Logger from "../utils/log";
 import { WalletManager, initVaultManager } from "./wallet-manager/wallet-manager";
-
 
 let walletManager: WalletManager;
 async function setupVault() {
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
 async function messageHandler(request: { action: string; data: any[] }) {
   let status: "success" | "error" = "success";
   let result;
-  let error;
+  let errorMsg;
 
   try {
     // @ts-ignore: Unreachable code error
@@ -48,14 +48,14 @@ async function messageHandler(request: { action: string; data: any[] }) {
       throw new Error(`Action ${request.action} not found`);
     }
   } catch (error) {
-    console.error("[Background]:", error);
+    Logger.error("[Background]:", error);
     if (error instanceof Error) {
-      error = error.message;
+      errorMsg = error.message;
     }
     status = "error";
   }
 
-  return { status, result, error };
+  return { status, result, error: errorMsg };
 }
 
 export type BackgroundResponse<T> = {
