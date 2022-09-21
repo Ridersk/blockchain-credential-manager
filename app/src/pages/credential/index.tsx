@@ -22,6 +22,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { forceUpdateWalletAction } from "store/actionCreators";
 import { sleep } from "utils/time";
 import { usePrev } from "hooks/usePrev";
+import Logger from "utils/log";
 
 const CredentialPage = () => {
   const location = useLocation();
@@ -202,9 +203,10 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
@@ -240,9 +242,10 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }

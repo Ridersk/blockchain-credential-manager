@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { resetWalletAction, WalletRequestError } from "store/actionCreators";
+import Logger from "utils/log";
 import { sleep } from "utils/time";
 
 const BASE_PATH = "/settings";
@@ -46,6 +47,7 @@ const SettingsPage = () => {
       window.location.reload();
       navigate({ pathname: "/" });
     } catch (error) {
+      Logger.error(error);
       if (error instanceof WalletRequestError) {
         sendNotification({ message: error?.message, variant: "error" });
       } else {

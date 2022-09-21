@@ -6,7 +6,6 @@ import idl from "../../../../idl/blockchain_credential_manager.json";
 import { BlockchainCredentialManager } from "../../../../idl/blockchain_credential_manager";
 import { LedgerProgram } from "../ledger";
 import { FilterOption, ownerFilter } from "./ledger-filters";
-import { sleep } from "../../../../utils/time";
 import { extractURLOrigin } from "../../../../utils/url";
 import { EncryptionUtils } from "../../../../utils/aes-encryption";
 import { filterCredentialsByURL } from "../../../../utils/credential-filters";
@@ -15,11 +14,13 @@ const CREDENTIAL_NAMESPACE = "credential";
 
 export class CredentialsController {
   private _ledgerProgram: LedgerProgram<BlockchainCredentialManager>;
+  private _program: anchor.Program<BlockchainCredentialManager>;
   private _keypair: Keypair;
   private _password: string;
 
   constructor(keypair: Keypair, password: string) {
     this._ledgerProgram = new LedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
+    this._program = this._ledgerProgram.program;
     this._keypair = keypair;
     this._password = password;
   }
@@ -29,7 +30,7 @@ export class CredentialsController {
   }
 
   async getCredential(address: string) {
-    const credential = await this._ledgerProgram.program.account.credentialAccount.fetch(address);
+    const credential = await this._program.account.credentialAccount.fetch(address);
     const encryptor = new EncryptionUtils(credential.salt, credential.iv);
     const decryptedCredential = await encryptor.decrypt(this._password, credential.credentialData);
 
@@ -57,9 +58,7 @@ export class CredentialsController {
   async getCredentials(): Promise<Array<Credential>> {
     const ledgerQueryFilters: Array<FilterOption> = [];
     ledgerQueryFilters.push(ownerFilter(this._keypair?.publicKey?.toBase58()));
-    const credentials = await this._ledgerProgram.program.account.credentialAccount.all(
-      ledgerQueryFilters
-    );
+    const credentials = await this._program.account.credentialAccount.all(ledgerQueryFilters);
 
     return Promise.all(
       credentials.map(async (credential) => {
@@ -110,35 +109,21 @@ export class CredentialsController {
       secret,
       description
     });
+    const tx = await this._program.methods
+      .createCredential(
+        credentialPda.uid,
+        encryptedCredential,
+        encryptor.encryptionIv,
+        encryptor.passwordSalt
+      )
+      .accounts({
+        credentialAccount: credentialAccountKey,
+        owner: ownerPublicKey,
+        systemProgram: SystemProgram.programId
+      })
+      .transaction();
 
-    try {
-      await this._ledgerProgram.program.methods
-        .createCredential(
-          credentialPda.uid,
-          encryptedCredential,
-          encryptor.encryptionIv,
-          encryptor.passwordSalt
-        )
-        .accounts({
-          credentialAccount: credentialAccountKey,
-          owner: ownerPublicKey,
-          systemProgram: SystemProgram.programId
-        })
-        .rpc();
-    } catch (e: any) {
-      let errorMessage = "";
-      if (!(e instanceof ReferenceError)) {
-        if (e.error && e.error.errorMessage) {
-          errorMessage = e.error?.errorMessage;
-        } else {
-          errorMessage = e.message;
-        }
-
-        throw new CredentialControllerError(errorMessage);
-      }
-    }
-
-    await sleep(1000);
+    await this._ledgerProgram.sendTransaction(tx, this._keypair);
   }
 
   async editCredential({
@@ -151,7 +136,6 @@ export class CredentialsController {
     description
   }: EditCredentialParams) {
     const ownerPublicKey = this._keypair.publicKey;
-    const program = this._ledgerProgram.program;
     const encryptor = new EncryptionUtils();
     const encryptedCredential = await encryptor.encrypt(this._password, {
       title,
@@ -160,62 +144,34 @@ export class CredentialsController {
       secret,
       description
     });
+    const tx = await this._program.methods
+      .editCredential(
+        new anchor.BN(uid),
+        encryptedCredential,
+        encryptor.encryptionIv,
+        encryptor.passwordSalt
+      )
+      .accounts({
+        credentialAccount: address,
+        owner: ownerPublicKey
+      })
+      .transaction();
 
-    try {
-      await program.methods
-        .editCredential(
-          new anchor.BN(uid),
-          encryptedCredential,
-          encryptor.encryptionIv,
-          encryptor.passwordSalt
-        )
-        .accounts({
-          credentialAccount: address,
-          owner: ownerPublicKey
-        })
-        .rpc();
-    } catch (e: any) {
-      if (!(e instanceof ReferenceError)) {
-        let errorMessage = "";
-        if (e.error && e.error.errorMessage) {
-          errorMessage = e.error?.errorMessage;
-        } else {
-          errorMessage = e.message;
-        }
-
-        throw new CredentialControllerError(errorMessage);
-      }
-    }
-
-    await sleep(1000);
+    await this._ledgerProgram.sendTransaction(tx, this._keypair);
   }
 
   async deleteCredential(address: string) {
     const ownerPublicKey = this._keypair.publicKey;
-    const program = this._ledgerProgram.program;
 
-    try {
-      await program.methods
-        .deleteCredential()
-        .accounts({
-          credentialAccount: address,
-          owner: ownerPublicKey
-        })
-        .rpc();
-    } catch (e: any) {
-      if (!(e instanceof ReferenceError)) {
-        let errorMessage = "";
-        if (e.error && e.error.errorMessage) {
-          errorMessage = e.error?.errorMessage;
-        } else {
-          errorMessage = e.message;
-        }
+    const tx = await this._program.methods
+      .deleteCredential()
+      .accounts({
+        credentialAccount: address,
+        owner: ownerPublicKey
+      })
+      .transaction();
 
-        throw new CredentialControllerError(errorMessage);
-      }
-    }
-
-    await sleep(1000);
+    await this._ledgerProgram.sendTransaction(tx, this._keypair);
   }
 
   private async _getPdaParams(namespace: string, ownerPublicKey: Buffer): Promise<PDAParams> {
@@ -224,7 +180,7 @@ export class CredentialsController {
 
     const [accountKey, bump] = await PublicKey.findProgramAddress(
       [Buffer.from(namespace), ownerPublicKey, Buffer.from(uidBuffer)],
-      this._ledgerProgram.program.programId
+      this._program.programId
     );
 
     return { uid, accountKey, bump };
@@ -253,10 +209,4 @@ interface PDAParams {
   uid: anchor.BN;
   accountKey: anchor.web3.PublicKey;
   bump: number;
-}
-
-export class CredentialControllerError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
 }

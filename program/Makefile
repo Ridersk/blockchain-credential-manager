@@ -53,7 +53,7 @@ show-net:
 
 # Start a local node
 start-localnet:
-	solana-test-validator --limit-ledger-size 100000
+	solana-test-validator
 
 ###### Authority Configs
 gen-account:

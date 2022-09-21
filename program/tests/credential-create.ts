@@ -4,6 +4,7 @@ import assert from "assert";
 import { BlockchainCredentialManager } from "../target/types/blockchain_credential_manager";
 import { getPdaParams, requestAirdrop } from "./utils/testing-utils";
 import { EncryptionUtils } from "./utils/aes-encryption";
+import { sleep } from "./utils/time";
 
 global.crypto = require("crypto").webcrypto;
 
@@ -123,6 +124,89 @@ describe("credential-creation", () => {
         signers: [owner],
       }
     );
+
+    const credentialAccountData = await program.account.credentialAccount.fetch(
+      credentialAccountKey
+    );
+    const decryptedCredential = await encryptor.decrypt(
+      password,
+      credentialAccountData.credentialData
+    );
+
+    // Assertions
+    assert.equal(
+      owner.publicKey.toBase58(),
+      credentialAccountData.owner.toBase58()
+    );
+    assert.equal(
+      credentialPda.uid.toNumber(),
+      credentialAccountData.uid.toNumber()
+    );
+    assert.equal(title, decryptedCredential.title);
+    assert.equal(url, decryptedCredential.url);
+    assert.equal(label, decryptedCredential.label);
+    assert.equal(secret, decryptedCredential.secret);
+    assert.equal(description, decryptedCredential.description);
+    assert.equal(encryptor.encryptionIv, credentialAccountData.iv);
+    assert.equal(encryptor.passwordSalt, credentialAccountData.salt);
+    assert.ok(credentialAccountData.createdAt.toNumber() > 0);
+    assert.ok(credentialAccountData.updatedAt.toNumber() > 0);
+  });
+
+  it("Can add new credential with custom owner without websocket", async () => {
+    const owner = Keypair.generate();
+    const credentialPda = await getPdaParams(
+      CREDENTIAL_NAMESPACE,
+      owner.publicKey.toBuffer()
+    );
+    const credentialAccountKey = credentialPda.accountKey;
+    await requestAirdrop(owner.publicKey);
+
+    const title = "Github Credentials";
+    const url = "https://github.com";
+    const label = "user-001";
+    const secret = "password123";
+    const description = "Github Login";
+
+    const encryptedCredentialData = await encryptor.encrypt(password, {
+      title,
+      url,
+      label,
+      secret,
+      description,
+    });
+
+    const tx = await program.methods
+      .createCredential(
+        credentialPda.uid,
+        encryptedCredentialData,
+        encryptor.encryptionIv,
+        encryptor.passwordSalt
+      )
+      .accounts({
+        credentialAccount: credentialAccountKey,
+        owner: owner.publicKey,
+        systemProgram: programId,
+      })
+      .signers([owner])
+      .transaction();
+
+    const signature = await provider.connection.sendTransaction(tx, [owner]);
+
+    const waitTime = 500;
+    let retries = 5;
+    while (retries > 0) {
+      await sleep(waitTime);
+      const transaction =
+        await program.provider.connection.getParsedTransaction(
+          signature,
+          "confirmed"
+        );
+      if (transaction) {
+        break;
+      }
+      retries--;
+    }
 
     const credentialAccountData = await program.account.credentialAccount.fetch(
       credentialAccountKey

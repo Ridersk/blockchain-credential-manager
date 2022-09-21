@@ -8,7 +8,7 @@ import {
   Connection
 } from "@solana/web3.js";
 import base58 from "bs58";
-import { sleep } from "../../../utils/time";
+import Logger from "../../../utils/log";
 import { LedgerProgram } from "./ledger";
 
 export class VaultAccountController {
@@ -72,7 +72,8 @@ export class VaultAccountController {
         toAddress = accounts[1].pubkey.toBase58();
         txStatus = transactionError ? "error" : "success";
         direction = "output";
-      } catch (err) {
+      } catch (error) {
+        Logger.error(error);
         try {
           const programInstruction = transactionMessage?.instructions[0] as ParsedInstruction;
           const instructionParsedData = programInstruction.parsed;
@@ -83,6 +84,7 @@ export class VaultAccountController {
           toAddress = instructionParsedData.info.destination;
           extraParams = { solAmount: instructionParsedData.info.lamports / LAMPORTS_PER_SOL };
         } catch (error) {
+          Logger.error(error);
           transactionType = !transactionError
             ? InstructionTypeCode.success
             : InstructionTypeCode.error;
@@ -108,8 +110,8 @@ export class VaultAccountController {
 
   async requestAirdrop() {
     // Request airdrop of 1 SOL
-    await this._connection.requestAirdrop(this._accountAddress, 1000000000);
-    await sleep(1000);
+    const signature = await this._connection.requestAirdrop(this._accountAddress, 1000000000);
+    await this._ledgerProgram.confirmTransaction(signature);
   }
 
   _convertB58ToPrettyHex(b58Text: string): string {

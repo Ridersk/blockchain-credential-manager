@@ -3,6 +3,7 @@ import { SxProps } from "@mui/system";
 import { useEffect, useState } from "react";
 import getPrice from "services/asset-price-api/binance-api";
 import { useTypedSelector } from "hooks/useTypedSelector";
+import Logger from "utils/log";
 
 interface VaultAccountBalanceCardProps {
   dataLoaded?: boolean;
@@ -22,7 +23,9 @@ const VaultAccountBalanceCard = (props: VaultAccountBalanceCardProps) => {
         const priceDetails = await getPrice({ target: "brl", balance });
         setFiatPrice(priceDetails.formattedPrice);
         setLoading(false);
-      } catch (err) {}
+      } catch (error) {
+        Logger.error(error);
+      }
     }
 
     handleGetCurrentPrice();

@@ -1,3 +1,4 @@
+import Logger from "../../utils/log";
 import { getCredentialsInputs } from "./selectCredentialsInput";
 
 const BUTTON_ID = "bcm-toggle-popup-btn";
@@ -45,7 +46,9 @@ function installButton() {
           };
         }
       }
-    } catch (err) {}
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 }
 

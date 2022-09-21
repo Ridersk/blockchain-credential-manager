@@ -3,6 +3,7 @@ import { AccountNotFoundError, WalletLockedError, WalletNoKeyringFoundError } fr
 import { VaultAccount } from "scripts/wallet-manager/controllers/keyring";
 import { SelectedAccount } from "scripts/wallet-manager/controllers/preferences";
 import { background } from "services/background-connection/background-msg";
+import Logger from "utils/log";
 import { NewWalletData, WalletActionType, VaultData, AccountData } from "../actionTypes/wallet";
 
 export const updateWalletAction = (data: VaultData) => ({
@@ -59,7 +60,11 @@ export const unlockWalletAction = createAsyncThunk<
   const isUnlocked = response.result;
 
   if (isUnlocked) {
-    unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+    try {
+      unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 
   return isUnlocked;

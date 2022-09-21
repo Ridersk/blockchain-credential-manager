@@ -26,6 +26,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { formatAddress } from "utils/address";
 import useNotification from "hooks/useNotification";
 import { useNavigate } from "react-router";
+import Logger from "utils/log";
 
 const MENU_DRAWER_WIDTH = 240;
 
@@ -46,13 +47,18 @@ const MenuDrawer = (props: Props) => {
 
   useEffect(() => {
     async function getAccounts() {
-      const savedAccounts = unwrapResult(await dispatch(getAccountsAction()));
-      const formattedAccounts = [];
-      for (const account of savedAccounts) {
-        formattedAccounts.push({ id: account.id, address: account.publicKey });
+      try {
+        const savedAccounts = unwrapResult(await dispatch(getAccountsAction()));
+        const formattedAccounts = [];
+        for (const account of savedAccounts) {
+          formattedAccounts.push({ id: account.id, address: account.publicKey });
+        }
+        setAccounts(formattedAccounts);
+      } catch (error) {
+        Logger.error(error);
       }
-      setAccounts(formattedAccounts);
     }
+
     getAccounts();
   }, [open]);
 
@@ -70,15 +76,20 @@ const MenuDrawer = (props: Props) => {
 
       refreshAppUI();
       navigate({ pathname: "/" });
-    } catch (err) {
+    } catch (error) {
+      Logger.error(error);
       sendNotification({ message: t("error_lock_wallet"), variant: "error" });
     }
   };
 
   const handleSelectAccount = async (address: string) => {
-    unwrapResult(await dispatch(selectAccountAction(address)));
-    refreshAppUI();
-    onToggle(false);
+    try {
+      unwrapResult(await dispatch(selectAccountAction(address)));
+      refreshAppUI();
+      onToggle(false);
+    } catch (error) {
+      Logger.error(error);
+    }
   };
 
   const handleSelectedOption = (optionAction: () => void) => {

@@ -5,6 +5,7 @@ import { Avatar, Box, Card, CardContent, IconButton, Skeleton, Typography } from
 import { copyTextToClipboard } from "utils/clipboard";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Logger from "utils/log";
 
 interface Props {
   dataLoaded?: boolean;
@@ -19,8 +20,10 @@ const CredentialCard = ({ dataLoaded = true, credentialKey, url, label, secret }
   const [iconUrl, setIconUrl] = useState<string>();
 
   useEffect(() => {
-    if (url) {
+    try {
       setIconUrl(new URL(url).origin + "/favicon.ico");
+    } catch (error) {
+      Logger.error(error);
     }
   }, [url]);
 

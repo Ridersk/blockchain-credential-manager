@@ -6,6 +6,7 @@ import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { getCredentialsAction } from "store/actionCreators/credential";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { filterCredentialsByText } from "utils/credential-filters";
+import Logger from "utils/log";
 
 interface Props {
   textFilter?: string;
@@ -42,7 +43,9 @@ const CredentialsList = ({ textFilter = "" }: Props) => {
         );
         setList(credentialsFormatted);
         setLoading(false);
-      } catch (err) {}
+      } catch (error) {
+        Logger.error(error);
+      }
     }
 
     getCredentialsList();

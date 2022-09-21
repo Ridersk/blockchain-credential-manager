@@ -6,6 +6,7 @@ import {
 import { CredentialActionType } from "store/actionTypes/credential";
 import { Credential } from "models/Credential";
 import { background } from "services/background-connection/background-msg";
+import Logger from "utils/log";
 
 export class CredentialRequestError extends Error {
   constructor(message: string) {
@@ -72,7 +73,9 @@ export const getCredentialsAction = createAsyncThunk<Credential[], void>(
     try {
       const response = await background.getCredentials();
       credentials = response?.result;
-    } catch (error) {}
+    } catch (error) {
+      Logger.error(error);
+    }
 
     return credentials;
   }

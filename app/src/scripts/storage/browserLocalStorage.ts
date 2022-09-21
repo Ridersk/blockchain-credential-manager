@@ -1,3 +1,4 @@
+import Logger from "../../utils/log";
 import { BaseStorage } from "./baseStorage";
 
 export class LocalStorage extends BaseStorage {
@@ -10,7 +11,8 @@ export class LocalStorage extends BaseStorage {
   async getData(key?: string): Promise<any> {
     try {
       return JSON.parse(localStorage.getItem(key || "") as string);
-    } catch (err) {
+    } catch (error) {
+      Logger.error(error);
       return null;
     }
   }

@@ -98,10 +98,10 @@ async function runMeasurableProcess(
           callback();
         });
       },
-      function (err) {
+      function (error) {
         console.log();
-        if (err) {
-          reject(err);
+        if (error) {
+          reject(error);
         } else {
           resolve(true);
         }

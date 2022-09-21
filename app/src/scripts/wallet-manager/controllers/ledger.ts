@@ -1,11 +1,17 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
+import { sleep } from "../../../utils/time";
+import Logger from "../../../utils/log";
 
-export const CLUSTER_URL = process.env.REACT_APP_CLUSTER_URL!;
+export const CLUSTER_URL = process.env.CLUSTER_URL!;
 export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
 
-console.log("CLUSTER_URL:", CLUSTER_URL);
+Logger.info("CLUSTER_URL:", CLUSTER_URL);
+Logger.info(
+  "IS BROWSER:",
+  process.env.BROWSER || (typeof window !== "undefined" && !window.process?.hasOwnProperty("type"))
+);
 
 export class LedgerProgram<IDL extends Idl = Idl> {
   vaultSigner: VaultAccountSigner;
@@ -23,6 +29,28 @@ export class LedgerProgram<IDL extends Idl = Idl> {
       commitment: COMMITMENT
     });
     this.program = new Program<IDL>(idl, this.programID, this.provider);
+  }
+
+  async sendTransaction(transaction: Transaction, signer: Keypair) {
+    const signature = await this.connection.sendTransaction(transaction, [signer]);
+    await this.confirmTransaction(signature);
+  }
+
+  async confirmTransaction(signature: string) {
+    const timeout = 30000;
+    const startTime = Date.now();
+    let waitTime = 200;
+    while (true) {
+      let status = await this.connection.getParsedTransaction(signature, COMMITMENT);
+      if (status) {
+        break;
+      }
+      if (Date.now() - startTime > timeout) {
+        throw new Error("Transaction confirmation timeout");
+      }
+      await sleep(waitTime);
+      waitTime = Math.min(waitTime * 1.1, 1000);
+    }
   }
 }
 

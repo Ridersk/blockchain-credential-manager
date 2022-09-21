@@ -3,6 +3,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
 import { generateAccountsListAction, GeneratedAccountDetails } from "store/actionCreators/account";
+import Logger from "utils/log";
 import AccountCard from "./account-card";
 
 type Props = {
@@ -44,7 +45,8 @@ const AccountList = (props: Props) => {
 
           setAccountList(accounts);
         }
-      } catch (err) {
+      } catch (error) {
+        Logger.error(error);
       } finally {
         setLoading(false);
       }

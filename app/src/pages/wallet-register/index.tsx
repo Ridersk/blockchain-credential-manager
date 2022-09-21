@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import SwipeableViews from "react-swipeable-views";
 import { createNewWalletAction } from "store/actionCreators";
+import Logger from "utils/log";
 import { sleep } from "utils/time";
 import WalletRegisterForm, { WalletFormData } from "./wallet-register-form";
 
@@ -43,7 +44,8 @@ const WalletRegisterPage = () => {
           variant: "error"
         });
       }
-    } catch (err) {
+    } catch (error) {
+      Logger.error(error);
       sendNotification({
         message: t("unexpected_error"),
         variant: "error"
