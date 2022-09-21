@@ -89,8 +89,8 @@ export class WalletManager {
     const windowInfo = await chrome.windows.getCurrent();
     const width = 400;
     const height = 600;
-    const top = 0;
-    const left = (windowInfo.width ? windowInfo.width - 400 : 0) + (windowInfo.left || 0);
+    const top = windowInfo.top;
+    const left = (windowInfo.width ? windowInfo.width - width : 0) + (windowInfo.left || 0);
 
     if (path) {
       popupUrl += `#/${path}`;
@@ -104,6 +104,7 @@ export class WalletManager {
     customSearchParams["origin"] = "popupInPage";
 
     chrome.windows.create({
+      focused: true,
       url: `${popupUrl}?${new URLSearchParams(customSearchParams).toString()}`,
       type: "popup",
       height,
