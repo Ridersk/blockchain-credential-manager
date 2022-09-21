@@ -21,6 +21,8 @@ function getUserInput() {
     }
   }
 
+  //input[contains(translate(@id, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "account")]
+
   return getElementByXpath(`//input[(${matchOptions.join(" or ")}) and not(@type="hidden")]`);
 }
 
@@ -29,7 +31,7 @@ function getElementByXpath(path: string) {
     .singleNodeValue;
 }
 
-const INPUT_ATTRIBUTES = ["id", "name", "label"];
+const INPUT_ATTRIBUTES = ["id", "name", "label", "type", "placeholder"];
 
 const USER_INPUT_KEYWORDS = [
   // English
@@ -40,7 +42,12 @@ const USER_INPUT_KEYWORDS = [
   "username",
   "user",
   "login",
+  "account",
+  "id",
   // Portuguese
   "usuário",
-  "identificador"
+  "usuario",
+  "identificador",
+  "identificação",
+  "conta"
 ];
