@@ -4,29 +4,21 @@ export function getCredentialsInputs() {
   ) as HTMLInputElement;
   const labelInput: HTMLInputElement = getUserInput() as HTMLInputElement;
 
-  // const labelInput: HTMLInputElement = passwordInput
-  //   ?.closest("form")
-  //   ?.querySelector("input") as HTMLInputElement;
   return {
     labelInput,
     passwordInput
   };
 }
 
-// // input[contains(@label, "E-mail") or contains(translate(@label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "senha")]
 function getUserInput() {
   const matchOptions = [];
 
-  for (const option of USER_INPUT_NAME_CONTAIN_OPTIONS) {
-    matchOptions.push(
-      `contains(translate(@id, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "${option}")`
-    );
-    matchOptions.push(
-      `contains(translate(@label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "${option}")`
-    );
-    matchOptions.push(
-      `contains(translate(@name, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "${option}")`
-    );
+  for (const keyword of USER_INPUT_KEYWORDS) {
+    for (const attribute of INPUT_ATTRIBUTES) {
+      matchOptions.push(
+        `contains(translate(@${attribute}, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "${keyword}")`
+      );
+    }
   }
 
   return getElementByXpath(`//input[(${matchOptions.join(" or ")}) and not(@type="hidden")]`);
@@ -37,7 +29,9 @@ function getElementByXpath(path: string) {
     .singleNodeValue;
 }
 
-const USER_INPUT_NAME_CONTAIN_OPTIONS = [
+const INPUT_ATTRIBUTES = ["id", "name", "label"];
+
+const USER_INPUT_KEYWORDS = [
   // English
   "email",
   "e-mail",
@@ -45,6 +39,7 @@ const USER_INPUT_NAME_CONTAIN_OPTIONS = [
   "identifier",
   "username",
   "user",
+  "login",
   // Portuguese
   "usuário",
   "identificador"

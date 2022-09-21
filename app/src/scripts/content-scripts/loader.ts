@@ -13,30 +13,27 @@ function installButton() {
       const { labelInput, passwordInput } = getCredentialsInputs();
 
       if (passwordInput) {
+        const btnBase = document.createElement("div");
         const size = passwordInput?.offsetHeight * 0.72;
-        const btnMargin = 8;
-        const btnPasswordTopPos =
-          passwordInput.offsetTop + passwordInput.offsetHeight / 2 - size / 2;
-        const btnPasswordLeftPos = passwordInput.offsetLeft - size - btnMargin;
+        const buttonIcon = document.createElement("img");
+        btnBase.id = BUTTON_ID;
+        btnBase.style.height = `${size}px`;
+        btnBase.style.width = `${size}px`;
+        buttonIcon.src = chrome.runtime.getURL("assets/action-btn.png");
+        btnBase.appendChild(buttonIcon);
 
-        const btnPassword = document.createElement("div");
-        btnPassword.id = BUTTON_ID;
-        btnPassword.style.height = `${size}px`;
-        btnPassword.style.width = `${size}px`;
-        btnPassword.style.top = `${btnPasswordTopPos}px`;
-        btnPassword.style.left = `${btnPasswordLeftPos}px`;
-
-        const buttonImg = document.createElement("img");
-        buttonImg.src = chrome.runtime.getURL("assets/action-btn.png");
-        btnPassword.appendChild(buttonImg);
+        const btnPassword: HTMLDivElement = btnBase.cloneNode(true) as HTMLDivElement;
+        updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput, size);
         passwordInput?.parentNode?.insertBefore(btnPassword, passwordInput.nextSibling);
 
-        const btnLabel: HTMLDivElement = btnPassword.cloneNode(true) as HTMLDivElement;
-        const btnLabelTopPos = labelInput.offsetTop + labelInput.offsetHeight / 2 - size / 2;
-        const btnLabelLeftPos = labelInput.offsetLeft - size - btnMargin;
-        btnLabel.style.top = `${btnLabelTopPos}px`;
-        btnLabel.style.left = `${btnLabelLeftPos}px`;
+        const btnLabel: HTMLDivElement = btnBase.cloneNode(true) as HTMLDivElement;
+        updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput, size);
         labelInput?.parentNode?.insertBefore(btnLabel, labelInput.nextSibling);
+
+        window.onresize = () => {
+          updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput, size);
+          updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput, size);
+        };
 
         const btnsAction: NodeListOf<HTMLElement> = document?.querySelectorAll(`#${BUTTON_ID}`);
         for (let btn of btnsAction) {
@@ -73,9 +70,9 @@ async function toggleInPagePopup(anchorElem: HTMLElement) {
     iframe.style.width = `${POPUP_WIDTH}px`;
     iframe.style.height = `${POPUP_HEIGHT}px`;
 
-    updateInPagePopupPosition(anchorElem, iframe);
+    updatePopupPositionBasedOnAnchor(iframe, anchorElem);
     window.onresize = () => {
-      updateInPagePopupPosition(anchorElem, iframe);
+      updatePopupPositionBasedOnAnchor(iframe, anchorElem);
     };
 
     document.documentElement.appendChild(iframe);
@@ -85,14 +82,29 @@ async function toggleInPagePopup(anchorElem: HTMLElement) {
   }
 }
 
-function updateInPagePopupPosition(anchorElement: HTMLElement, iframeElement: HTMLIFrameElement) {
-  if (iframeElement) {
+function updateBtnActionPositionBasedOnAnchor(
+  btnElement: HTMLElement,
+  anchorElement: HTMLElement,
+  size: number
+) {
+  const btnMargin = 8;
+
+  if (btnElement) {
+    const btnTopPos = anchorElement.offsetTop + anchorElement.offsetHeight / 2 - size / 2;
+    const btnLeftPos = anchorElement.offsetLeft - size - btnMargin;
+    btnElement.style.top = `${btnTopPos}px`;
+    btnElement.style.left = `${btnLeftPos}px`;
+  }
+}
+
+function updatePopupPositionBasedOnAnchor(element: HTMLElement, anchorElement: HTMLElement) {
+  if (element) {
     const anchorPos = anchorElement.getBoundingClientRect();
     const anchorPosX = anchorPos.x + window.scrollX + anchorPos.width / 2;
     const anchorPosY = anchorPos.top + window.scrollY + anchorPos.height;
 
-    iframeElement.style.left = `${anchorPosX - (POPUP_WIDTH - DIFF_CONTENT_WRAPPER) / 2}px`;
-    iframeElement.style.top = `${anchorPosY}px`;
+    element.style.left = `${anchorPosX - (POPUP_WIDTH - DIFF_CONTENT_WRAPPER) / 2}px`;
+    element.style.top = `${anchorPosY}px`;
   }
 }
 
