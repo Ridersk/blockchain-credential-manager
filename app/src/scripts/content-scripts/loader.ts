@@ -12,36 +12,40 @@ function installButton() {
     try {
       const { labelInput, passwordInput } = getCredentialsInputs();
 
-      if (passwordInput) {
-        const btnBase = document.createElement("div");
-        const size = passwordInput?.offsetHeight * 0.72;
-        const buttonIcon = document.createElement("img");
-        btnBase.id = BUTTON_ID;
-        btnBase.style.height = `${size}px`;
-        btnBase.style.width = `${size}px`;
-        buttonIcon.src = chrome.runtime.getURL("assets/action-btn.png");
-        btnBase.appendChild(buttonIcon);
+      console.log("LABEL INPUT:", labelInput);
 
+      const btnBase = document.createElement("div");
+      const buttonIcon = document.createElement("img");
+      btnBase.id = BUTTON_ID;
+      buttonIcon.src = chrome.runtime.getURL("assets/action-btn.png");
+      btnBase.appendChild(buttonIcon);
+
+      if (passwordInput) {
         const btnPassword: HTMLDivElement = btnBase.cloneNode(true) as HTMLDivElement;
-        updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput, size);
+        updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput);
         passwordInput?.parentNode?.insertBefore(btnPassword, passwordInput.nextSibling);
 
+        window.addEventListener("resize", () => {
+          updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput);
+        });
+      }
+
+      if (labelInput) {
         const btnLabel: HTMLDivElement = btnBase.cloneNode(true) as HTMLDivElement;
-        updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput, size);
+        updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput);
         labelInput?.parentNode?.insertBefore(btnLabel, labelInput.nextSibling);
 
-        window.onresize = () => {
-          updateBtnActionPositionBasedOnAnchor(btnPassword, passwordInput, size);
-          updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput, size);
-        };
+        window.addEventListener("resize", () => {
+          updateBtnActionPositionBasedOnAnchor(btnLabel, labelInput);
+        });
+      }
 
-        const btnsAction: NodeListOf<HTMLElement> = document?.querySelectorAll(`#${BUTTON_ID}`);
-        for (let btn of btnsAction) {
-          btn.onclick = async (event) => {
-            event.stopPropagation();
-            await toggleInPagePopup(btn);
-          };
-        }
+      const btnsAction: NodeListOf<HTMLElement> = document?.querySelectorAll(`#${BUTTON_ID}`);
+      for (let btn of btnsAction) {
+        btn.onclick = async (event) => {
+          event.stopPropagation();
+          await toggleInPagePopup(btn);
+        };
       }
     } catch (error) {
       Logger.error(error);
@@ -71,9 +75,9 @@ async function toggleInPagePopup(anchorElem: HTMLElement) {
     iframe.style.height = `${POPUP_HEIGHT}px`;
 
     updatePopupPositionBasedOnAnchor(iframe, anchorElem);
-    window.onresize = () => {
+    window.addEventListener("resize", () => {
       updatePopupPositionBasedOnAnchor(iframe, anchorElem);
-    };
+    });
 
     document.documentElement.appendChild(iframe);
     document.onclick = removeInPagePopup;
@@ -82,16 +86,16 @@ async function toggleInPagePopup(anchorElem: HTMLElement) {
   }
 }
 
-function updateBtnActionPositionBasedOnAnchor(
-  btnElement: HTMLElement,
-  anchorElement: HTMLElement,
-  size: number
-) {
-  const btnMargin = 8;
-
-  if (btnElement) {
+function updateBtnActionPositionBasedOnAnchor(btnElement: HTMLElement, anchorElement: HTMLElement) {
+  if (btnElement && anchorElement) {
+    const btnMargin = 8;
+    // const anchorRect = anchorElement.getBoundingClientRect();
+    const size = anchorElement.offsetHeight * 0.72;
     const btnTopPos = anchorElement.offsetTop + anchorElement.offsetHeight / 2 - size / 2;
     const btnLeftPos = anchorElement.offsetLeft - size - btnMargin;
+
+    btnElement.style.height = `${size}px`;
+    btnElement.style.width = `${size}px`;
     btnElement.style.top = `${btnTopPos}px`;
     btnElement.style.left = `${btnLeftPos}px`;
   }
