@@ -33,12 +33,23 @@ async function main() {
 }
 
 async function prepareTest(): Promise<{ [key: string]: any }> {
+  console.log(
+    `=========================== Test Configuration ===========================`
+  );
+  console.log(`Concurrency: ${CONCURRENCY}`);
+  console.log(`Runs count: ${RUNS_COUNT}`);
+  console.log(`Credentials count: ${CREDENTIALS_COUNT}`);
+
+  console.log(
+    `=========================== Test Preparation - Create credentials ===========================`
+  );
+
   let child = childProcess.spawn("ts-node", [
     "./src/createCredential.ts",
     `--credentialsCount=${CREDENTIALS_COUNT}`,
   ]);
 
-  return new Promise((resolve, reject) => {
+  const data = await new Promise((resolve, reject) => {
     let credentialData: { [key: string]: any };
     child.stdout.on("data", (data) => {
       try {
@@ -55,6 +66,8 @@ async function prepareTest(): Promise<{ [key: string]: any }> {
       }
     });
   });
+
+  return data as { [key: string]: any };
 }
 
 async function runMeasurableProcess(
@@ -66,7 +79,7 @@ async function runMeasurableProcess(
   let responses: boolean[] = [];
 
   console.log(
-    `=========================== [START] - ${processName} ===========================`
+    `=========================== STEP - ${processName} ===========================`
   );
 
   await new Promise((resolve, reject) => {
@@ -83,7 +96,7 @@ async function runMeasurableProcess(
           try {
             times.push(parseFloat(JSON.parse(data).elapsedTime));
           } catch (e) {
-            // console.log(`child error: ${data}`);
+            console.log(`child error: ${data}`);
           }
         });
 
@@ -118,10 +131,6 @@ async function runMeasurableProcess(
   } else {
     console.log("fail!");
   }
-
-  console.log(
-    `=========================== [END] - ${processName} ===========================`
-  );
 }
 
 main();

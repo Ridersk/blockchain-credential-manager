@@ -1,5 +1,4 @@
-// Responsible to get credential values from current page
-
+// Responsible to get credential values from current page form inputs
 import { getCredentialsInputs } from "./selectCredentialsInput";
 
 chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {

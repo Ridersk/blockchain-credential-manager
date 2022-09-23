@@ -1,11 +1,12 @@
 {
   "name": "load_testing",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.ts",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "test": "ts-node src/index.ts",
-    "build": "tsc"
+    "test:compiled": "node dist/index.js"
   },
   "devDependencies": {
     "@types/node": "^18.7.16",
