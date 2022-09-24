@@ -12,8 +12,6 @@ function installButton() {
     try {
       const { labelInput, passwordInput } = getCredentialsInputs();
 
-      console.log("LABEL INPUT:", labelInput);
-
       const btnBase = document.createElement("div");
       const buttonIcon = document.createElement("img");
       btnBase.id = BUTTON_ID;

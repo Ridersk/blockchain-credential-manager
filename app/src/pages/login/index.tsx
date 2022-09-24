@@ -8,7 +8,7 @@ import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { unlockWalletAction } from "store/actionCreators";
+import { unlockWalletAction, updateAppStateFromBackgroundAction } from "store/actionCreators";
 import Logger from "utils/log";
 import { sleep } from "utils/time";
 import * as Yup from "yup";
@@ -36,6 +36,7 @@ const LoginPage = () => {
     await (async () => new Promise((resolve) => setTimeout(resolve, 500)))();
     try {
       const isUnlocked: boolean = unwrapResult(await dispatch(unlockWalletAction(values.password)));
+      unwrapResult(await dispatch(updateAppStateFromBackgroundAction()));
       if (isUnlocked) {
         sendNotification({
           message: t("login_successfully"),

@@ -3,7 +3,7 @@ import { FormInput } from "components/ui/form/inputs/form-input";
 import { useField } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { AccountGenerator } from "utils/account-generator";
+import { AccountGenerator } from "services/account-generator";
 
 type Props = {
   formField: {

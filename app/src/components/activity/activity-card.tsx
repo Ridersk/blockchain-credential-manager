@@ -3,7 +3,10 @@ import ReceivedIcon from "@mui/icons-material/CallReceivedRounded";
 import ErrorIcon from "@mui/icons-material/ErrorOutlineRounded";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { CLUSTER_URL } from "scripts/wallet-manager/controllers/ledger";
+import { useTypedSelector } from "hooks/useTypedSelector";
+import { useEffect, useState } from "react";
+
+const BLOCKCHAIN_EXPLORE_URL = "https://explorer.solana.com";
 
 interface Props {
   title: string;
@@ -21,6 +24,22 @@ const ActivityCard = ({
   status = "success"
 }: Props) => {
   const { t } = useTranslation();
+  const currentNetwork = useTypedSelector((state) => state.network.network);
+  const [clusterSearchParams, setClusterSearchParams] = useState<string>("");
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams();
+
+    if (currentNetwork.id === "local") {
+      searchParams.set("cluster", "custom");
+      searchParams.set("customUrl", currentNetwork.url);
+    } else {
+      searchParams.set("cluster", currentNetwork.id);
+    }
+
+    setClusterSearchParams(searchParams.toString());
+  }, [currentNetwork]);
+
   const renderIcon = () => {
     switch (status) {
       case "success":
@@ -47,7 +66,7 @@ const ActivityCard = ({
           }}
         >
           <IconButton
-            href={`https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=${CLUSTER_URL}`}
+            href={`${BLOCKCHAIN_EXPLORE_URL}/tx/${txSignature}?${clusterSearchParams}`}
             target="_blank"
           >
             {renderIcon()}

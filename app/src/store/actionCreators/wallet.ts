@@ -164,6 +164,8 @@ export const editAccountAction = createAsyncThunk<
     return thunkAPI.rejectWithValue(new WalletRequestError(error));
   }
 
+  unwrapResult(await thunkAPI.dispatch(updateWalletFromBackgroundAction()));
+
   return Boolean(unwrapResult(await thunkAPI.dispatch(getAccountAction(account.publicKey))));
 });
 

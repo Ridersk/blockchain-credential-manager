@@ -1,5 +1,5 @@
-import * as en from "./en/messages.json";
-import * as pt_br from "./pt_br/messages.json";
+import * as en from "./locale_en.json";
+import * as pt_br from "./locale_pt_br.json";
 
 export const localeOptions = {
   en: {

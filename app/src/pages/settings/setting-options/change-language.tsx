@@ -12,10 +12,13 @@ import { useTranslation } from "react-i18next";
 import { localeOptions } from "locales";
 import { setCurrentLanguage } from "i18n";
 import { useNavigate } from "react-router";
+import { sleep } from "utils/time";
+import useNotification from "hooks/useNotification";
 
 const ChangeLanguagePage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const sendNotification = useNotification();
   const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>([]);
 
   useEffect(() => {
@@ -28,10 +31,15 @@ const ChangeLanguagePage = () => {
     setLanguageOptions(languages);
   }, []);
 
-  const handleSelectLanguage = (langId: string) => {
+  const handleSelectLanguage = async (langId: string) => {
     setCurrentLanguage(langId);
-    window.location.reload();
+    sendNotification({
+      message: t("language_changed"),
+      variant: "success"
+    });
+    await sleep(500);
     navigate(-1);
+    // window.location.reload();
   };
 
   return (

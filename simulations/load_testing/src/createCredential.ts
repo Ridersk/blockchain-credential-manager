@@ -3,7 +3,6 @@ import {
   getPdaParams,
   initializeProgram,
   requestAirdrop,
-  sleep,
 } from "./utils/testing-utils";
 
 import { EncryptionUtils } from "./utils/aes-encryption";

@@ -1,8 +1,6 @@
 import { List, ListItem, SxProps } from "@mui/material";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { useEffect, useState } from "react";
-import { generateAccountsListAction, GeneratedAccountDetails } from "store/actionCreators/account";
+import { generateAccountsList, GeneratedAccountDetails } from "services/account-generator";
 import Logger from "utils/log";
 import AccountCard from "./account-card";
 
@@ -20,7 +18,6 @@ const AccountList = (props: Props) => {
     onSelected = () => new Promise(() => ({})),
     ...otherProps
   } = props;
-  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<Array<GeneratedAccountDetails>>([]);
 
@@ -29,7 +26,7 @@ const AccountList = (props: Props) => {
       try {
         if (mnemonic) {
           setLoading(true);
-          const accounts = unwrapResult(await dispatch(generateAccountsListAction(mnemonic)));
+          const accounts = await generateAccountsList(mnemonic);
 
           if (excludeAccounts) {
             for (const account of accounts) {
