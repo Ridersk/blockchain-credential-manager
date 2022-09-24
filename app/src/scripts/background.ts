@@ -1,75 +1,11 @@
-import Logger from "../utils/log";
-import { WalletManager, initVaultManager } from "./wallet-manager/wallet-manager";
+import { setupAlarms } from "./workers/alarms";
+import { setupPersistentWorker } from "./workers/persistent-worker";
+import { setupVault } from "./workers/vault";
 
-let walletManager: WalletManager;
-async function setupVault() {
-  walletManager = await initVaultManager();
+setupApp();
+
+export async function setupApp() {
+  setupAlarms();
+  setupPersistentWorker();
+  await setupVault();
 }
-
-setupVault();
-
-/*
- * Old functions
- */
-
-let counter: number = 0;
-
-// Create Alarm
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create("refresh", { periodInMinutes: 0.1 });
-});
-
-// Listen for alarm
-chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === "refresh") {
-    chrome.action.setBadgeText({ text: String(counter++) });
-  }
-});
-
-chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
-  messageHandler(request).then(sendResponse);
-  return true;
-});
-
-async function messageHandler(request: { action: string; data: any[] }) {
-  let status: "success" | "error" = "success";
-  let result;
-  let errorMsg;
-
-  try {
-    // @ts-ignore: Unreachable code error
-    const walletManagerApiMethod = walletManager.api[request.action];
-    if (walletManagerApiMethod) {
-      if (typeof walletManagerApiMethod === "function") {
-        // @ts-ignore: Unreachable code error
-        result = await walletManagerApiMethod(...request.data);
-      }
-    } else {
-      throw new Error(`Action ${request.action} not found`);
-    }
-  } catch (error) {
-    Logger.error("[Background]:", error);
-    if (error instanceof Error) {
-      errorMsg = error.message;
-    }
-    status = "error";
-  }
-
-  return { status, result, error: errorMsg };
-}
-
-export type BackgroundResponse<T> = {
-  status: "success" | "error";
-  result: T;
-  error: any;
-};
-
-export type InferBackgroundAPI<T extends (...args: any) => any> = T extends (
-  ...args: infer P
-) => infer R
-  ? (...args: P) => Promise<BackgroundResponse<Awaited<R>>>
-  : never;
-
-export type BackgroundAPI = {
-  [K in keyof typeof walletManager.api]: InferBackgroundAPI<typeof walletManager.api[K]>;
-};

@@ -1,4 +1,4 @@
-import { BackgroundAPI } from "scripts/background";
+import { WalletAPI } from "scripts/workers/vault";
 
 const proxyHandler = {
   get: (_target: object, property: string | symbol, _receiver: any) => {
@@ -8,10 +8,10 @@ const proxyHandler = {
   }
 };
 
-const backgroundConnection: BackgroundAPI = new Proxy({}, proxyHandler) as unknown as BackgroundAPI;
+const backgroundConnection: WalletAPI = new Proxy({}, proxyHandler) as unknown as WalletAPI;
 
-export let background: BackgroundAPI;
-function _setBackgroundConnection(backgroundConnectionPort: BackgroundAPI) {
+export let background: WalletAPI;
+function _setBackgroundConnection(backgroundConnectionPort: WalletAPI) {
   background = backgroundConnectionPort;
 }
 _setBackgroundConnection(backgroundConnection);
