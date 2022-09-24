@@ -1,5 +1,5 @@
 import Logger from "../../utils/log";
-import { WalletManager, initVaultManager } from "../wallet-manager/wallet-manager";
+import { WalletManager, initVaultManager } from "../wallet-manager";
 
 let walletManager: WalletManager;
 

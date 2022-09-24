@@ -1,15 +1,15 @@
 import { StoreInterface } from "./base-store";
-import { MemoryStore } from "./memory-store";
+import { SessionStore } from "./variants/session-store";
 
 type ComposableStoreOpts = {
   stores: { [key: string]: StoreInterface };
 };
 
 export class ComposableStore<T extends StoreInterface = StoreInterface> {
-  private _stores: { [key: string]: MemoryStore<T> } = {};
+  private _stores: { [key: string]: SessionStore<T> } = {};
 
   constructor(opts: ComposableStoreOpts) {
-    this._stores = opts.stores as { [key: string]: MemoryStore<T> };
+    this._stores = opts.stores as { [key: string]: SessionStore<T> };
   }
 
   async getState() {

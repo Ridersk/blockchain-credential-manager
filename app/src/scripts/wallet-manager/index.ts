@@ -1,6 +1,6 @@
-import selectedStorage from "../storage";
+import { selectedStorage } from "./store/variants/persistent-store";
 import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
-import { MemoryStore } from "./store/memory-store";
+import { StoreInterface } from "./store/base-store";
 import { EncryptorInterface } from "./encryptor";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
@@ -20,7 +20,7 @@ export type WalletManagerOpts = {
 export class WalletManager {
   private _keyringController: KeyringController;
   private _preferencesController: PreferencesController;
-  private _memoryStore: ComposableStore<MemoryStore<any>>;
+  private _memoryStoreCompose: ComposableStore<StoreInterface>;
   private _credentialsController?: CredentialsController;
   private _vaultAccountController?: VaultAccountController;
 
@@ -36,9 +36,9 @@ export class WalletManager {
       initState: initState?.preferences || ({} as PreferencesData)
     });
 
-    this._memoryStore = new ComposableStore<any>({
+    this._memoryStoreCompose = new ComposableStore<any>({
       stores: {
-        keyring: this._keyringController.sessionStore,
+        keyring: this._keyringController.memoryStore,
         preferences: this._preferencesController.sessionStore
       }
     });
@@ -169,7 +169,7 @@ export class WalletManager {
   }
 
   async isUnlocked() {
-    return (await this._keyringController.sessionStore.getState()).isUnlocked;
+    return (await this._keyringController.memoryStore.getState()).isUnlocked;
   }
 
   async getState() {
@@ -178,7 +178,7 @@ export class WalletManager {
 
     return {
       isInitialized,
-      ...(await this._memoryStore.getState())
+      ...(await this._memoryStoreCompose.getState())
     };
   }
 
@@ -195,7 +195,7 @@ export class WalletManager {
     const keypair = await this.getSelectedAccountKeypair();
 
     if (keypair) {
-      const password = (await this._keyringController.sessionStore.getState()).password;
+      const password = (await this._keyringController.memoryStore.getState()).password;
 
       this._credentialsController = new CredentialsController(keypair, password as string);
       this._vaultAccountController = new VaultAccountController(

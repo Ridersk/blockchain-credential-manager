@@ -1,4 +1,4 @@
-import Logger from "../../utils/log";
+import Logger from "../../../../../../utils/log";
 import { BaseStorage } from "./baseStorage";
 
 export class LocalStorage extends BaseStorage {
