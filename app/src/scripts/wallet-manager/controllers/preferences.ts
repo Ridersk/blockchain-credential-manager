@@ -1,5 +1,5 @@
-import { MemoryStore } from "../store/memory-store";
-import { PersistentStore } from "../store/persistent-store";
+import { SessionStore } from "../store/variants/session-store";
+import { PersistentStore } from "../store/variants/persistent-store";
 
 export type PreferencesData = {
   selectedAccount: SelectedAccount;
@@ -10,13 +10,13 @@ export type PreferencesControllerOpts = {
 };
 
 export class PreferencesController {
-  sessionStore: MemoryStore<PreferencesData>;
+  sessionStore: SessionStore<PreferencesData>;
   persistentStore: PersistentStore<PreferencesData>;
 
   constructor(opts: PreferencesControllerOpts) {
     const { initState } = opts;
 
-    this.sessionStore = new MemoryStore<PreferencesData>("preferences", initState);
+    this.sessionStore = new SessionStore<PreferencesData>("preferences", initState);
     this.persistentStore = new PersistentStore<PreferencesData>("preferences", initState);
   }
 

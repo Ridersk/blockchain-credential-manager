@@ -4,8 +4,9 @@
   "name": "MetaVault",
   "description": "Store sensitive informations secure in blockchain Solana platform.",
   "author": "Ridersk",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "permissions": ["storage", "tabs", "activeTab", "scripting", "alarms"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "index.html",
     "default_title": "MetaVault"
