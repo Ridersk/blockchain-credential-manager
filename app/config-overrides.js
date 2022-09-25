@@ -18,7 +18,7 @@ module.exports = function override(config) {
   config.ignoreWarnings = [/Failed to parse source map/];
 
   plugin.definitions["process.env"] = {
-    ...{ CLUSTER_URL: `"${process.env.CLUSTER_URL}"`, LOG_LEVEL: `"${process.env.LOG_LEVEL}"` }
+    ...{ CLUSTER: `"${process.env.CLUSTER}"`, LOG_LEVEL: `"${process.env.LOG_LEVEL}"` }
   };
 
   return config;

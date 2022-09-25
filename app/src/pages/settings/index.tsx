@@ -100,6 +100,14 @@ const SettingsPage = () => {
             color="info"
             variant="contained"
             size="medium"
+            onClick={() => handleGoToSetting("change-network")}
+          >
+            {t("change_network")}
+          </SettingButton>
+          <SettingButton
+            color="info"
+            variant="contained"
+            size="medium"
             onClick={() => handleGoToSetting("change-language")}
           >
             {t("change_language")}

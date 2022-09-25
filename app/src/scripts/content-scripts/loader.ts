@@ -12,12 +12,10 @@ function installButton() {
     try {
       const { labelInput, passwordInput } = getCredentialsInputs();
 
-      console.log("LABEL INPUT:", labelInput);
-
       const btnBase = document.createElement("div");
       const buttonIcon = document.createElement("img");
       btnBase.id = BUTTON_ID;
-      buttonIcon.src = chrome.runtime.getURL("assets/action-btn.png");
+      buttonIcon.src = chrome.runtime.getURL("assets/logo48.png");
       btnBase.appendChild(buttonIcon);
 
       if (passwordInput) {

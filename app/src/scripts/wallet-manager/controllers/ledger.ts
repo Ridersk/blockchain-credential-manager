@@ -3,15 +3,8 @@ import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
 import { sleep } from "../../../utils/time";
 import Logger from "../../../utils/log";
 
-export const CLUSTER_URL = process.env.CLUSTER_URL!;
 export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
-
-Logger.info("CLUSTER_URL:", CLUSTER_URL);
-Logger.info(
-  "IS BROWSER:",
-  process.env.BROWSER || (typeof window !== "undefined" && !window.process?.hasOwnProperty("type"))
-);
 
 export class LedgerProgram<IDL extends Idl = Idl> {
   vaultSigner: VaultAccountSigner;
@@ -20,15 +13,17 @@ export class LedgerProgram<IDL extends Idl = Idl> {
   program: Program<IDL>;
   programID: PublicKey;
 
-  constructor(keypair: Keypair, idl: IDL) {
+  constructor(url: string, keypair: Keypair, idl: IDL) {
     this.programID = new PublicKey(idl.metadata.address);
     this.vaultSigner = new VaultAccountSigner(keypair);
-    this.connection = new Connection(CLUSTER_URL, COMMITMENT);
+    this.connection = new Connection(url, COMMITMENT);
     this.provider = new AnchorProvider(this.connection, this.vaultSigner, {
       preflightCommitment: PREFLIGHT_COMMITMENT,
       commitment: COMMITMENT
     });
     this.program = new Program<IDL>(idl, this.programID, this.provider);
+
+    Logger.info("CLUSTER_URL:", url);
   }
 
   async sendTransaction(transaction: Transaction, signer: Keypair) {

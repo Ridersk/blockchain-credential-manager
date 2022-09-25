@@ -18,8 +18,8 @@ export class CredentialsController {
   private _keypair: Keypair;
   private _password: string;
 
-  constructor(keypair: Keypair, password: string) {
-    this._ledgerProgram = new LedgerProgram<BlockchainCredentialManager>(keypair, idl as any);
+  constructor(url: string, keypair: Keypair, password: string) {
+    this._ledgerProgram = new LedgerProgram<BlockchainCredentialManager>(url, keypair, idl as any);
     this._program = this._ledgerProgram.program;
     this._keypair = keypair;
     this._password = password;

@@ -4,8 +4,9 @@ import { StoreInterface } from "./store/base-store";
 import { EncryptorInterface } from "./encryptor";
 import { PreferencesController, PreferencesData } from "./controllers/preferences";
 import { ComposableStore } from "./store/composable-store";
-import { CredentialsController } from "./controllers/credentials";
+import { CredentialsController, EditCredentialParams } from "./controllers/credentials";
 import { VaultAccountController } from "./controllers/vault";
+import { AccountData } from "store/actionTypes";
 
 type WalletInitialState = {
   keyring: KeyringEncryptedSerialized;
@@ -45,20 +46,26 @@ export class WalletManager {
   }
 
   get api() {
-    const { _keyringController, _credentialsController, _vaultAccountController } = this;
+    const {
+      _keyringController,
+      _credentialsController,
+      _vaultAccountController,
+      _preferencesController
+    } = this;
 
     return {
+      openPopup: this.openPopup.bind(this),
       registerNewWallet: this.registerNewWallet.bind(this),
       unlockWallet: this.unlockWallet.bind(this),
       selectAccount: this.selectAccount.bind(this),
+      editAccount: this.editAccount.bind(this),
       lockWallet: this.lockWallet.bind(this),
       resetWallet: this.resetWallet.bind(this),
       isUnlocked: this.isUnlocked.bind(this),
+      changeNetwork: this.changeNetwork.bind(this),
       getState: this.getState.bind(this),
       fullUpdate: this.fullUpdate.bind(this),
-      openPopup: this.openPopup.bind(this),
       addAccount: _keyringController.addAccount.bind(_keyringController),
-      editAccount: _keyringController.editAccount.bind(_keyringController),
       deleteAccount: _keyringController.deleteAccount.bind(_keyringController),
       getAccounts: _keyringController.getAccounts.bind(_keyringController),
       getAccount: _keyringController.getAccount.bind(_keyringController),
@@ -71,7 +78,8 @@ export class WalletManager {
         _credentialsController?.getCredentialsFromCurrentTabURL.bind(_credentialsController)!,
       getVaultDetails: _vaultAccountController?.getVaultDetails.bind(_vaultAccountController)!,
       getActivities: _vaultAccountController?.getActivities.bind(_vaultAccountController)!,
-      requestAirdrop: _vaultAccountController?.requestAirdrop.bind(_vaultAccountController)!
+      requestAirdrop: _vaultAccountController?.requestAirdrop.bind(_vaultAccountController)!,
+      getCurrentNetwork: _preferencesController.getCurrentNetwork.bind(_preferencesController)
     };
   }
 
@@ -129,6 +137,7 @@ export class WalletManager {
       id: createdAccount.id,
       address: firstVaultAccount.publicKey
     });
+    await this._preferencesController.changeNetwork(process.env.CLUSTER!);
   }
 
   async unlockWallet(password: string) {
@@ -156,6 +165,15 @@ export class WalletManager {
     return selectedAccount;
   }
 
+  async editAccount(account: AccountData) {
+    await this._keyringController.editAccount(account);
+
+    const currentAccountKeyPair = await this.getSelectedAccountKeypair();
+    if (currentAccountKeyPair?.publicKey.toBase58() === account.publicKey) {
+      await this.selectAccount(account.publicKey);
+    }
+  }
+
   async lockWallet() {
     const vaultData = await this._keyringController.lock();
     return vaultData.isUnlocked;
@@ -170,6 +188,11 @@ export class WalletManager {
 
   async isUnlocked() {
     return (await this._keyringController.memoryStore.getState()).isUnlocked;
+  }
+
+  async changeNetwork(networkId: string) {
+    await this._preferencesController.changeNetwork(networkId);
+    await this.fullUpdate();
   }
 
   async getState() {
@@ -196,8 +219,13 @@ export class WalletManager {
 
     if (keypair) {
       const password = (await this._keyringController.memoryStore.getState()).password;
+      const clusterUrl = (await this._preferencesController.getCurrentNetwork()).url;
 
-      this._credentialsController = new CredentialsController(keypair, password as string);
+      this._credentialsController = new CredentialsController(
+        clusterUrl,
+        keypair,
+        password as string
+      );
       this._vaultAccountController = new VaultAccountController(
         this._credentialsController.ledgerProgram,
         keypair

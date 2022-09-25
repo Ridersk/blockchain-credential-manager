@@ -1,20 +1,14 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import bs58 from "bs58";
-import { AccountActionType } from "store/actionTypes";
-import { AccountGenerator } from "utils/account-generator";
+import { AccountGenerator } from "./account-generator";
 
-export const generateAccountsListAction = createAsyncThunk<
-  GeneratedAccountDetails[],
-  string,
-  {
-    rejectValue: AccountRequestError;
-  }
->(AccountActionType.GENERATE_ACCOUNTS_LIST, async (mnemonic, thunkAPI) => {
+export * from "./account-generator";
+
+export const generateAccountsList = async (mnemonic: string) => {
   const accountListFormatted = [];
   const mnemonicIsValid = AccountGenerator.validateMnemonic(mnemonic);
 
   if (!mnemonicIsValid) {
-    thunkAPI.rejectWithValue(new AccountRequestError("Invalid mnemonic"));
+    throw new AccountRequestError("Invalid mnemonic");
   }
 
   const accountList = await AccountGenerator.generateAccountList(mnemonic);
@@ -27,7 +21,7 @@ export const generateAccountsListAction = createAsyncThunk<
   }
 
   return accountListFormatted;
-});
+};
 
 export class AccountRequestError extends Error {
   constructor(message: string) {
