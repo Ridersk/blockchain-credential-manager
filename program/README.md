@@ -1,8 +1,10 @@
 # Metavault - Program (Development Guide)
 
-To develop the program, you need to have installed [Rust](https://www.rust-lang.org/tools/install) and [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) or use the commands in Makefile.
-
 ## Install dependencies
+
+To develop the program, you need to have installed [Rust](https://www.rust-lang.org/tools/install), [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) and [Anchor Framework](https://github.com/coral-xyz/anchor).
+
+If you prefer an automated way use the commands in Makefile.
 
 ```shell
 make install
