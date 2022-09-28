@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { Box, Container, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Form, Formik } from "formik";
@@ -65,6 +66,7 @@ const CredentialPage = () => {
       const selectedCredAddress = new URLSearchParams(locationUrlQsParams).get("cred");
 
       if (selectedCredAddress) {
+        setIsUpdate(true);
         const credential = unwrapResult(await dispatch(getCredentialAction(selectedCredAddress)));
 
         if (credential) {
@@ -77,7 +79,6 @@ const CredentialPage = () => {
             secret: credential.secret,
             description: credential.description
           });
-          setIsUpdate(true);
         }
       }
     }
@@ -88,8 +89,8 @@ const CredentialPage = () => {
   // Get Data from user current external website page
   useEffect(() => {
     async function getUserValue() {
-      if (chrome?.tabs) {
-        const tabQuery: chrome.tabs.QueryInfo = {};
+      if (!isUpdate && browser?.tabs) {
+        const tabQuery: browser.Tabs.QueryQueryInfoType = {};
         let generatedSecret: string;
 
         tabQuery.active = true;
@@ -107,20 +108,18 @@ const CredentialPage = () => {
         }
 
         // Send a request to the content script to get current tab input value.
-        const [tab] = await chrome.tabs.query(tabQuery);
-        chrome.tabs.sendMessage(
-          tab.id!,
-          { action: "getInputFormCredentials" },
-          function (response) {
-            setCredentialForm({
-              title: extractURLOrigin(tab.url || ""),
-              url: extractURLOrigin(tab.url || ""),
-              label: response?.data.label,
-              secret: generatedSecret || response?.data.password,
-              description: ""
-            });
-          }
-        );
+        const [tab] = await browser.tabs.query(tabQuery);
+        const response = await browser.tabs.sendMessage(tab.id!, {
+          action: "getInputFormCredentials"
+        });
+
+        setCredentialForm({
+          title: "",
+          url: extractURLOrigin(tab.url || ""),
+          label: response?.data.label,
+          secret: generatedSecret || response?.data.password,
+          description: ""
+        });
       }
     }
 
@@ -132,7 +131,7 @@ const CredentialPage = () => {
   };
 
   const sendCredentialToCurrentPage = async (values: FormValues) => {
-    const tabQuery: chrome.tabs.QueryInfo = {};
+    const tabQuery: browser.Tabs.QueryQueryInfoType = {};
 
     tabQuery.active = true;
     if (currentWindowId) {
@@ -142,8 +141,8 @@ const CredentialPage = () => {
     }
 
     // Send a request to the content script to get current tab input value.
-    const [tab] = await chrome.tabs.query(tabQuery);
-    chrome.tabs.sendMessage(tab.id!, {
+    const [tab] = await browser.tabs.query(tabQuery);
+    await browser.tabs.sendMessage(tab.id!, {
       action: "credentialSaved",
       data: { label: values.label, password: values.secret }
     });
@@ -197,8 +196,8 @@ const CredentialPage = () => {
 
       if (originIsPopupInPage) {
         await sendCredentialToCurrentPage(values);
-        const windowsId = (await chrome.windows.getCurrent()).id;
-        await chrome.windows.remove(windowsId!);
+        const windowsId = (await browser.windows.getCurrent()).id;
+        await browser.windows.remove(windowsId!);
       }
 
       goToPreviousPage();
@@ -236,8 +235,8 @@ const CredentialPage = () => {
           secret: "",
           description: ""
         });
-        const windowsId = (await chrome.windows.getCurrent()).id;
-        await chrome.windows.remove(windowsId!);
+        const windowsId = (await browser.windows.getCurrent()).id;
+        await browser.windows.remove(windowsId!);
       }
 
       goToPreviousPage();

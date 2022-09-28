@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { StoreInterface } from "../base-store";
 
 export class SessionStore<T> implements StoreInterface {

@@ -1,14 +1,14 @@
 import Logger from "../../utils/log";
 import { WalletManager, initVaultManager } from "../wallet-manager";
+import browser from "webextension-polyfill";
 
 let walletManager: WalletManager;
 
 export async function setupVault() {
   walletManager = await initVaultManager();
 
-  chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
-    messageHandler(request).then(sendResponse);
-    return true;
+  browser.runtime.onMessage.addListener(async function (request, _sender) {
+    return await messageHandler(request);
   });
 }
 

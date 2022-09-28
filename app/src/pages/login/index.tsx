@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { LoadingButton } from "@mui/lab";
 import { Box, Container, Grid, Typography } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -45,8 +46,8 @@ const LoginPage = () => {
         await sleep(100);
 
         if (originIsPopupInPage) {
-          const windowsId = (await chrome.windows.getCurrent()).id;
-          await chrome.windows.remove(windowsId!);
+          const windowsId = (await browser.windows.getCurrent()).id;
+          await browser.windows.remove(windowsId!);
         }
         navigate({ pathname: "/" });
       } else {

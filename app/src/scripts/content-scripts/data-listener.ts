@@ -1,17 +1,18 @@
 // Responsible to get credential values from current page form inputs
+import browser from "webextension-polyfill";
 import { getCredentialsInputs } from "./selectCredentialsInput";
 
-chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
+browser.runtime.onMessage.addListener(async function (request, _sender) {
   if (request.action == "getInputFormCredentials") {
     const { labelInput, passwordInput } = getCredentialsInputs();
 
-    sendResponse({
+    return {
       data: {
         label: labelInput?.value,
         password: passwordInput?.value
       }
-    });
-  } else sendResponse({});
+    };
+  } else return {};
 });
 
 export default {};

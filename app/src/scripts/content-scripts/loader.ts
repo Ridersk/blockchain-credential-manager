@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import Logger from "../../utils/log";
 import { getCredentialsInputs } from "./selectCredentialsInput";
 
@@ -15,7 +16,7 @@ function installButton() {
       const btnBase = document.createElement("div");
       const buttonIcon = document.createElement("img");
       btnBase.id = BUTTON_ID;
-      buttonIcon.src = chrome.runtime.getURL("assets/logo48.png");
+      buttonIcon.src = browser.runtime.getURL("assets/logo48.png");
       btnBase.appendChild(buttonIcon);
 
       if (passwordInput) {
@@ -55,7 +56,7 @@ async function toggleInPagePopup(anchorElem: HTMLElement) {
   if (!document.querySelector(`iframe#${INPAGE_POPUP_ID}`)) {
     const iframe = document.createElement("iframe");
     iframe.id = INPAGE_POPUP_ID;
-    iframe.src = chrome.runtime.getURL("popup_credentials/index.html");
+    iframe.src = browser.runtime.getURL("popup_credentials/index.html");
     iframe.style.overflow = "hidden";
     iframe.style.position = "absolute";
     iframe.style.display = "block";
@@ -134,7 +135,7 @@ export const interval = setInterval(async () => {
 }, 100);
 
 // Background Listener
-chrome.runtime.onMessage.addListener(function (request) {
+browser.runtime.onMessage.addListener(function (request) {
   if (request.action == "stateUpdated") {
     const iframe: HTMLIFrameElement = document.querySelector(
       `iframe#${INPAGE_POPUP_ID}`

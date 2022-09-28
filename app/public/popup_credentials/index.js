@@ -1,5 +1,5 @@
 async function loadPopup() {
-  const response = await chrome.runtime.sendMessage({
+  const response = await browser.runtime.sendMessage({
     action: "getState",
     data: []
   });
@@ -79,7 +79,7 @@ async function createCredentialsList() {
 
 async function getCredentialsCurrentDomainFromBackground() {
   try {
-    const response = await chrome.runtime.sendMessage({
+    const response = await browser.runtime.sendMessage({
       action: "getCredentialsFromCurrentTabURL",
       data: []
     });
@@ -108,7 +108,7 @@ async function openPopupFromBackground(path, searchParams) {
   msgParams.push(path);
   msgParams.push(searchParams);
 
-  await chrome.runtime.sendMessage({ action: "openPopup", data: msgParams });
+  await browser.runtime.sendMessage({ action: "openPopup", data: msgParams });
 }
 
 async function sendCredentialsToCurrentPage(credential) {

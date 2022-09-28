@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { selectedStorage } from "./store/variants/persistent-store";
 import { KeyringController, KeyringEncryptedSerialized, VaultAccount } from "./controllers/keyring";
 import { StoreInterface } from "./store/base-store";
@@ -92,9 +93,9 @@ export class WalletManager {
   }
 
   async openPopup(path?: string, customSearchParams?: { [key: string]: any }) {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    let popupUrl = await chrome.action.getPopup({ tabId: tab.id });
-    const windowInfo = await chrome.windows.getCurrent();
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+    let popupUrl = await browser.action.getPopup({ tabId: tab.id });
+    const windowInfo = await browser.windows.getCurrent();
     const width = 400;
     const height = 600;
     const top = windowInfo.top;
@@ -111,7 +112,7 @@ export class WalletManager {
     customSearchParams["window-id"] = tab.windowId;
     customSearchParams["origin"] = "popupInPage";
 
-    chrome.windows.create({
+    browser.windows.create({
       focused: true,
       url: `${popupUrl}?${new URLSearchParams(customSearchParams).toString()}`,
       type: "popup",
@@ -231,14 +232,13 @@ export class WalletManager {
         keypair
       );
 
-      chrome.windows.getAll({ populate: true }, (windows) => {
-        windows.forEach((window) => {
-          if (window.tabs) {
-            window.tabs.forEach((tab) => {
-              chrome.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
-            });
-          }
-        });
+      const windows = await browser.windows.getAll({ populate: true });
+      windows.forEach((window) => {
+        if (window.tabs) {
+          window.tabs.forEach((tab) => {
+            browser.tabs.sendMessage(tab.id!, { action: "stateUpdated" });
+          });
+        }
       });
     } else {
       this._credentialsController = undefined;

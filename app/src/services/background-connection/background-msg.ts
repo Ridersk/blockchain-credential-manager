@@ -1,9 +1,10 @@
+import browser from "webextension-polyfill";
 import { WalletAPI } from "scripts/workers/vault";
 
 const proxyHandler = {
   get: (_target: object, property: string | symbol, _receiver: any) => {
     return async (...params: any[]) => {
-      return chrome.runtime.sendMessage({ action: property, data: params });
+      return await browser.runtime.sendMessage({ action: property, data: params });
     };
   }
 };

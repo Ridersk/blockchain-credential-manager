@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import * as anchor from "@project-serum/anchor";
 import { Credential } from "../../../../models/Credential";
 
@@ -92,7 +93,7 @@ export class CredentialsController {
   }
 
   async getCredentialsFromCurrentTabURL() {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     const urlOrigin = extractURLOrigin(tab.url!);
     return filterCredentialsByURL(await this.getCredentials(), urlOrigin);
   }

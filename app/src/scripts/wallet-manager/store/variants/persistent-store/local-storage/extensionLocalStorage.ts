@@ -1,11 +1,12 @@
+import browser from "webextension-polyfill";
 import { BaseStorage } from "./baseStorage";
 
 export class ExtensionLocalStorage extends BaseStorage {
-  storageMethod: chrome.storage.LocalStorageArea;
+  storageMethod: browser.Storage.LocalStorageArea;
 
   constructor() {
     super();
-    this.storageMethod = chrome.storage.local;
+    this.storageMethod = browser.storage.local;
   }
 
   async setData(key: string, val: any): Promise<void> {
