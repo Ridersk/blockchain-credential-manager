@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    "applications": {
+        "gecko": {
+            "id": "metavault@rdk.io"
+        }
+    },
+    "background": {
+        "page": "background.html",
+        "persistent": true
+    },
+    "browser_action": {
+        "default_icon": {
+            "48": "assets/logo48.png",
+            "128": "assets/logo128.png"
+        },
+        "default_title": "MetaVault",
+        "default_popup": "index.html"
+    },
+    "web_accessible_resources": [
+        "popup_credentials/index.html",
+        "popup_credentials/styles.css",
+        "assets/logo48.png"
+    ]
+}

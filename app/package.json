@@ -2,6 +2,43 @@
   "name": "extension",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "start": "BROWSER=none react-app-rewired start",
+    "build": "npm-run-all build:app build:scripts",
+    "build:app": "env-cmd -f .env react-app-rewired build",
+    "build:scripts": "env-cmd -f .env webpack --config webpack.config.js",
+    "build:dev": "npm-run-all build:dev:*",
+    "build:dev:app": "env-cmd -f .env.dev react-app-rewired build",
+    "build:dev:scripts": "env-cmd -f .env.dev webpack --config webpack.config.js",
+    "build:test": "npm-run-all build:test:*",
+    "build:test:app": "env-cmd -f .env.test react-app-rewired build",
+    "build:test:scripts": "env-cmd -f .env.test webpack --config webpack.config.js",
+    "lint:fix": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --write",
+    "lint": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --check"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
@@ -67,43 +104,6 @@
     "webextension-polyfill": "^0.10.0",
     "xhr2": "^0.2.1",
     "yup": "^0.32.11"
-  },
-  "scripts": {
-    "start": "BROWSER=none react-app-rewired start",
-    "build": "npm-run-all build:app build:scripts",
-    "build:app": "env-cmd -f .env react-app-rewired build",
-    "build:scripts": "env-cmd -f .env webpack --config webpack.config.js",
-    "build:dev": "npm-run-all build:dev:*",
-    "build:dev:app": "env-cmd -f .env.dev react-app-rewired build",
-    "build:dev:scripts": "env-cmd -f .env.dev webpack --config webpack.config.js",
-    "build:test": "npm-run-all build:test:*",
-    "build:test:app": "env-cmd -f .env.test react-app-rewired build",
-    "build:test:scripts": "env-cmd -f .env.test webpack --config webpack.config.js",
-    "lint:fix": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --write",
-    "lint": "prettier */*.js \"src/**/*{.js,.jsx,.ts,.tsx,.json}\" --check"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-react"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@babel/core": "^7.18.0",

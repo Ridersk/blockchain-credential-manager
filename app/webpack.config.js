@@ -21,7 +21,6 @@ module.exports = {
       os: require.resolve("os-browserify/browser"),
       https: require.resolve("https-browserify"),
       http: require.resolve("stream-http"),
-      // url: require.resolve("url"),
       buffer: require.resolve("buffer/"),
       crypto: require.resolve("crypto-browserify"),
       zlib: require.resolve("browserify-zlib"),
@@ -44,10 +43,6 @@ module.exports = {
       process: require.resolve("process/browser"),
       Buffer: ["buffer", "Buffer"],
       XMLHttpRequest: require.resolve("xhr2")
-      // window: "global/window",
-      // "window.WebSocket": require.resolve("ws")
-      // "window.WebSocket": ["rpc-websockets", "Client"]
-      // "window.WebSocket": ["websocket-polyfill/lib/WebSocket", "WebSocket"]
     }),
     new webpack.DefinePlugin({
       "process.env": JSON.stringify(process.env)

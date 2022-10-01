@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "icons": {
+        "48": "assets/logo48.png",
+        "128": "assets/logo128.png"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "MetaVault"
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module",
+        "mode": "module"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "popup_credentials/index.html",
+                "popup_credentials/styles.css",
+                "assets/logo48.png"
+            ],
+            "matches": [
+                "https://*/*"
+            ]
+        }
+    ]
+}
