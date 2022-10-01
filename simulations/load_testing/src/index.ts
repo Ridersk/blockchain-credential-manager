@@ -94,7 +94,9 @@ async function runMeasurableProcess(
 
         child.stdout.on("data", (data) => {
           try {
-            times.push(parseFloat(JSON.parse(data).elapsedTime));
+            const elapsedTime = parseFloat(JSON.parse(data).elapsedTime)
+            times.push(elapsedTime);
+            // console.log(elapsedTime);
           } catch (e) {
             console.log(`child error: ${data}`);
           }
@@ -124,7 +126,13 @@ async function runMeasurableProcess(
 
   const sum = times.reduce((a, b) => a + b, 0);
   const avg = sum / times.length;
+  const std = Math.sqrt(
+    times.map((t) => Math.pow(t - avg, 2)).reduce((a, b) => a + b, 0) /
+      times.length
+  );
+
   console.log(`average: ${avg}`);
+  console.log(`standard deviation: ${std}`);
 
   if (responses.filter(Boolean).length == responses.length) {
     console.log("success!");
