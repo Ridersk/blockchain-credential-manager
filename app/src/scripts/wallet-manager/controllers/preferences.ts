@@ -1,4 +1,4 @@
-import { SessionStore } from "../store/variants/session-store";
+import { MemoryStore } from "../store/variants/memory-store";
 import { PersistentStore } from "../store/variants/persistent-store";
 import { NetworkController, NetworkOption } from "./network";
 
@@ -12,14 +12,14 @@ export type PreferencesControllerOpts = {
 };
 
 export class PreferencesController {
-  sessionStore: SessionStore<PreferencesData>;
+  memoryStore: MemoryStore<PreferencesData>;
   persistentStore: PersistentStore<PreferencesData>;
   networkController: NetworkController;
 
   constructor(opts: PreferencesControllerOpts) {
     const { initState } = opts;
 
-    this.sessionStore = new SessionStore<PreferencesData>("preferences", initState);
+    this.memoryStore = new MemoryStore<PreferencesData>("preferences", initState);
     this.persistentStore = new PersistentStore<PreferencesData>("preferences", initState);
 
     this.networkController = new NetworkController({
@@ -38,7 +38,7 @@ export class PreferencesController {
   }
 
   async reset() {
-    await this.sessionStore.clearState();
+    await this.memoryStore.clearState();
     await this.persistentStore.clearState();
   }
 
@@ -51,12 +51,12 @@ export class PreferencesController {
   }
 
   async _update(key: string, data: any) {
-    await this.sessionStore.updateState({ [key]: data });
+    await this.memoryStore.updateState({ [key]: data });
     await this.persistentStore.updateState({ [key]: data });
   }
 
   async _get(): Promise<PreferencesData> {
-    return (await this.sessionStore.getState()) || (await this.persistentStore.getState());
+    return (await this.memoryStore.getState()) || (await this.persistentStore.getState());
   }
 }
 

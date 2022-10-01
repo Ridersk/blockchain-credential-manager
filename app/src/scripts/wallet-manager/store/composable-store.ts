@@ -1,15 +1,14 @@
 import { StoreInterface } from "./base-store";
-import { SessionStore } from "./variants/session-store";
 
 type ComposableStoreOpts = {
-  stores: { [key: string]: StoreInterface };
+  stores: { [key: string]: StoreInterface<any> };
 };
 
-export class ComposableStore<T extends StoreInterface = StoreInterface> {
-  private _stores: { [key: string]: SessionStore<T> } = {};
+export class ComposableStore<T extends StoreInterface<T> = StoreInterface<any>> {
+  private _stores: { [key: string]: StoreInterface<T> } = {};
 
   constructor(opts: ComposableStoreOpts) {
-    this._stores = opts.stores as { [key: string]: SessionStore<T> };
+    this._stores = opts.stores as { [key: string]: StoreInterface<T> };
   }
 
   async getState() {

@@ -22,7 +22,7 @@ export type WalletManagerOpts = {
 export class WalletManager {
   private _keyringController: KeyringController;
   private _preferencesController: PreferencesController;
-  private _memoryStoreCompose: ComposableStore<StoreInterface>;
+  private _memoryStoreCompose: ComposableStore<StoreInterface<any>>;
   private _credentialsController?: CredentialsController;
   private _vaultAccountController?: VaultAccountController;
 
@@ -41,7 +41,7 @@ export class WalletManager {
     this._memoryStoreCompose = new ComposableStore<any>({
       stores: {
         keyring: this._keyringController.memoryStore,
-        preferences: this._preferencesController.sessionStore
+        preferences: this._preferencesController.memoryStore
       }
     });
   }

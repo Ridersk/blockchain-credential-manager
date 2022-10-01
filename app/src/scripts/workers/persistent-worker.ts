@@ -54,11 +54,11 @@ function connectToServiceWorker() {
   function isChrome() {
     return detectBrowser() === "chrome";
   }
-  
+
   function detectBrowser() {
     let userAgent = navigator.userAgent;
     let browserName;
-  
+
     if (userAgent.match(/chrome|chromium|crios/i)) {
       browserName = "chrome";
     } else if (userAgent.match(/firefox|fxios/i)) {
@@ -70,8 +70,7 @@ function connectToServiceWorker() {
     } else if (userAgent.match(/edg/i)) {
       browserName = "edge";
     }
-  
+
     return browserName;
   }
 }
-

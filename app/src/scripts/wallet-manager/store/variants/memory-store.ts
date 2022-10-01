@@ -1,6 +1,6 @@
 import { StoreInterface } from "../base-store";
 
-export class MemoryStore<T> implements StoreInterface {
+export class MemoryStore<T> implements StoreInterface<T> {
   private _state: T;
 
   constructor(_key: string, initState: T = {} as T) {

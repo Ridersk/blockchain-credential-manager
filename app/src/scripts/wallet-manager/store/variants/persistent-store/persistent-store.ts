@@ -1,7 +1,7 @@
 import { selectedStorage } from "./local-storage";
 import { StoreInterface } from "../../base-store";
 
-export class PersistentStore<T> implements StoreInterface {
+export class PersistentStore<T> implements StoreInterface<T> {
   private _state: T;
   private _key: string;
 
