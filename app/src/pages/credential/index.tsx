@@ -21,11 +21,10 @@ import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { forceUpdateWalletAction } from "store/actionCreators";
 import { sleep } from "utils/time";
-import { usePrev } from "hooks/usePrev";
+import Logger from "utils/log";
 
 const CredentialPage = () => {
   const location = useLocation();
-  const prevLocation = usePrev(location);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useTypedDispatch();
@@ -101,8 +100,9 @@ const CredentialPage = () => {
         }
 
         try {
-          generatedSecret = (prevLocation?.state as any).generatedSecret;
-        } catch (e) {
+          generatedSecret = (location?.state as any).generatedSecret;
+        } catch (error) {
+          Logger.error(error);
           generatedSecret = "";
         }
 
@@ -202,9 +202,10 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }
@@ -240,9 +241,10 @@ const CredentialPage = () => {
       }
 
       goToPreviousPage();
-    } catch (err) {
-      if (err instanceof CredentialRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof CredentialRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({ message: t("operation_unknown_error"), variant: "error" });
       }

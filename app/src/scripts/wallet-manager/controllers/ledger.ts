@@ -1,10 +1,10 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program, Wallet } from "@project-serum/anchor";
+import { sleep } from "../../../utils/time";
+import Logger from "../../../utils/log";
 
-// const CLUSTER_URL = process.env.REACT_APP_CLUSTER_URL || "devnet";
-const CLUSTER_URL = "http://127.0.0.1:8899" || "devnet";
+export const COMMITMENT = "confirmed";
 const PREFLIGHT_COMMITMENT = "processed";
-const COMMITMENT = "confirmed";
 
 export class LedgerProgram<IDL extends Idl = Idl> {
   vaultSigner: VaultAccountSigner;
@@ -13,15 +13,39 @@ export class LedgerProgram<IDL extends Idl = Idl> {
   program: Program<IDL>;
   programID: PublicKey;
 
-  constructor(keypair: Keypair, idl: IDL) {
+  constructor(url: string, keypair: Keypair, idl: IDL) {
     this.programID = new PublicKey(idl.metadata.address);
     this.vaultSigner = new VaultAccountSigner(keypair);
-    this.connection = new Connection(CLUSTER_URL, COMMITMENT);
+    this.connection = new Connection(url, COMMITMENT);
     this.provider = new AnchorProvider(this.connection, this.vaultSigner, {
       preflightCommitment: PREFLIGHT_COMMITMENT,
       commitment: COMMITMENT
     });
     this.program = new Program<IDL>(idl, this.programID, this.provider);
+
+    Logger.info("CLUSTER_URL:", url);
+  }
+
+  async sendTransaction(transaction: Transaction, signer: Keypair) {
+    const signature = await this.connection.sendTransaction(transaction, [signer]);
+    await this.confirmTransaction(signature);
+  }
+
+  async confirmTransaction(signature: string) {
+    const timeout = 30000;
+    const startTime = Date.now();
+    let waitTime = 200;
+    while (true) {
+      let status = await this.connection.getParsedTransaction(signature, COMMITMENT);
+      if (status) {
+        break;
+      }
+      if (Date.now() - startTime > timeout) {
+        throw new Error("Transaction confirmation timeout");
+      }
+      await sleep(waitTime);
+      waitTime = Math.min(waitTime * 1.1, 1000);
+    }
   }
 }
 

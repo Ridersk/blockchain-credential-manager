@@ -1,5 +1,4 @@
 import { EncryptorInterface } from "../encryptor";
-import { MemoryStore } from "../store/memory-store";
 import passEncryptor from "browser-passworder";
 import {
   WalletIncorrectPasswordError,
@@ -7,9 +6,11 @@ import {
   WalletLockedError,
   AccountAlreadyExistsError
 } from "../../../exceptions";
-import { PersistentStore } from "../store/persistent-store";
+import { PersistentStore } from "../store/variants/persistent-store";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
+import Logger from "../../../utils/log";
+import { MemoryStore } from "../store/variants/memory-store";
 
 export type KeyringEncryptedSerialized = {
   vault: string;
@@ -39,14 +40,14 @@ type KeyringControllerOpts = {
 
 export class KeyringController {
   persistentStore: PersistentStore<KeyringEncryptedSerialized>;
-  sessionStore: MemoryStore<SessionVault>;
+  memoryStore: MemoryStore<SessionVault>;
   private _encryptor: EncryptorInterface;
 
   constructor(opts: KeyringControllerOpts) {
     const { initState, encryptor } = opts;
 
     this.persistentStore = new PersistentStore<KeyringEncryptedSerialized>("keyring", initState);
-    this.sessionStore = new MemoryStore<SessionVault>("keyring", {
+    this.memoryStore = new MemoryStore<SessionVault>("keyring", {
       isUnlocked: false,
       keyring: null,
       password: null
@@ -63,12 +64,13 @@ export class KeyringController {
 
       const vault: VaultKeyring = await this._encryptor.decrypt(password, encryptedVault);
       await this._updateKeyringSession(password, vault);
-      return (await this.sessionStore.getState()).keyring;
-    } catch (err) {
-      if (err instanceof Error && err.message === "Incorrect password") {
+      return (await this.memoryStore.getState()).keyring;
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof Error && error.message === "Incorrect password") {
         throw new WalletIncorrectPasswordError("Incorrect password");
       }
-      throw err;
+      throw error;
     }
   }
 
@@ -77,7 +79,7 @@ export class KeyringController {
   }
 
   async getKeyring(): Promise<VaultKeyring> {
-    const keyring = (await this.sessionStore.getState()).keyring;
+    const keyring = (await this.memoryStore.getState()).keyring;
 
     if (!keyring) {
       throw new WalletLockedError("Keyring is locked");
@@ -89,15 +91,16 @@ export class KeyringController {
   async lock() {
     try {
       await this._updateKeyringSession(null, null, false);
-      return await this.sessionStore.getState();
-    } catch (err) {
+      return await this.memoryStore.getState();
+    } catch (error) {
+      Logger.error(error);
       throw new WalletLockedError("Error on locking keyring");
     }
   }
 
   async reset() {
     await this.persistentStore.clearState();
-    await this.sessionStore.clearState();
+    await this.memoryStore.clearState();
   }
 
   async addAccount(account: {
@@ -119,7 +122,7 @@ export class KeyringController {
     }
 
     keyring.accounts.push(newAccount);
-    const password = (await this.sessionStore.getState()).password!;
+    const password = (await this.memoryStore.getState()).password!;
     await this._updatePersistentKeyring(password, keyring);
 
     return newAccount;
@@ -141,7 +144,7 @@ export class KeyringController {
     };
     keyring.accounts[index] = updatedAccount;
 
-    const password = (await this.sessionStore.getState()).password!;
+    const password = (await this.memoryStore.getState()).password!;
     await this._updatePersistentKeyring(password, keyring);
 
     return updatedAccount;
@@ -157,7 +160,7 @@ export class KeyringController {
     const index = keyring.accounts.findIndex((_account) => _account.publicKey === address);
     keyring.accounts.splice(index, 1);
 
-    const password = (await this.sessionStore.getState()).password!;
+    const password = (await this.memoryStore.getState()).password!;
     await this._updatePersistentKeyring(password, keyring);
 
     return account;
@@ -193,7 +196,7 @@ export class KeyringController {
     keyring: VaultKeyring | null,
     isUnlocked: boolean = true
   ) {
-    await this.sessionStore.updateState({
+    await this.memoryStore.updateState({
       isUnlocked,
       keyring,
       password

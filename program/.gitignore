@@ -8,5 +8,5 @@ test-ledger
 # Node packages
 node_modules
 package-lock.json
-yarn.lock
+# yarn.lock
 .vscode/*.log

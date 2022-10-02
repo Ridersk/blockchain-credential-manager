@@ -19,6 +19,7 @@ import {
   getAccountsAction,
   WalletRequestError
 } from "store/actionCreators";
+import Logger from "utils/log";
 import { sleep } from "utils/time";
 import { extractURLHashSearchParams } from "utils/url";
 
@@ -64,6 +65,8 @@ const AccountPage = () => {
           formattedAccounts.push({ publicKey: account.publicKey });
         }
         setSavedAccounts(formattedAccounts);
+      } catch (error) {
+        Logger.error(error);
       } finally {
         setSavedAccountsLoaded(true);
       }
@@ -110,9 +113,10 @@ const AccountPage = () => {
       }
       await sleep(100);
       navigate(-1);
-    } catch (err) {
-      if (err instanceof WalletRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof WalletRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({
           message: t("unexpected_error"),
@@ -133,9 +137,10 @@ const AccountPage = () => {
       });
       await sleep(100);
       navigate(-1);
-    } catch (err) {
-      if (err instanceof WalletRequestError) {
-        sendNotification({ message: err?.message, variant: "error" });
+    } catch (error) {
+      Logger.error(error);
+      if (error instanceof WalletRequestError) {
+        sendNotification({ message: error?.message, variant: "error" });
       } else {
         sendNotification({
           message: t("unexpected_error"),

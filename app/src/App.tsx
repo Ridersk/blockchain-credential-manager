@@ -5,10 +5,14 @@ import { theme } from "themes";
 import Routes from "routes";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { updateWalletFromBackgroundAction } from "store/actionCreators";
+import {
+  updateNetworkFromBackgroundAction,
+  updateWalletFromBackgroundAction
+} from "store/actionCreators";
 import { WalletNoKeyringFoundError } from "exceptions";
 import { useTypedDispatch } from "hooks/useTypedDispatch";
 import { unwrapResult } from "@reduxjs/toolkit";
+import Logger from "utils/log";
 
 function App() {
   const dispatch = useTypedDispatch();
@@ -28,12 +32,18 @@ function App() {
       try {
         setLoading(true);
         unwrapResult(await dispatch(updateWalletFromBackgroundAction()));
-      } catch (err) {
-        if (err instanceof WalletNoKeyringFoundError) {
+        unwrapResult(await dispatch(updateNetworkFromBackgroundAction()));
+      } catch (error) {
+        if (error instanceof WalletNoKeyringFoundError) {
           goToWelcomePage();
         } else {
           goToLoginPage();
         }
+        Logger.error("[APP]", error);
+        Logger.error(
+          "[APP] WalletNoKeyringFoundError?",
+          error instanceof WalletNoKeyringFoundError
+        );
       } finally {
         setLoading(false);
       }

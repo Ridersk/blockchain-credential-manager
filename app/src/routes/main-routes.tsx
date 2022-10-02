@@ -6,6 +6,7 @@ import HomePage from "pages/home";
 import SettingsPage from "pages/settings";
 import AccountPage from "pages/settings/setting-options/account";
 import ChangeLanguagePage from "pages/settings/setting-options/change-language";
+import ChangeNetworkPage from "pages/settings/setting-options/change-network";
 import ShowMnemonicPage from "pages/settings/setting-options/show-mnemonic";
 
 // ==============================|| ROUTING ||============================== //
@@ -32,6 +33,10 @@ const MainRoutes = {
         {
           path: "",
           element: <SettingsPage />
+        },
+        {
+          path: "change-network",
+          element: <ChangeNetworkPage />
         },
         {
           path: "change-language",

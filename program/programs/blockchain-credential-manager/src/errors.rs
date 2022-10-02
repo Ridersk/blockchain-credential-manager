@@ -6,5 +6,5 @@ use anchor_lang::prelude::*;
 #[error_code]
 pub enum CustomErrorCode {
     #[msg("Credential data too long.")]
-    CredentialataTooLong
+    CredentialataTooLong,
 }

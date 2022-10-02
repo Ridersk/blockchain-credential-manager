@@ -1,10 +1,38 @@
 version: "3"
 
 services:
-  program:
+  program-commom: &program-commom
     build: .
-    container_name: blockchain-credential-program
-    ports:
-      - 8899:8899
+    image: bcm-program
+    networks:
+      - bcm-network
+    environment:
+      PROGRAM_AUTHORITY_KEYPAIR_FILE: /program/target/deploy/id.json
+      PROGRAM_KEYPAIR_FILE: /program/target/deploy/blockchain_credential_manager-keypair.json
     volumes:
-      - .:/program
+      - ./target/deploy:/program/target/deploy
+
+  # program:
+  #   <<: *program-commom
+  #   container_name: bcm-program
+  #   ports:
+  #     - 8899:8899
+  #   command: bash -c "make start-localnet"
+
+  program-deploy:
+    <<: *program-commom
+    container_name: bcm-program-deploy
+    extra_hosts:
+      - "localhost-test:host-gateway"
+    # depends_on:
+    #   - program
+    # command: |
+    #   bash -c "
+    #     make airdrop AUTHORITY_KEYPAIR_FILE=$${PROGRAM_AUTHORITY_KEYPAIR_FILE} &&
+    #     make deploy AUTHORITY_KEYPAIR_FILE=$${PROGRAM_AUTHORITY_KEYPAIR_FILE} CLUSTER=http://bcm-program:8899
+    #   "
+
+networks:
+  bcm-network:
+    name: bcm-network
+    driver: bridge

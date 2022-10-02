@@ -76,9 +76,9 @@ describe("credential-deletion", () => {
     // Check if credential still exists
     await assert.rejects(
       program.account.credentialAccount.fetch(credentialAccountKey),
-      (err: Error) => {
+      (error: Error) => {
         assert.strictEqual(
-          err.message,
+          error.message,
           `Account does not exist ${credentialAccountKey}`
         );
         return true;
@@ -136,10 +136,10 @@ describe("credential-deletion", () => {
         },
         signers: [user2],
       }),
-      (err: Error) => {
+      (error: Error) => {
         assert.strictEqual(
           `unknown signer: ${user2.publicKey.toBase58()}`,
-          err.message
+          error.message
         );
         return true;
       }

@@ -1,3 +1,5 @@
+import Logger from "./log";
+
 export class EncryptionUtils {
   passwordSalt: string;
   encryptionIv: string;
@@ -49,6 +51,7 @@ export class EncryptionUtils {
       const decryptedStr = Buffer.from(decryptedData).toString("utf8");
       return JSON.parse(decryptedStr);
     } catch (error) {
+      Logger.error(error);
       throw new Error("Incorrect password");
     }
   }
