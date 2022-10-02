@@ -10,8 +10,7 @@ const CREDENTIALS_COUNT = parseInt(process.env.CREDENTIALS_COUNT!);
 async function main() {
   try {
     const data = await prepareTest();
-    const firstCredential = data.credentialsData[0].credential;
-    console.log(`CREDENTIALS: ${JSON.stringify(data, null, 2)}`);
+    const firstCredential = data.firstCredentialData.credential;
     await runMeasurableProcess(
       "Edit Credential",
       "./src/editCredential.ts",
@@ -27,8 +26,8 @@ async function main() {
       "./src/getCredentials.ts",
       firstCredential
     );
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -54,8 +53,10 @@ async function prepareTest(): Promise<{ [key: string]: any }> {
     child.stdout.on("data", (data) => {
       try {
         credentialData = JSON.parse(data);
-      } catch (e) {
-        console.log(`createCredentials STDOUT: ${data}`);
+        console.log(`CREDENTIALS: ${JSON.stringify(credentialData, null, 2)}`);
+      } catch (err) {
+        console.log(`create credentials error: ${err}`);
+        console.log(`create credentials error data: ${data}`);
       }
     });
     child.on("exit", (code) => {
@@ -96,9 +97,9 @@ async function runMeasurableProcess(
           try {
             const elapsedTime = parseFloat(JSON.parse(data).elapsedTime)
             times.push(elapsedTime);
-            // console.log(elapsedTime);
-          } catch (e) {
-            console.log(`child error: ${data}`);
+          } catch (error) {
+            console.log(`child error: ${error}`);
+            console.log(`child error data: ${data}`);
           }
         });
 
