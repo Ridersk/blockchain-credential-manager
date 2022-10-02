@@ -3,6 +3,7 @@ import {
   getPdaParams,
   initializeProgram,
   requestAirdrop,
+  sleep,
 } from "./utils/testing-utils";
 
 import { EncryptionUtils } from "./utils/aes-encryption";
@@ -20,6 +21,8 @@ async function createCredentialProc() {
     const credentialsCount = parseInt(argv.credentialsCount);
     const { program, provider, keyPair } = initializeProgram(generateKeyPair());
     await requestAirdrop(keyPair.publicKey);
+    await sleep(10000);
+    await requestAirdrop(keyPair.publicKey);
     let credentialsData = [];
 
     const startTime = process.hrtime();
@@ -29,7 +32,7 @@ async function createCredentialProc() {
     const elapsedTime = parseHrtimeToSeconds(process.hrtime(startTime));
 
     process.stdout.write(
-      JSON.stringify({ credentialsData, elapsedTime, credentialsCount })
+      JSON.stringify({ firstCredentialData: credentialsData[0], elapsedTime, credentialsCount })
     );
 
     process.exitCode = 0;

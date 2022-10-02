@@ -70,7 +70,7 @@ export const requestAirdrop = async (ownerPublicKey: PublicKeyStruct) => {
   const latestBlockHash = await connection.getLatestBlockhash();
   const airdropSignature = await connection.requestAirdrop(
     ownerPublicKey,
-    1000000000
+    2000000000
   );
 
   await connection.confirmTransaction({

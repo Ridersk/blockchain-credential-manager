@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "ts-node src/index.ts",
-    "test:compiled": "node dist/index.js"
+    "test": "node dist/index.js",
+    "test:dev": "ts-node src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^18.7.16",
