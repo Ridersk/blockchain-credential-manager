@@ -183,7 +183,6 @@ export class WalletManager {
     await this._keyringController.unlock(password);
     await this._keyringController.reset();
     await this._preferencesController.reset();
-    await this.fullUpdate();
   }
 
   async isUnlocked() {
